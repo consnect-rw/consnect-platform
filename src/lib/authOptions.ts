@@ -38,6 +38,7 @@ export const authOptions: NextAuthOptions = {
                     const response = await DataService.post<ILoginRequest,IAuthUser>(apiUrl, `${Endpoints.AUTH.AUTH}/check-credentials`, {email, password});
                     if (!response || !response.success || !response.data) return null;
                     const user = response.data;
+                    console.log(user);
                     if(!user.active) return null;
                     return {
                          ...user,

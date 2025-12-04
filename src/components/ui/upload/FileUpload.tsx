@@ -5,6 +5,7 @@ import { useDropzone } from "react-dropzone";
 import { Dialog, DialogPanel } from "@headlessui/react";
 import { uploadSingleImage } from "@/util/s3Helpers";
 import { toast } from "sonner";
+import { cn } from "@/lib/utils";
 
 // You can swap this with your actual uploader function // Must return the uploaded file URL
 
@@ -15,6 +16,8 @@ interface FileUploadProps {
   name?: string;
   icon?: ReactNode;
   multiple?: boolean;
+  folder?:string;
+  className?:string
 }
 
 const FileUpload: React.FC<FileUploadProps> = ({
@@ -24,6 +27,8 @@ const FileUpload: React.FC<FileUploadProps> = ({
   name = "Upload Document",
   icon,
   multiple = false,
+  folder = "consnect-documents",
+  className
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [uploading, setUploading] = useState(false);
@@ -59,7 +64,7 @@ const FileUpload: React.FC<FileUploadProps> = ({
 
     try {
       for (const file of selectedFiles) {
-        const url = await uploadSingleImage(file, "consnect-documents");
+        const url = await uploadSingleImage(file, folder);
         if (url) {
           onUploadComplete(url, file);
           toast.success(`${file.name} uploaded successfully`);
@@ -82,7 +87,7 @@ const FileUpload: React.FC<FileUploadProps> = ({
       <button
         type="button"
         onClick={() => setIsOpen(true)}
-        className="px-4 py-[6px] bg-blue-600 hover:bg-blue-700 text-white whitespace-nowrap rounded-md flex items-center justify-center gap-2 text-sm"
+        className={cn("px-4 py-[6px] bg-amber-600 hover:bg-amber-700 text-white whitespace-nowrap rounded-md flex items-center justify-center gap-2 text-sm", className)}
       >
         {icon ?? null}
         {name}

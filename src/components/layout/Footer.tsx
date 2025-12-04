@@ -6,7 +6,7 @@ import { FaFacebook, FaInstagram, FaWhatsapp, FaXTwitter } from "react-icons/fa6
 export default function Footer () {
      return (
           <footer className="w-full py-8 bg-yellow-900 text-white flex flex-col gap-8">
-               <div className="w-full max-w-7xl mx-auto flex items-center justify-between flex-wrap">
+               <div className="w-full max-w-7xl mx-auto flex items-center justify-between flex-wrap px-2 lg:px-0">
                     <Image src={"/logo/consnect-rb.png"} width={200} height={100} className="w-24 rounded-lg object-cover bg-gray-200" alt="consnect"  />
                     <div className="flex items-center gap-4">
                          <Link target="_blank" className="text-gray-200" title="Consnect Facebook"  href={SocialMediaLinks.facebook}><FaFacebook size={22} /></Link>
@@ -15,7 +15,7 @@ export default function Footer () {
                          <Link target="_blank" className="text-gray-200" title="whatsapp channel" href={SocialMediaLinks.whatsappChannel}><FaWhatsapp size={22} /></Link>
                     </div>
                </div>
-               <div className="w-full max-w-7xl mx-auto grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+               <div className="w-full max-w-7xl mx-auto grid md:grid-cols-2 lg:grid-cols-3 gap-8 px-2 lg:px-0">
                     <div className="w-full flex flex-col gap-4">
                          <h4 className="text-xl font-bold text-white">Company</h4>
                          <div className="flex flex-col gap-2 w-19/20 mx-auto">

@@ -16,10 +16,11 @@ interface ImageUploaderProps {
     onUploadComplete: (url: string) => void;
     aspect?: EAspectRatio
     name?: string
-    Icon?:IconType
+    Icon?:IconType,
+    folder?:string
 }
 
-const ImageUploader: React.FC<ImageUploaderProps> = ({ onUploadComplete, aspect=EAspectRatio.STANDARD, name, Icon }) => {
+const ImageUploader: React.FC<ImageUploaderProps> = ({ onUploadComplete, aspect=EAspectRatio.STANDARD, name, Icon,folder="consnect" }) => {
     const [isOpen, setIsOpen] = useState(false);
     const [imageSrc, setImageSrc] = useState<string | null>(null);
     const [crop, setCrop] = useState({ x: 0, y: 0 });
@@ -60,7 +61,7 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({ onUploadComplete, aspect=
             const blob = await response.blob();
             const file = new File([blob], `cropped-image.jpg`, { type: "image/jpeg" });
 
-            const uploadedUrl = await uploadSingleImage(file);
+            const uploadedUrl = await uploadSingleImage(file, folder);
             if (uploadedUrl) {
                 toast.success("Image Uploaded Successfully");
                 onUploadComplete(uploadedUrl);
@@ -82,7 +83,7 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({ onUploadComplete, aspect=
             <button
                 onClick={() => setIsOpen(true)}
                 type="button"
-                className="px-4 py-[5px] text-[0.9rem] bg-blue-600 text-white rounded-md flex items-center justify-center whitespace-nowrap gap-[5px]"
+                className="px-4 py-1.5 text-base font-medium bg-gradient-to-br from-slate-700 to-slate-900 text-white flex items-center justify-center whitespace-nowrap gap-2 rounded-lg"
             >
                 {Icon ? <i className="text-[18px]"><Icon /></i> :null}
                 {name || "Upload Image"}
@@ -90,7 +91,7 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({ onUploadComplete, aspect=
 
             {/* Popup Modal */}
             <Dialog open={isOpen} onClose={() => setIsOpen(false)} className="relative z-50">
-                <div className="w-full fixed inset-0 bg-black bg-opacity-30 flex justify-center items-center">
+                <div className="w-full fixed inset-0 bg-black/80 bg-opacity-30 flex justify-center items-center">
                     <DialogPanel className="bg-white p-6 w-full rounded-lg shadow-lg lg:w-[80%] max-w-[90%]">
                         <h2 className="text-lg text-gray-800 font-semibold mb-4">Select Image</h2>
 
