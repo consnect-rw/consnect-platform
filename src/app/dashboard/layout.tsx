@@ -1,14 +1,18 @@
-import { getSessionUser } from "@/lib/actions";
-import { EUserRole } from "@/types/auth/user";
-import { getRedirectPath } from "@/util/auth";
-import { redirect } from "next/navigation";
+import { UserMobileTopBar, UserSideBar } from "@/components/layout/user/SideBar";
+import AuthWrapper from "@/context/AuthWrapper";
+import { EUserRole } from "@prisma/client";
 import { ReactNode } from "react";
 
 export default async function  UserDashboardLayout ({children}:{children: ReactNode}) {
-     const {user} = await getSessionUser();
-     if (!user) return redirect("/auth/login");
-     if(user.role !== EUserRole.USER) return redirect(getRedirectPath(user.role));
      return (
-          <div>{children}</div>
+          <AuthWrapper type={EUserRole.USER}>
+               <div className="w-full h-dvh bg-gray-100 overflow-hidden p-2 md:p-4 flex flex-col lg:flex-row gap-4 justify-between">
+                    <div className="w-64 h-full hidden lg:block"><UserSideBar /></div>
+                    <UserMobileTopBar />
+                    <div className="w-full h-full overflow-y-auto rounded-xl">
+                    {children}
+                    </div>
+               </div>
+          </AuthWrapper>
      )
 }

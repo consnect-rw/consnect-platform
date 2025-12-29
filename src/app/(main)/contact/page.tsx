@@ -3,6 +3,9 @@
 import React, { useState } from 'react';
 import { MapPin, Phone, Mail, Clock, Send, Building2, Globe, Facebook, Linkedin, Twitter, Instagram, CheckCircle } from 'lucide-react';
 import { ContactInfo } from '@/lib/data/contact-info';
+import { toast } from 'sonner';
+import { createSupportMessage } from '@/server/management/support-message';
+import Link from 'next/link';
 
 
 export default function ContactPage() {
@@ -15,10 +18,21 @@ export default function ContactPage() {
   });
   const [submitted, setSubmitted] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setSubmitted(true);
-    setTimeout(() => setSubmitted(false), 3000);
+    try {
+      const response = await createSupportMessage(formData);
+      if (response) {
+        setSubmitted(true);
+        setFormData({ name: '', email: '', phone: '', subject: '', message: '' });
+        toast.success("Your message has been sent successfully!");
+      } else {
+        toast.error("Failed to send your message. Please try again.");
+      }
+    } catch (error) {
+      console.error("Error submitting contact form: ", error);
+      return toast.error("There was an error sending your message. Please try again later.");
+    }
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
@@ -132,18 +146,18 @@ export default function ContactPage() {
               </div>
               <h3 className="text-lg font-bold text-gray-900 mb-4">Follow Us</h3>
               <div className="flex gap-3">
-                <a href={ContactInfo.socialMedia.facebook} target="_blank" rel="noopener noreferrer" className="w-12 h-12 bg-blue-100 hover:bg-blue-200 rounded-xl flex items-center justify-center transition-all">
+                <Link href={ContactInfo.socialMedia.facebook} target="_blank" rel="noopener noreferrer" className="w-12 h-12 bg-blue-100 hover:bg-blue-200 rounded-xl flex items-center justify-center transition-all">
                   <Facebook className="w-5 h-5 text-blue-600" />
-                </a>
-                <a href={ContactInfo.socialMedia.linkedin} target="_blank" rel="noopener noreferrer" className="w-12 h-12 bg-blue-100 hover:bg-blue-200 rounded-xl flex items-center justify-center transition-all">
+                </Link>
+                <Link href={ContactInfo.socialMedia.linkedin} target="_blank" rel="noopener noreferrer" className="w-12 h-12 bg-blue-100 hover:bg-blue-200 rounded-xl flex items-center justify-center transition-all">
                   <Linkedin className="w-5 h-5 text-blue-700" />
-                </a>
-                <a href={ContactInfo.socialMedia.twitter} target="_blank" rel="noopener noreferrer" className="w-12 h-12 bg-sky-100 hover:bg-sky-200 rounded-xl flex items-center justify-center transition-all">
+                </Link>
+                <Link href={ContactInfo.socialMedia.twitter} target="_blank" rel="noopener noreferrer" className="w-12 h-12 bg-sky-100 hover:bg-sky-200 rounded-xl flex items-center justify-center transition-all">
                   <Twitter className="w-5 h-5 text-sky-500" />
-                </a>
-                <a href={ContactInfo.socialMedia.instagram} target="_blank" rel="noopener noreferrer" className="w-12 h-12 bg-pink-100 hover:bg-pink-200 rounded-xl flex items-center justify-center transition-all">
+                </Link>
+                <Link href={ContactInfo.socialMedia.instagram} target="_blank" rel="noopener noreferrer" className="w-12 h-12 bg-pink-100 hover:bg-pink-200 rounded-xl flex items-center justify-center transition-all">
                   <Instagram className="w-5 h-5 text-pink-600" />
-                </a>
+                </Link>
               </div>
             </div>
           </div>
@@ -253,6 +267,7 @@ export default function ContactPage() {
             {/* Map */}
             <div className="mt-8 bg-white rounded-2xl shadow-lg border border-gray-200 overflow-hidden">
               <iframe
+                title='Company Location'
                 src={ContactInfo.map.embedUrl}
                 width="100%"
                 height="400"

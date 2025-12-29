@@ -1,3 +1,4 @@
+import { Prisma } from "@prisma/client"
 import { ECategoryType } from "./enums"
 
 
@@ -39,3 +40,10 @@ export interface ICategoryUpdate {
      description?:string
      image?:string
 }
+
+
+export const SAdminCategoryCard = {
+     id:true, name:true, image:true, description:true, type:true
+} satisfies Prisma.CategorySelect;
+
+export type TAdminCategoryCard = Prisma.CategoryGetPayload<{select: typeof SAdminCategoryCard}>

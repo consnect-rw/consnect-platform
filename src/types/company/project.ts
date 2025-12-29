@@ -1,3 +1,5 @@
+import { Prisma } from "@prisma/client"
+
 export interface IDefaultProject {
      id:string
      title:string 
@@ -41,3 +43,10 @@ export interface IProjectUpdate {
      initiatedOn?: Date
      completedOn?: Date
 }
+
+export const SProject  = {
+     id:true, title:true, description:true, images:true, phase:true, 
+     clientEmail:true, clientName:true, clientPhone:true, createdAt:true,
+     initiatedOn:true, completedOn:true, 
+} satisfies Prisma.ProjectSelect;
+export type TProject = Prisma.ProjectGetPayload<{select: typeof SProject}>

@@ -2,8 +2,6 @@
 import { LoginForm } from "@/components/forms/auth/LoginForm";
 import { getRedirectPath } from "@/util/auth";
 import { Sparkles } from "lucide-react";
-import Image from "next/image";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 
 export default function LoginPage() {
@@ -120,7 +118,7 @@ export default function LoginPage() {
 
         {/* Footer Text */}
         <p className="text-center mt-6 text-sm text-gray-600">
-          © 2024 Consnect. All rights reserved.
+          © {new Date().getFullYear()} Consnect. All rights reserved.
         </p>
       </div>
 

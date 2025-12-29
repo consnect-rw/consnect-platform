@@ -1,0 +1,86 @@
+enum ECategoryType {
+     TENDER 
+     SERVICE
+     BLOG
+}
+
+model Category {
+     id String @id @default(uuid())
+     name String 
+     type ECategoryType 
+     description String?
+     image String?
+
+     // timestamps 
+     createdAt DateTime @default(now())
+     updatedAt DateTime @updatedAt
+
+     // relations
+     services Service[]
+     offers Offer[]
+     blogs Blog[]
+}
+
+model Location {
+     id String @id @default(uuid())
+     country String
+     city String
+     state String?
+     zipCode String?
+     address String?
+
+     companyId String? @unique
+     company Company? @relation(fields: [companyId], references: [id])
+}
+
+model SocialMedia {
+     id String @id @default(uuid())
+     facebook String?
+     twitter String?
+     linkedin String?
+     instagram String?
+     youtube String?
+
+     companyId String @unique
+     company Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+}
+
+enum EDocumentType {
+     CERTIFICATION 
+     LICENSE
+
+}
+
+enum EDocumentModelType {
+     COMPANY
+     TENDER
+     OFFER
+     SERVICE
+}
+
+model Document {
+     id String @id @default(uuid())
+     title String
+     description String?
+     docUrl String
+     type EDocumentType
+     modelType EDocumentModelType
+
+     // relations
+     serviceId String?
+     service Service? @relation(fields: [serviceId], references: [id])
+
+     companyId String?
+     company Company? @relation(fields: [companyId], references: [id])
+}
+
+model Description {
+     id String @id @default(uuid())
+     title String
+     description String
+     featuredImage String?
+     rank Int 
+
+     companyId String?
+     company Company? @relation(fields: [companyId], references: [id], onDelete: Cascade)
+}

@@ -1,3 +1,5 @@
+import { Prisma } from "@prisma/client"
+
 export interface IDefaultFounder {
      id:string 
      name: string
@@ -22,4 +24,9 @@ export interface IFounderUpdate {
      title?:string
      image?:string
 }
+
+export const SFounder = {
+     id:true, name:true, title:true, image:true,
+} satisfies Prisma.FounderSelect;
+export type TFounder = Prisma.FounderGetPayload<{select: typeof SFounder}>
 

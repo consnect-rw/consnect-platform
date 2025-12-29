@@ -1,0 +1,162 @@
+enum ECompanyStatus {
+     PENDING
+     VERIFIED
+     REJECTED
+}
+
+model Company {
+     id String @id @default(uuid())
+     name String
+     handle String @unique
+     phone String
+     email String @unique
+
+     foundedYear Int
+     companySize Int
+
+     website String?
+     logoUrl String?
+     slogan String?
+     location Location?
+
+     // timestamps
+     createdAt DateTime @default(now())
+     updatedAt DateTime @updatedAt
+
+     // relations
+     descriptions Description[]
+     socialMedia SocialMedia?
+     founders Founder[]
+     contactPersons ContactPerson[]
+     reviews Review[]
+     projects Project[]
+     offers Offer[]
+     offerInterests OfferInterest[]
+     catalogs ProductCatalog[]
+     services Service[]
+     documents Document[]
+     verification CompanyVerification?
+     partnerInterests String[] @default([])
+
+     userId String @unique
+     user User @relation(fields: [userId], references: [id])
+
+     @@index([handle])
+}
+
+model CompanyVerification {
+     id String @id @default(uuid())
+     status ECompanyStatus
+     message String
+
+     createdAt DateTime @default(now())
+     updatedAt DateTime @updatedAt
+
+     companyId String @unique
+     company Company @relation(fields: [companyId], references: [id])
+}
+
+model Founder {
+     id String @id @default(uuid())
+     name String
+     title String
+     image String?
+
+     companyId String
+     company Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+}
+
+
+
+model Service {
+     id String @id @default(uuid())
+     name String 
+     description String 
+
+     // timestamps
+     createdAt DateTime @default(now())
+     updatedAt DateTime @updatedAt
+
+     // relations
+     categoryId String
+     category Category @relation(fields: [categoryId], references: [id])
+
+     companyId String
+     company Company @relation(fields: [companyId], references: [id])
+
+     certifications Document[]
+}
+
+enum EContactPersonLevel {
+     PRIMARY
+     SECONDARY
+}
+
+model ContactPerson {
+     id String @id @default(uuid())
+     level EContactPersonLevel
+     contactPhone String 
+     contactEmail String 
+     name String 
+     role String 
+
+     companyId String 
+     company Company @relation(fields: [companyId], references: [id])
+}
+
+model Review {
+     id String @id @default(uuid())
+     name String 
+     email String 
+     phone String 
+     review String 
+     rating Int 
+     
+     // timestamps
+     createdAt DateTime @default(now())
+     updated DateTime @updatedAt
+
+     companyId String 
+     company Company @relation(fields: [companyId], references: [id])
+}
+
+enum EProjectPhase {
+     EXECUTION
+     COMPLETED
+}
+
+model Project {
+     id String @id @default(uuid())
+     title String
+     description String
+     images String[]
+     phase EProjectPhase
+
+     clientName String
+     clientEmail String 
+     clientPhone String 
+
+     createdAt DateTime @default(now())
+     updatedAt DateTime @updatedAt
+     initiatedOn DateTime
+     completedOn DateTime?
+     
+
+     companyId String 
+     company Company @relation(fields: [companyId], references: [id])
+}
+
+model ProductCatalog {
+     id String @id @default(uuid())
+     name String 
+     description String 
+     image String 
+     fileUrl String 
+
+     createdAt DateTime @default(now())
+     updatedAt DateTime @updatedAt
+
+     companyId String 
+     company Company @relation(fields: [companyId], references: [id])
+
+}

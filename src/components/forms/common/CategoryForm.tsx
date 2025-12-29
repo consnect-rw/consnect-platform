@@ -1,67 +1,82 @@
 "use client";
 
-import { apiUrl } from "@/lib/api";
-import Endpoints from "@/lib/endpoints";
 import queryClient from "@/lib/queryClient";
-import { IBaseCategory, ICategoryCreate, ICategoryUpdate } from "@/types/common/category";
-import { ECategoryType } from "@/types/common/enums"
-import { DataService } from "@/util/data-service";
-import { ComponentProps, useState } from "react"
+import { ComponentProps, useEffect, useState } from "react"
 import { toast } from "sonner";
 import { MainForm } from "../MainForm";
-import { SelectInputGroup, TextAreaInputGroup, TextInputGroup } from "../InputGroups";
+import {  TextAreaInputGroup, TextInputGroup } from "../InputGroups";
 import ImageUploader from "@/components/ui/upload/ImageUploader";
 import { EntityButton } from "@/components/ui/custom-buttons";
 import { Dialog, DialogPanel } from "@headlessui/react";
-import { CloudUpload, X } from "lucide-react";
+import { CloudUpload, Trash, X } from "lucide-react";
 import { EAspectRatio } from "@/types/enums";
+import { createCategory, updateCategory } from "@/server/common/category";
+import { ECategoryType } from "@prisma/client";
+import Image from "@/components/ui/Image";
+import { deleteSingleImage } from "@/util/s3Helpers";
+import { TAdminCategoryCard } from "@/types/common/category";
 
-export const CategoryForm = ({id, onComplete}:{id?: string, onComplete: () => void}) => {
+export const CategoryForm = ({category, type, onComplete}:{category?: TAdminCategoryCard, onComplete: () => void, type: ECategoryType}) => {
      const [image,setImage] = useState("");
      const submitForm = async(data:FormData) => {
           const name = data.get("name") as string
-          const type = data.get("type") as ECategoryType
           const description = data.get("description") as string
 
-          if(!id) {
-               const newCategory:ICategoryCreate = {
-                    name, type, description, image
-               }
-               const response = await DataService.post<ICategoryCreate, IBaseCategory>(apiUrl, Endpoints.COMMON.CATEGORY, newCategory);
-               if(!response || !response.success) return toast.error("Error creating the category!", {description: "Please try again later"});
+          if(!category) {
+               const response = await createCategory({name, type, description, image});
+               if(!response) return toast.error("Error creating the category!", {description: "Please try again later"});
                toast.success("Category created successfully");
                queryClient.invalidateQueries();
                return onComplete();
           }
-          const updatedCategory: ICategoryUpdate = {
+
+          const response = await updateCategory(category.id ?? "", {
                ...(name ? {name} : {} ),
-               ...(type ? {type} : {} ),
                ...(description ? {description} : {} ),
-               ...(image ? {image} : {} ),
-          }
-          const response = await DataService.put<ICategoryUpdate, IBaseCategory>(apiUrl, `${Endpoints.COMMON.CATEGORY}/${id}`, updatedCategory);
-          if(!response || !response.success) return toast.error("Error updating the category!", {description: "Please try again later"});
+               ...(image ? {image} : {} )
+          });
+          if(!response) return toast.error("Error updating the category!", {description: "Please try again later"});
           toast.success("Category updated successfully");
           queryClient.invalidateQueries();
           return onComplete();
      }
 
+     const deleteImage = async() => {
+          try {
+               await deleteSingleImage(image);
+               setImage("");
+               return toast.success("Image deleted successfully");
+          } catch (error) {
+               console.log(error);
+               return toast.error("Error deleting image!");
+          }
+     }
+
+     useEffect(() => {
+          if(category){
+               setImage(category.image ?? "");
+          }
+     }, [category])
+
      return (
-          <MainForm btnTitle={id ? "Update Category" : "Save Category"} submitData={submitForm}>
-               <TextInputGroup name="name" label="Category Name:" placeholder="enter category name..." required={id ? false : true} />
-               <SelectInputGroup name="type" label="Category Type" values={Object.values(ECategoryType).map(v => ({label:v, value:v}))} required={id ? false : true} />
-               <div className="w-full flex gap-2 items-start ">
+          <MainForm btnTitle={category ? "Update Category" : "Save Category"} submitData={submitForm}>
+               <TextInputGroup name="name" label={`Category Name: ${category?.name}`} placeholder="enter category name..." required={category ? false : true} />
+               <div className="w-full flex flex-col gap-2 items-start ">
                     {
-                         image ? <></> :
+                         image ? 
+                         <>
+                         <Image src={image} alt="category image" className="w-32 rounded-lg" />
+                         <button onClick={deleteImage} type="button" className="rounded-lg py-1.5 px-3 flex items-center gap-2 bg-red-100 text-red-600"><Trash className="w-4 h-4" /> Delete</button>
+                         </> :
                          <ImageUploader name="Icon" Icon={CloudUpload} aspect={EAspectRatio.STANDARD} onUploadComplete={res => setImage(res) } />
                     }
                </div>
-               <TextAreaInputGroup name="description" label="Description:" maxWords={100} required={false} placeholder="Brief description of the category..." />
+               <TextAreaInputGroup defaultValue={category?.description ?? ""} name="description" label="Description:" maxWords={100} required={false} placeholder="Brief description of the category..." />
           </MainForm>
      )
 }
 
-export const CategoryFormToggleBtn = ({title, ...btnProps}:{title: string} & ComponentProps<typeof EntityButton> ) => {
+export const CategoryFormToggleBtn = ({title, categoryType, category, ...btnProps}:{title: string, categoryType:ECategoryType, category?:TAdminCategoryCard} & ComponentProps<typeof EntityButton> ) => {
      const [open,setOpen] = useState(false);
      
      if(!open) return <EntityButton  onClick={() => setOpen(true)} {...btnProps} />
@@ -73,7 +88,7 @@ export const CategoryFormToggleBtn = ({title, ...btnProps}:{title: string} & Com
                          <h3 className="text-xl text-slate-800 font-bold">{title}</h3>
                          <X size={28} className="text-gray-600 border rounded-full p-1 cursor-pointer hover:text-gray-800" onClick={() => setOpen(false)} />
                     </div>
-                    <CategoryForm id={btnProps.entityId} onComplete={() => setOpen(false)} />
+                    <CategoryForm type={categoryType} category={category} onComplete={() => setOpen(false)} />
                </DialogPanel >
                </div>
           </Dialog>

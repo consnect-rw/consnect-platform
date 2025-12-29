@@ -1,23 +1,22 @@
 "use client";
 
-import { apiUrl } from "@/lib/api";
-import Endpoints from "@/lib/endpoints";
 import queryClient from "@/lib/queryClient";
-import { ILoginRequest } from "@/types/auth/auth";
-import { IAuthUser, IDefaultUser, IUserCreate } from "@/types/auth/user";
-import { DataService } from "@/util/data-service";
+import {  IUserCreate } from "@/types/auth/user";
+
 import { toast } from "sonner";
 import { MainForm } from "../MainForm";
 import { PasswordInputGroup, TextInputGroup } from "../InputGroups";
-import { AuthTextInput } from "../AuthForms";
 import { Send } from "lucide-react";
+import { createUser, updateUser } from "@/server/auth/user";
+import { EUserRole } from "@prisma/client";
 
 interface IUserFormProps {
      userId?: string
      onComplete: () => void
+     role?: EUserRole
 }
 
-export const UserForm = ({userId, onComplete}:IUserFormProps) => {
+export const UserForm = ({userId, role,onComplete}:IUserFormProps) => {
      const submitForm = async(data: FormData) => {
           const name = data.get("name") as string;
           const phone = data.get("phone") as string;
@@ -30,12 +29,9 @@ export const UserForm = ({userId, onComplete}:IUserFormProps) => {
           if(!userId) {
                if(!name || !phone || ! email || ! password) return ("Please fill all fields");
                if(password !== confirmPassword) return toast.warning("Please passwords do not match!")
-   
-               const newUser: IUserCreate = {
-                    name, phone, email, password
-               }
-               const response = await DataService.post<IUserCreate,IDefaultUser>(apiUrl, Endpoints.AUTH.USER, newUser);
-               if(!response || !response.success) return toast.error("Erroring creating your account!");
+
+               const response = await createUser({name, phone, email, password, ...(role ? {role} : {})});
+               if(!response) return toast.error("Erroring creating your account!");
                queryClient.invalidateQueries();
                toast.success("Success creating your account");
                return onComplete();
@@ -51,8 +47,8 @@ export const UserForm = ({userId, onComplete}:IUserFormProps) => {
                if(newPassword !== confirmPassword ) return toast.warning("New Passwords don not match!")
                updatedUser.password = newPassword;
           }
-          const response = await DataService.put<Partial<IUserCreate>, IDefaultUser>(apiUrl, `${Endpoints.AUTH.USER}/${userId}`, updatedUser);
-          if(!response || !response.success) return toast.error("Erroring updating your account!");
+          const response = await updateUser(userId, updatedUser);
+          if(!response) return toast.error("Erroring updating your account!");
           queryClient.invalidateQueries();
           toast.success("Success updating your account");
           return onComplete();

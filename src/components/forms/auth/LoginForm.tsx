@@ -1,16 +1,16 @@
 "use client";
 
-import { useAuth} from "@/hooks/useAuth";
-import { IAuthUser } from "@/types/auth/user";
+import {  TSessionUser } from "@/types/auth/user";
 import { CredentialsSignin } from "@/util/auth";
 import { ChangeEvent, useState } from "react";
 import { toast } from "sonner";
 import { AuthPasswordInput, AuthSubmitBtn, AuthTextInput } from "../AuthForms";
-import { getSessionUser } from "@/lib/actions";
+// import { getSessionUser } from "@/lib/actions";
 import Link from "next/link";
+import { getSessionUser } from "@/server/auth/user";
 
-export const LoginForm = ({onComplete}:{onComplete: (user: IAuthUser) => void}) => {
-     const {setUser} = useAuth();
+export const LoginForm = ({onComplete}:{onComplete: (user: TSessionUser) => void}) => {
+     // const {setUser} = useAuth();
      const [loading, setLoading] = useState(false);
      const submitForm = async(event: ChangeEvent<HTMLFormElement>) => {
           event.preventDefault();
@@ -28,7 +28,7 @@ export const LoginForm = ({onComplete}:{onComplete: (user: IAuthUser) => void}) 
                
                const {user} = await getSessionUser();
                if(!user) return toast.warning("User account not found!");
-               setUser(user);
+               // setUser(user);
                toast.success("Login success");
                return onComplete(user);
           } catch (error) {

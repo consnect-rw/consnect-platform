@@ -1,3 +1,5 @@
+import { Prisma } from "@prisma/client"
+
 export interface IDefaultReview {
      id:string
      name:string
@@ -29,3 +31,8 @@ export interface IReviewUpdate {
      review?:string
      rating?:number
 }
+
+export const SReview = {
+     id:true, name:true, email:true, phone:true, review:true, rating:true, createdAt:true,
+} satisfies Prisma.ReviewSelect;
+export type TReview = Prisma.ReviewGetPayload<{select: typeof SReview}>

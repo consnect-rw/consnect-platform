@@ -22,9 +22,6 @@ export const uploadSingleImage = async (file: File, folder:string = "consnect"):
           const command = new PutObjectCommand(params);
      
           await s3Client.send(command);
-
-          // `https://${this.bucketName}.s3.${this.configService.getOrThrow('AWS_S3_REGION')}.amazonaws.com/${key}`
-     
           return `https://${BUCKET_NAME}.s3.${AWS_REGION}.amazonaws.com/${params.Key}`;
      } catch (error) {
           console.log(error);

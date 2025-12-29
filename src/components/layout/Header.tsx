@@ -27,7 +27,7 @@ export const DesktopView = () => {
           <header className="hidden lg:flex w-full bg-white px-2 py-2 ">
                <div className="w-full max-w-7xl mx-auto flex items-center justify-between">
                     <LogoLink />
-                    <nav className="w-auto flex items-center gap-4">
+                    <nav className="w-auto flex items-center gap-8">
                          {
                               NavLinks.map((link,index) => <Link prefetch className="text-black text-sm font-medium hover:text-yellow-800" href={link.href ?? "/"} key={`desktop-header-nav-link-${index}`}>{link.name}</Link>)
                          }

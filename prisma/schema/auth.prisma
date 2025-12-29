@@ -1,0 +1,41 @@
+enum EUserRole {
+     USER
+     ADMIN
+}
+
+model User {
+     id String @id @default(uuid())
+     email String @unique
+     password String
+     name String?
+     phone String?
+     image String?
+     role EUserRole @default(USER)
+     isEmailVerified Boolean @default(false)
+     isTwoFactorEnabled Boolean @default(false)
+     active Boolean @default(true)
+
+     // timestamps
+     createdAt DateTime @default(now())
+     updatedAt DateTime @updatedAt
+
+     userOTP UserOTP?
+     
+     company Company?
+     blogs Blog[]
+     blogComments Comment[]
+     sentMessages Message[] @relation("MessageSender")
+     receivedMessages Message[] @relation("MessageReceiver")
+}
+
+model UserOTP {
+     id String @id @default(uuid())
+     otp Int 
+     
+     expiresAt DateTime
+     createdAt DateTime @default(now())
+     expiryAt DateTime
+
+     userId String @unique
+     user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}

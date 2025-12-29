@@ -28,7 +28,6 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const {user} = await getSessionUser();
   return (
     <html lang="en">
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
@@ -40,11 +39,9 @@ export default async function RootLayout({
         >
           
               <QueryProvider>
-                <AuthProvider authUser={user}>
                   <ViewProvider>
                     {children}
                   </ViewProvider>
-                </AuthProvider>
             </QueryProvider>
             <Toaster
               position="bottom-center"

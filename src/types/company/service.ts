@@ -1,3 +1,4 @@
+import { Prisma } from "@prisma/client"
 import { IDefaultCategory } from "../common/category"
 import { IBaseDocument, IDocumentCreate } from "../common/document"
 
@@ -37,3 +38,10 @@ export interface IServiceUpdate {
           disconnect?: { id: string }[];
      };
 }
+
+export const SService = {
+     id:true, name:true, description:true, createdAt:true,
+     category: {select:{id:true, name:true}},
+     certifications:{select:{title:true, docUrl:true, type:true, }}
+} satisfies Prisma.ServiceSelect;
+export type TService = Prisma.ServiceGetPayload<{select: typeof SService}>

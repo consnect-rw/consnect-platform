@@ -1,20 +1,20 @@
 "use client";
 
-import { IAuthUser } from "@/types/auth/user";
+import { IAuthUser, TSessionUser } from "@/types/auth/user";
 import { createContext, ReactNode, useState } from "react";
 
 
 interface AuthContextType {
-     user: IAuthUser | null | undefined;
-     setUser: (user: IAuthUser | null | undefined) => void;
+     user: TSessionUser | null | undefined;
+     setUser: (user: TSessionUser | null | undefined) => void;
      authOn: boolean;
      setAuthOn: (option:boolean) => void;
 }
 
 export const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-export function AuthProvider({authUser, children}:{children: ReactNode, authUser: IAuthUser | null | undefined}) {
-     const [user, setUser] = useState<IAuthUser | null | undefined>(authUser);
+export function AuthProvider({authUser, children}:{children: ReactNode, authUser: TSessionUser | null | undefined}) {
+     const [user, setUser] = useState<TSessionUser | null | undefined>(authUser);
      const [authOn, setAuthOn] = useState(authUser ? false : true);
 
      return (

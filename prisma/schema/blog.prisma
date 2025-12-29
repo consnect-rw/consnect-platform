@@ -1,0 +1,44 @@
+enum EBlogStatus {
+     DRAFT
+     PUBLISHED
+     ARCHIVED
+}
+
+model Blog {
+     id String @id @default(uuid())
+     title String
+     description String
+     detailedDescription String
+     featuredImageUrl String
+     images String[]
+     status EBlogStatus @default(DRAFT)
+     tags String[] @default([])
+
+     readingTime          Int?
+     viewCount            Int            @default(0)
+     likeCount            Int            @default(0)
+     commentCount         Int            @default(0)
+
+     createdAt DateTime @default(now())
+     updatedAt DateTime @updatedAt
+     publishedAt DateTime? 
+
+     categoryId String
+     category Category @relation(fields: [categoryId], references: [id])
+     authorId String
+     author User @relation(fields: [authorId], references: [id])
+     comments Comment[]
+}
+
+model Comment {
+     id String @id @default(uuid())
+     content String
+     createdAt DateTime @default(now())
+     updatedAt DateTime @updatedAt
+
+     blogId String 
+     blog Blog @relation(fields: [blogId], references: [id])
+
+     userId String
+     user User @relation(fields: [userId], references: [id])
+}

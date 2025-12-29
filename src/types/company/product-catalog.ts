@@ -1,3 +1,5 @@
+import { Prisma } from "@prisma/client"
+
 export interface IDefaultProductCatalog {
      id:string
      name:string
@@ -28,3 +30,8 @@ export interface IProductCatalogUpdate {
      image?:string
      fileUrl?:string
 }
+
+export const SProductCatalog = {
+     id:true, name:true, description:true, image:true, fileUrl:true
+} satisfies Prisma.ProductCatalogSelect;
+export type TProductCatalog = Prisma.ProductCatalogGetPayload<{select: typeof SProductCatalog}>

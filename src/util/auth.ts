@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { EUserRole } from "@/types/auth/user";
+import { EUserRole } from "@prisma/client";
 import { signIn, signOut } from "next-auth/react";
 
 

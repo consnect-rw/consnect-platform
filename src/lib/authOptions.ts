@@ -1,11 +1,12 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { DefaultSession, DefaultUser, NextAuthOptions, Session as NextAuthSession } from "next-auth";
+import GoogleProvider from "next-auth/providers/google";
 import CredentialsProvider from "next-auth/providers/credentials";
-import { EUserRole, IAuthUser } from "@/types/auth/user";
-import { DataService } from "@/util/data-service";
-import { apiUrl } from "./api";
-import Endpoints from "./endpoints";
-import { ILoginRequest } from "@/types/auth/auth";
+import { PrismaAdapter } from "@next-auth/prisma-adapter";
+import { verifyPassword } from "@/util/bcryptFuncs";
+import { fetchUserByEmail } from "@/server/auth/user";
+import { EUserRole, Prisma } from "@prisma/client";
+import prisma from "@/config/prisma";
 
 declare module "next-auth" {
      interface Session extends DefaultSession {
@@ -19,9 +20,28 @@ declare module "next-auth" {
      }
 }
 
+const UserSelect = {id:true, email:true, password:true, role:true, active:true} satisfies Prisma.UserSelect;
+
 export const authOptions: NextAuthOptions = {
-     // adapter: PrismaAdapter(prisma),
+     adapter: PrismaAdapter(prisma),
      providers: [
+          GoogleProvider({
+               clientId: process.env.GOOGLE_CLIENT_ID!,
+               clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+               authorization: {
+                    params: {
+                      scope: "openid email profile", // Ensure these scopes are requested
+                    },
+               },
+               profile(profile) {
+                    return {
+                         id: profile.sub,
+                         name: profile.name,
+                         email: profile.email,
+                         image: profile.picture,
+                    };
+               },
+          }),
           CredentialsProvider({
                name: "Credentials",
                credentials: {
@@ -35,11 +55,14 @@ export const authOptions: NextAuthOptions = {
                     };
 
                     
-                    const response = await DataService.post<ILoginRequest,IAuthUser>(apiUrl, `${Endpoints.AUTH.AUTH}/check-credentials`, {email, password});
-                    if (!response || !response.success || !response.data) return null;
-                    const user = response.data;
-                    console.log(user);
+                    const user = await fetchUserByEmail(email, UserSelect);
+                    if (!user || !user.password) return null;
                     if(!user.active) return null;
+
+                    // Validate password (use bcrypt or another hashing library)
+                    const isPasswordValid = await verifyPassword(password,user.password);
+                    if (!isPasswordValid) return null;
+
                     return {
                          ...user,
                          id: (user.id || "").toString(),
@@ -66,6 +89,29 @@ export const authOptions: NextAuthOptions = {
           },
      },
      callbacks: {
+          async signIn({ account, profile }) {
+               if (account?.provider === "google" && profile && profile.email) {
+                    const gProfile = profile as { email: string; name?: string; picture?: string };
+                    let user = await fetchUserByEmail(profile.email, UserSelect);
+          
+                    if (!user) {
+                         // Create the new user in the database
+                         user = await prisma.user.create({
+                              data: {
+                                   email: gProfile.email,
+                                   name:gProfile.name,
+                                   image: gProfile.picture ? gProfile.picture : "",
+                                   password: "",
+                                   createdAt: new Date(),
+                                   updatedAt: new Date(),
+                                   role: EUserRole.USER,
+                              },
+                         });
+                    }
+                    return true;
+               }
+               return true;
+          },
           async jwt({token, user}) {
                if (user) {
                     const myUser = user;
