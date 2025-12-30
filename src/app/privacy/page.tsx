@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { Shield, Lock, Eye, Database, Users, Globe, Cookie, Mail, Calendar, Building2, Search, ChevronRight } from 'lucide-react';
 import PrivacyPolicy from '@/lib/data/privacy-policy';
 import Link from 'next/link';
+import { CurrentYear } from '@/components/layout/CurrentYear';
 
 const iconMap: Record<string, React.ElementType> = {
   'information_we_collect': Database,
@@ -202,7 +203,7 @@ export default function PrivacyPolicyPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="flex flex-col md:flex-row items-center justify-between gap-4">
             <p className="text-sm text-gray-600 text-center md:text-left">
-              © 2024 {PrivacyPolicy.companyName} • Last updated: {PrivacyPolicy.lastUpdated}
+              © <CurrentYear /> {PrivacyPolicy.companyName} • Last updated: {PrivacyPolicy.lastUpdated}
             </p>
             <div className="flex gap-6 text-sm">
               <Link href="terms" className="text-yellow-600 hover:text-amber-700 font-medium">Terms of Use</Link>

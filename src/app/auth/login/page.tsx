@@ -1,5 +1,6 @@
 "use client";
 import { LoginForm } from "@/components/forms/auth/LoginForm";
+import { CurrentYear } from "@/components/layout/CurrentYear";
 import { getRedirectPath } from "@/util/auth";
 import { Sparkles } from "lucide-react";
 import { useRouter } from "next/navigation";
@@ -118,7 +119,7 @@ export default function LoginPage() {
 
         {/* Footer Text */}
         <p className="text-center mt-6 text-sm text-gray-600">
-          © {new Date().getFullYear()} Consnect. All rights reserved.
+          © <CurrentYear /> Consnect. All rights reserved.
         </p>
       </div>
 

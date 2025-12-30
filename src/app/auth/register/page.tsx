@@ -1,9 +1,10 @@
 "use client";
+
 import { Building2, Sparkles, CheckCircle2, TrendingUp, Users, FileText } from 'lucide-react';
 import { UserForm } from '@/components/forms/auth/UserForm';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-
+import { CurrentYear } from '@/components/layout/CurrentYear';
 
 export default function RegisterPage() {
 
@@ -179,7 +180,7 @@ export default function RegisterPage() {
 
         {/* Footer Text */}
         <p className="text-center mt-6 text-sm text-gray-600">
-          © {new Date().getFullYear()} Consnect. Connecting Construction Professionals.
+          © <CurrentYear /> Consnect. Connecting Construction Professionals.
         </p>
       </div>
 

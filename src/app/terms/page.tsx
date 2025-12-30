@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { FileText, Building2, ChevronDown, ChevronUp, Shield, Mail, Calendar } from 'lucide-react';
 import TermsOfUse from '@/lib/data/terms-of-use';
 import Link from 'next/link';
+import { CurrentYear } from '@/components/layout/CurrentYear';
 
 export default function TermsOfUsePage() {
   const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({});
@@ -216,7 +217,7 @@ export default function TermsOfUsePage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
             <p className="text-sm text-gray-600 text-center sm:text-left">
-              © {new Date().getFullYear()} {TermsOfUse.companyName} • Last updated: {TermsOfUse.lastUpdated}
+              © <CurrentYear /> {TermsOfUse.companyName} • Last updated: {TermsOfUse.lastUpdated}
             </p>
             <div className="flex gap-4 text-sm">
               <Link href="/privacy" className="text-amber-600 hover:text-amber-700 font-medium">Privacy Policy</Link>
