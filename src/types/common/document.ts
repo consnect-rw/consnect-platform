@@ -1,3 +1,4 @@
+import { Prisma } from "@prisma/client"
 import { EDocumentModelType, EDocumentType } from "./enums"
 
 export interface IDefaultDocument {
@@ -39,3 +40,9 @@ export interface IDocumentUpdate {
      docUrl?:string
      description?:string
 }
+
+export const SDocument = {
+     id:true, title:true, description:true, docUrl:true, type:true
+} satisfies Prisma.DocumentSelect;
+
+export type TDocument = Prisma.DocumentGetPayload<{select: typeof SDocument}>

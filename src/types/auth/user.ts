@@ -45,3 +45,16 @@ export const SSessionUser = {
 } satisfies Prisma.UserSelect;
 
 export type TSessionUser = Prisma.UserGetPayload<{select: typeof SSessionUser}>;
+
+export const SAdminUserRow = {
+     id:true, email:true, name:true, isEmailVerified:true, isTwoFactorEnabled:true, active:true, 
+     createdAt:true, 
+     company: {select:{name:true, verification:{select:{status:true}}}}
+} satisfies Prisma.UserSelect;
+export type TAdminUserRow = Prisma.UserGetPayload<{select: typeof SAdminUserRow}>
+
+export const SAdminRow = {
+     id:true, email:true, name:true, isEmailVerified:true, isTwoFactorEnabled:true, active:true, 
+     createdAt:true
+} satisfies Prisma.UserSelect;
+export type TAdminRow = Prisma.UserGetPayload<{select: typeof SAdminRow}>

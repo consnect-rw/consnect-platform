@@ -27,7 +27,7 @@ export default function AdminCompaniesPage() {
 
 
   return (
-    <div className="w-full min-h-full bg-gray-50/50 p-4 md:p-8">
+    <div className="w-full min-h-full bg-gray-50 rounded-xl p-4">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="mb-8">

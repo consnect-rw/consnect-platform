@@ -1,3 +1,5 @@
+import { Prisma } from "@prisma/client"
+
 export interface IDefaultSocialMedia {
      id:string
 }
@@ -14,8 +16,13 @@ export interface IBaseSocialMedia {
 export interface ISocialMediaCreate {
      facebook?:string
      twitter?: string 
-     linkedIn?: string
+     linkedin?: string
      instagram?:string
      youtube?:string
-     company?: {connect: {id:string}}
 }
+
+export const SSocialMedia = {
+     id:true, facebook:true, twitter:true, linkedin:true, instagram:true, youtube:true
+} satisfies Prisma.SocialMediaSelect;
+
+export type TSocialMedia = Prisma.SocialMediaGetPayload<{select: typeof SSocialMedia}>

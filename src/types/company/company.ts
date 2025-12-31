@@ -109,7 +109,8 @@ export const SAdminCompanyCard = {
 export type TAdminCompanyCard = Prisma.CompanyGetPayload<{select: typeof SAdminCompanyCard}>
 
 export const SCompanyCard = {
-     id:true, handle:true, name:true, website:true, logoUrl:true, slogan:true
+     id:true, handle:true, name:true, website:true, logoUrl:true, slogan:true, 
+     descriptions:{select:{description:true}, where:{title: "Overview"}},
 } satisfies Prisma.CompanySelect;
 export type TCompanyCard = Prisma.CompanyGetPayload<{select: typeof SCompanyCard}>
 

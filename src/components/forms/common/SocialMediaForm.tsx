@@ -2,29 +2,19 @@
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { ISocialMediaCreate } from "@/types/common/social-media";
+import queryClient from "@/lib/queryClient";
+import { createSocialMedia, updateSocialMedia } from "@/server/common/social-media";
+import { ISocialMediaCreate, TSocialMedia } from "@/types/common/social-media";
 import { ExternalLink, Facebook, Instagram, Linkedin, LinkIcon, Plus, Twitter, Youtube } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { IconType } from "react-icons/lib";
+import { toast } from "sonner";
 
 interface ISocialMediaFormProps {
      companyId?:string
-     onSubmit: (res: ISocialMediaCreate) => void 
+     socialMedia?:TSocialMedia
+     onComplete:() => void
 }
-
-// export default function SocialMediaForm({companyId, onSubmit}:ISocialMediaFormProps) {
-//      const [media, setMedia] = useState<ISocialMediaCreate>({});
-
-//      const submit = () => {
-//           return onSubmit(
-//                {...media, ...(companyId ? {company:{connect:{id:companyId}}}: {})}
-//           );
-//      }
-
-//      return (
-//           <div className=""></div>
-//      )
-// }
 
 interface IPlatform {
      label:string 
@@ -46,7 +36,7 @@ const platforms = {
           placeholder: 'twitter.com/your-handle',
           color: 'text-sky-500'
      },
-     linkedIn: {
+     linkedin: {
           label: 'LinkedIn', 
           icon: Linkedin, 
           placeholder: 'linkedin.com/company/your-company',
@@ -71,13 +61,14 @@ interface ISocialMediaLinkInputProps {
      platform: IPlatform
      isFocused: boolean
      hasValue: boolean
+     defaultValue?: string
      onUpdate: (res:string) => void
      onFocus: () => void
      onBlur: () => void
 
 }
 
-const SocialMediaLinkInput = ({key, isFocused,platform, hasValue,onUpdate, onFocus,onBlur}:ISocialMediaLinkInputProps) => {
+const SocialMediaLinkInput = ({key, isFocused,platform, hasValue,onUpdate, onFocus,onBlur, defaultValue}:ISocialMediaLinkInputProps) => {
      const Icon = platform.icon;
      return (
           <div  className={`flex items-center gap-3 p-3 rounded-lg border transition-all ${ isFocused  ? 'border-amber-500 bg-amber-50/50 shadow-sm'  : hasValue ? 'border-green-200 bg-green-50/30' : 'border-gray-200 hover:border-gray-300'}`} >
@@ -95,6 +86,7 @@ const SocialMediaLinkInput = ({key, isFocused,platform, hasValue,onUpdate, onFoc
                <Input
                     placeholder={platform.placeholder}
                     value={key}
+                    defaultValue={defaultValue}
                     onChange={(e) => onUpdate(e.target.value)}
                     onFocus={() => onFocus()}
                     onBlur={() => onBlur()}
@@ -106,15 +98,42 @@ const SocialMediaLinkInput = ({key, isFocused,platform, hasValue,onUpdate, onFoc
 }
 
 
-export default function SocialMediaForm({ companyId, onSubmit }:ISocialMediaFormProps) {
+export default function SocialMediaForm({ companyId, onComplete, socialMedia }:ISocialMediaFormProps) {
      const [media, setMedia] = useState<ISocialMediaCreate>({});
      const [focusedField, setFocusedField] = useState("");
 
-     const submit = () => {
-          return onSubmit(
-               {...media, ...(companyId ? {company: {connect: {id: companyId}}} : {})}
-          );
+     const submit = async () => {
+          if(!socialMedia) {
+               const newSocialMedia = await createSocialMedia({
+                    company:{connect: {id:companyId}},
+                    ...media
+               },);
+               if(!newSocialMedia) return toast.error("Error saving social media");
+               queryClient.invalidateQueries();
+               toast.success("Social Medias added successfully");
+               return onComplete();
+          }
+          const updates = await updateSocialMedia(socialMedia.id, {
+               ...media
+          });
+          if(!updates) return toast.error("Error saving social media");
+          queryClient.invalidateQueries();
+          toast.success("Successfully updated company social links");
+          return onComplete();
      };
+
+     useEffect(() => {
+          if(socialMedia) {
+               console.log(socialMedia)
+               setMedia({
+                    facebook: socialMedia.facebook ?? undefined,
+                    twitter: socialMedia.twitter ?? undefined,
+                    instagram: socialMedia.instagram ?? undefined,
+                    youtube: socialMedia.youtube ?? undefined,
+                    linkedin: socialMedia.linkedin ?? undefined,
+               })
+          }
+     }, [socialMedia])
 
      return (
           <div className="p-5 bg-gradient-to-br from-white to-amber-50/30 rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition-all">
@@ -134,6 +153,7 @@ export default function SocialMediaForm({ companyId, onSubmit }:ISocialMediaForm
                <div className="space-y-3 mb-5">
                     <SocialMediaLinkInput 
                          key="facebook" 
+                         defaultValue={media.facebook}
                          platform={platforms.facebook} 
                          isFocused={focusedField === "facebook"} 
                          hasValue={media.facebook !== undefined} 
@@ -143,6 +163,7 @@ export default function SocialMediaForm({ companyId, onSubmit }:ISocialMediaForm
                     />
                     <SocialMediaLinkInput 
                          key="twitter" 
+                         defaultValue={media.twitter}
                          platform={platforms.twitter} 
                          isFocused={focusedField === "twitter"} 
                          hasValue={media.twitter !== undefined} 
@@ -151,16 +172,18 @@ export default function SocialMediaForm({ companyId, onSubmit }:ISocialMediaForm
                          onBlur={() => setFocusedField("")}
                     />
                     <SocialMediaLinkInput 
-                         key="linkedIn" 
-                         platform={platforms.linkedIn} 
-                         isFocused={focusedField === "linkedIn"} 
-                         hasValue={media.linkedIn !== undefined} 
-                         onUpdate={res => setMedia(prev => ({...prev, linkedIn: res}))}
-                         onFocus={() => setFocusedField("linkedIn")}
+                         key="linkedin" 
+                         defaultValue={media.linkedin}
+                         platform={platforms.linkedin} 
+                         isFocused={focusedField === "linkedin"} 
+                         hasValue={media.linkedin !== undefined} 
+                         onUpdate={res => setMedia(prev => ({...prev, linkedin: res}))}
+                         onFocus={() => setFocusedField("linkedin")}
                          onBlur={() => setFocusedField("")}
                     />
                     <SocialMediaLinkInput 
                          key="instagram" 
+                         defaultValue={media.instagram}
                          platform={platforms.instagram} 
                          isFocused={focusedField === "instagram"} 
                          hasValue={media.instagram !== undefined} 
@@ -169,7 +192,8 @@ export default function SocialMediaForm({ companyId, onSubmit }:ISocialMediaForm
                          onBlur={() => setFocusedField("")}
                     />
                     <SocialMediaLinkInput 
-                         key="youtube" 
+                         key="youtube"
+                         defaultValue={media.youtube}
                          platform={platforms.youtube} 
                          isFocused={focusedField === "youtube"} 
                          hasValue={media.youtube !== undefined} 

@@ -15,13 +15,13 @@ export default function FormsPage () {
                <CategoryFormToggleBtn categoryType={ECategoryType.SERVICE} className={"flex items-center gap-2 text-base font-bold text-white bg-gradient-to-bl from-amber-600 to-amber-800 rounded-lg py-1.5 px-4"} title="New Category" name="Category" icon={<Plus className="w-4 h-4" />} />
                <div className="w-full lg:w-md shadow-md p-2 rounded-xl">
                     <h2>Document form</h2>
-                    <DocumentForm type={EDocumentType.CERTIFICATION} modelType={EDocumentModelType.COMPANY} onSubmit={doc => {}} />
+                    <DocumentForm type={EDocumentType.CERTIFICATION} modelType={EDocumentModelType.COMPANY} onComplete={() => {}} />
                </div>
                <div className="w-full lg:w-lg p-2 shadow-md rounded-xl">
                     <LocationForm onSubmit={loc => {console.log(loc)}} />
                </div>
                <div className="w-full lg:w-lg p-2 shadow-md rounded-xl">
-                    <SocialMediaForm onSubmit={obj => console.log(obj)} companyId="my-company" />
+                    <SocialMediaForm onComplete={() => {}} companyId="my-company" />
                </div>
                <div className="w-full lg:w-lg p-2 shadow-md rounded-xl">
                     <UserForm  onComplete={() => toast.success("User Created successfully")} />
