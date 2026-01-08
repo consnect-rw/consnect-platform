@@ -1,6 +1,6 @@
 "use client";
 
-import { Building2, Sparkles, CheckCircle2, TrendingUp, Users, FileText } from 'lucide-react';
+import { Building2, Sparkles, CheckCircle2, TrendingUp, Users, FileText, ArrowLeft } from 'lucide-react';
 import { UserForm } from '@/components/forms/auth/UserForm';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
@@ -43,7 +43,7 @@ export default function RegisterPage() {
           <div className="grid lg:grid-cols-2 gap-0">
             
             {/* Left Section - Branding & Benefits */}
-            <div className="hidden lg:flex relative bg-gradient-to-br from-amber-500 via-yellow-700 to-yellow-800 p-12 flex-col justify-between overflow-hidden">
+            <div className="hidden lg:flex relative bg-gradient-to-br from-black via-gray-950 to-black p-12 flex-col justify-between overflow-hidden">
               {/* Decorative Pattern */}
               <div className="absolute inset-0 opacity-10">
                 <div className="absolute top-0 left-0 w-96 h-96 bg-white rounded-full -translate-y-1/2 -translate-x-1/2"></div>
@@ -116,9 +116,10 @@ export default function RegisterPage() {
               </div>
 
               {/* Welcome Text */}
-              <div className="mb-8 lg:mb-10">
+              <div className="mb-8 lg:mb-10 flex flex-col items-start gap-4">
+                <Link prefetch href={"/"} className="flex items-center justify-center gap-2 py-1.5 px-3 rounded-lg text-gray-700 hover:text-yellow-600 text-sm "><ArrowLeft className="w-4 h-4" /> Back To Home</Link>
                 <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-3">
-                  <span className="bg-gradient-to-r from-yellow-600 to-amber-600 bg-clip-text text-transparent">
+                  <span className="bg-gradient-to-r from-gray-600 to-amber-600 bg-clip-text text-transparent">
                     Get Started
                   </span>
                 </h1>
