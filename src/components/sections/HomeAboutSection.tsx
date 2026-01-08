@@ -34,7 +34,7 @@ export default function HomeAboutSection() {
   ];
 
   return (
-    <section className="relative py-24 bg-gradient-to-b from-gray-900 via-gray-900 to-gray-800 overflow-hidden">
+    <section className="relative py-24 bg-gradient-to-b from-black via-gray-950 to-black overflow-hidden">
       {/* Subtle Grid Background */}
       <div
         className="absolute inset-0 opacity-[0.03]"
@@ -51,22 +51,38 @@ export default function HomeAboutSection() {
 
       <div className="max-w-7xl mx-auto px-6 relative z-10">
         {/* Section Header */}
-        <div className="max-w-3xl mb-16">
-          <div className="flex items-center gap-3 mb-4">
+        <div className="max-w-7xl mb-16">
+          {/* <div className="flex items-center gap-3 mb-4">
             <div className="h-px w-12 bg-yellow-400"></div>
             <span className="text-yellow-400 font-bold uppercase tracking-widest text-sm">
               About the Platform
             </span>
-          </div>
+          </div> */}
 
-          <h2 className="text-4xl md:text-5xl lg:text-6xl font-black text-white mb-6 leading-tight">
+          {/* <h2 className="text-4xl md:text-5xl lg:text-6xl font-black text-white mb-6 leading-tight">
             Connecting the Construction Industry
           </h2>
 
           <p className="text-xl text-gray-300 leading-relaxed font-medium mb-8">
             A comprehensive platform built specifically for construction companies to streamline 
             tender management, showcase their expertise, and forge meaningful business partnerships.
-          </p>
+          </p> */}
+
+          {/* Section Header */}
+        <div className="w-full flex items-end justify-between mb-12 pb-8 border-b-2 border-gray-800">
+          <div>
+            <div className="flex items-center gap-3 mb-3">
+              <div className="w-1 h-8 bg-yellow-400"></div>
+              <h2 className="text-3xl lg:text-4xl md:text-5xl font-black text-white tracking-tight">
+                Connecting the Construction Industry
+              </h2>
+            </div>
+            <p className="text-gray-300 text-lg font-medium ml-5 max-w-3xl">
+              A comprehensive platform built specifically for construction companies to streamline 
+            tender management, showcase their expertise, and forge meaningful business partnerships.
+            </p>
+          </div>
+        </div>
 
           <div className="flex flex-wrap gap-3">
             <div className="flex items-center gap-2 px-4 py-2 bg-white/5 border border-white/10 rounded-lg">
@@ -82,37 +98,6 @@ export default function HomeAboutSection() {
               <span className="text-sm text-gray-300 font-medium">Project Partnerships</span>
             </div>
           </div>
-        </div>
-
-        {/* Features Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
-          {features.map((feature, index) => {
-            const Icon = feature.icon;
-            return (
-              <div
-                key={index}
-                className="group relative bg-white/5 backdrop-blur-sm border-2 border-white/10 hover:border-yellow-400/50 rounded-xl p-6 transition-all duration-300 hover:-translate-y-1"
-              >
-                {/* Icon Container */}
-                <div className="mb-5">
-                  <div className="inline-flex items-center justify-center w-14 h-14 bg-gradient-to-br from-yellow-400 to-yellow-500 rounded-lg group-hover:scale-110 transition-transform duration-300">
-                    <Icon className="w-7 h-7 text-gray-900" strokeWidth={2.5} />
-                  </div>
-                </div>
-
-                {/* Content */}
-                <h3 className="text-lg font-black text-white mb-3 leading-tight">
-                  {feature.title}
-                </h3>
-                <p className="text-sm text-gray-400 leading-relaxed font-medium">
-                  {feature.description}
-                </p>
-
-                {/* Decorative Corner */}
-                <div className="absolute top-0 right-0 w-20 h-20 bg-gradient-to-bl from-yellow-400/5 to-transparent rounded-xl opacity-0 group-hover:opacity-100 transition-opacity"></div>
-              </div>
-            );
-          })}
         </div>
 
         {/* Key Benefits Section */}
@@ -186,7 +171,7 @@ export default function HomeAboutSection() {
 
         {/* CTA Section */}
         <div className="relative">
-          <div className="bg-gradient-to-r from-yellow-400 to-yellow-500 rounded-2xl p-12 text-center relative overflow-hidden">
+          <div className="bg-gradient-to-r from-yellow-400 to-yellow-500 rounded-2xl py-8 px-4 lg:py-12 lg:px-12 text-center relative overflow-hidden">
             {/* Decorative Pattern */}
             <div
               className="absolute inset-0 opacity-10"
@@ -203,10 +188,10 @@ export default function HomeAboutSection() {
 
             {/* Content */}
             <div className="relative z-10">
-              <h3 className="text-3xl md:text-4xl font-black text-gray-900 mb-4">
+              <h3 className="text-2xl lg:text-3xl md:text-4xl font-black text-gray-900 mb-4">
                 Ready to Transform Your Construction Business?
               </h3>
-              <p className="text-lg text-gray-800 max-w-2xl mx-auto mb-8 font-medium">
+              <p className="text-sm md:text-base lg:text-lg text-gray-800 max-w-2xl mx-auto mb-8 font-medium">
                 Join hundreds of construction companies already leveraging our platform 
                 to grow their business and connect with industry partners.
               </p>
@@ -232,7 +217,7 @@ export default function HomeAboutSection() {
               {/* Trust Badge */}
               <div className="mt-8 pt-6 border-t-2 border-gray-900/10">
                 <p className="text-sm text-gray-800 font-bold">
-                  ✓ Free to register • ✓ No credit card required • ✓ Instant profile setup
+                  ✓ Free to register  •  ✓ No credit card required  •  ✓ Instant profile setup
                 </p>
               </div>
             </div>

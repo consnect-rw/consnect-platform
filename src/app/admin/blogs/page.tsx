@@ -44,8 +44,8 @@ export default function AdminBlogsPage() {
   // Calculate statistics from blogs data
   const publishedBlogs = blogs.filter((b) => b.status === "PUBLISHED").length;
   const draftBlogs = blogs.filter((b) => b.status === "DRAFT").length;
-  const totalViews = blogs.reduce((sum, b) => sum + (b.viewCount || 0), 0);
-  const totalComments = blogs.reduce((sum, b) => sum + (b.commentCount || 0), 0);
+  const totalViews = blogs.reduce((sum, b) => sum + (b._count.views || 0), 0);
+  const totalComments = blogs.reduce((sum, b) => sum + (b._count.comments || 0), 0);
 
   return (
     <div className="min-h-screen bg-gray-50 p-6">

@@ -20,6 +20,8 @@ model User {
      updatedAt DateTime @updatedAt
 
      userOTP UserOTP?
+     likedBlogs BlogLike[]
+     viewedBlogs BlogView[]
      
      company Company?
      blogs Blog[]

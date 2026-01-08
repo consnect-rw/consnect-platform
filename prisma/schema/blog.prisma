@@ -15,9 +15,6 @@ model Blog {
      tags String[] @default([])
 
      readingTime          Int?
-     viewCount            Int            @default(0)
-     likeCount            Int            @default(0)
-     commentCount         Int            @default(0)
 
      createdAt DateTime @default(now())
      updatedAt DateTime @updatedAt
@@ -28,6 +25,8 @@ model Blog {
      authorId String
      author User @relation(fields: [authorId], references: [id])
      comments Comment[]
+     likes BlogLike[]
+     views BlogView[]
 }
 
 model Comment {
@@ -41,4 +40,25 @@ model Comment {
 
      userId String
      user User @relation(fields: [userId], references: [id])
+}
+
+model BlogLike {
+     userId String
+     blogId String
+
+     user User @relation(fields: [userId], references: [id])
+     blog Blog @relation(fields: [blogId], references: [id])
+
+     @@id([userId, blogId]) // ✅ Prevents duplicates at DB level
+}
+
+model BlogView {
+     userId String
+     blogId String
+     createdAt DateTime @default(now())
+
+     user User @relation(fields: [userId], references: [id])
+     blog Blog @relation(fields: [blogId], references: [id])
+
+     @@id([userId, blogId]) // ✅ Prevents duplicates at DB level
 }

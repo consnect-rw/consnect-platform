@@ -127,7 +127,7 @@ const BlogCard = ({ blog }: { blog: TAdminBlogCard }) => {
             <div className="flex items-center gap-1 text-gray-500">
               <Eye className="w-4 h-4" />
             </div>
-            <span className="text-sm font-semibold text-gray-900">{blog.viewCount.toLocaleString()}</span>
+            <span className="text-sm font-semibold text-gray-900">{blog._count.views.toLocaleString()}</span>
             <span className="text-xs text-gray-500">Views</span>
           </div>
 
@@ -135,7 +135,7 @@ const BlogCard = ({ blog }: { blog: TAdminBlogCard }) => {
             <div className="flex items-center gap-1 text-red-500">
               <Heart className="w-4 h-4" />
             </div>
-            <span className="text-sm font-semibold text-gray-900">{blog.likeCount.toLocaleString()}</span>
+            <span className="text-sm font-semibold text-gray-900">{blog._count.likes.toLocaleString()}</span>
             <span className="text-xs text-gray-500">Likes</span>
           </div>
 
@@ -143,7 +143,7 @@ const BlogCard = ({ blog }: { blog: TAdminBlogCard }) => {
             <div className="flex items-center gap-1 text-blue-500">
               <MessageSquare className="w-4 h-4" />
             </div>
-            <span className="text-sm font-semibold text-gray-900">{blog.commentCount}</span>
+            <span className="text-sm font-semibold text-gray-900">{blog._count.comments}</span>
             <span className="text-xs text-gray-500">Comments</span>
           </div>
         </div>

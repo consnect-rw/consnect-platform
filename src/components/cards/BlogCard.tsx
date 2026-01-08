@@ -46,10 +46,10 @@ export default function BlogCard({ blog, featured = false }: BlogCardProps) {
           </div>
 
           {/* Content */}
-          <div className="p-8 md:p-12 flex flex-col justify-center">
+          <div className="p-4 md:p-8 flex flex-col justify-center">
             {/* Category */}
             {blog.category && (
-              <div className="mb-4">
+              <div className="mb-2 lg:mb-4">
                 <span className="inline-block px-3 py-1 bg-gray-100 text-gray-700 text-xs font-bold uppercase tracking-wider">
                   {blog.category.name}
                 </span>
@@ -57,19 +57,19 @@ export default function BlogCard({ blog, featured = false }: BlogCardProps) {
             )}
 
             {/* Title */}
-            <h2 className="text-3xl md:text-4xl font-black text-gray-900 mb-4 leading-tight group-hover:text-gray-700 transition-colors">
+            <h2 className="text-xl md:text-2xl font-black text-gray-900 mb-2 lg:mb-4 leading-tight group-hover:text-gray-700 transition-colors">
               {blog.title}
             </h2>
 
             {/* Description */}
             {blog.description && (
-              <p className="text-gray-600 text-lg leading-relaxed mb-6 line-clamp-3">
+              <p className="text-gray-600 text-sm lg:text-base leading-relaxed mb-2 lg:md-4 line-clamp-3">
                 {blog.description}
               </p>
             )}
 
             {/* Meta Information */}
-            <div className="flex flex-wrap items-center gap-4 text-sm text-gray-500 mb-6">
+            <div className="flex flex-wrap items-center gap-4 text-sm text-gray-500 mb-2 lg:mb-4">
               <div className="flex items-center gap-1.5">
                 <Calendar className="w-4 h-4" />
                 <span className="font-medium">{timeAgo}</span>
@@ -82,7 +82,7 @@ export default function BlogCard({ blog, featured = false }: BlogCardProps) {
               )}
               <div className="flex items-center gap-1.5">
                 <Eye className="w-4 h-4" />
-                <span className="font-medium">{blog.viewCount}</span>
+                <span className="font-medium">{blog._count.views}</span>
               </div>
             </div>
 
@@ -147,18 +147,18 @@ export default function BlogCard({ blog, featured = false }: BlogCardProps) {
           <div className="flex items-center gap-3 text-xs text-gray-500">
             <div className="flex items-center gap-1">
               <Eye className="w-3.5 h-3.5" />
-              <span className="font-medium">{blog.viewCount}</span>
+              <span className="font-medium">{blog._count.views}</span>
             </div>
-            {blog.likeCount > 0 && (
+            {blog._count.likes > 0 && (
               <div className="flex items-center gap-1">
                 <Heart className="w-3.5 h-3.5" />
-                <span className="font-medium">{blog.likeCount}</span>
+                <span className="font-medium">{blog._count.likes}</span>
               </div>
             )}
-            {blog.commentCount > 0 && (
+            {blog._count.comments > 0 && (
               <div className="flex items-center gap-1">
                 <MessageCircle className="w-3.5 h-3.5" />
-                <span className="font-medium">{blog.commentCount}</span>
+                <span className="font-medium">{blog._count.comments}</span>
               </div>
             )}
           </div>

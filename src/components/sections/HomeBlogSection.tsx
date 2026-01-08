@@ -29,7 +29,7 @@ export default async function HomeBlogsSection() {
           <div>
             <div className="flex items-center gap-3 mb-3">
               <div className="w-1 h-8 bg-yellow-400"></div>
-              <h2 className="text-4xl md:text-5xl font-black text-gray-900 tracking-tight">
+              <h2 className="text-3xl lg:text-4xl md:text-5xl font-black text-gray-900 tracking-tight">
                 Latest Insights
               </h2>
             </div>
@@ -39,7 +39,7 @@ export default async function HomeBlogsSection() {
           </div>
 
           <Link
-            href="/blogs"
+            href="/blog"
             className="hidden rounded-lg md:flex items-center gap-2 px-6 py-3 bg-gray-900 hover:bg-gray-800 text-white font-bold transition-colors group"
           >
             <BookOpen className="w-5 h-5" />
@@ -67,7 +67,7 @@ export default async function HomeBlogsSection() {
         {/* View All Button - Mobile */}
         <div className="flex justify-center md:hidden">
           <Link
-            href="/blogs"
+            href="/blog"
             className="flex items-center gap-2 px-8 py-4 bg-gray-900 hover:bg-gray-800 text-white font-bold transition-colors w-full sm:w-auto justify-center"
           >
             <BookOpen className="w-5 h-5" />

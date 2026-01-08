@@ -41,7 +41,7 @@ export async function HomeCompaniesSection() {
 
       <div className="max-w-7xl mx-auto px-6 relative z-10">
         {/* Section Header */}
-        <div className="text-center mb-16">
+        {/* <div className="text-center mb-16">
           <div className="inline-flex items-center gap-2 px-4 py-2 bg-yellow-400/10 border border-yellow-400/20 rounded-full mb-6">
             <CheckCircle2 className="w-4 h-4 text-yellow-600" fill="currentColor" />
             <span className="text-sm font-bold text-gray-700 uppercase tracking-wider">
@@ -55,7 +55,31 @@ export async function HomeCompaniesSection() {
           <p className="text-xl text-gray-600 max-w-2xl mx-auto font-medium leading-relaxed">
             Join hundreds of verified companies building their presence on our platform
           </p>
-        </div>
+        </div> */}
+
+        {/* Section Header */}
+                <div className="flex items-end justify-between mb-12 pb-8 border-b-2 border-gray-200">
+                  <div>
+                    <div className="flex items-center gap-3 mb-3">
+                      <div className="w-1 h-8 bg-yellow-400"></div>
+                      <h2 className="text-3xl lg:text-4xl md:text-5xl font-black text-gray-900 tracking-tight">
+                        Verified Companies
+                      </h2>
+                    </div>
+                    <p className="text-gray-600 text-base lg:text-lg font-medium ml-5">
+                      Join hundreds of verified companies building their presence on our platform
+                    </p>
+                  </div>
+        
+                  <Link
+                    href="/companies"
+                    className="hidden rounded-lg md:flex items-center gap-2 px-6 py-3 bg-gray-900 hover:bg-gray-800 text-white font-bold transition-colors group"
+                  >
+                    <Building2 className="w-5 h-5" />
+                    <span>View All Companies</span>
+                    <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                  </Link>
+                </div>
 
         {/* Companies Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
@@ -64,9 +88,27 @@ export async function HomeCompaniesSection() {
           ))}
         </div>
 
-        {/* CTA Section */}
+        {/* Trust Indicators */}
+        <div className="mt-12 flex flex-wrap items-center justify-center gap-8 text-sm text-gray-500">
+          <div className="flex items-center gap-2">
+            <CheckCircle2 className="w-4 h-4 text-yellow-400" fill="currentColor" />
+            <span className="font-medium">Verified Organizations</span>
+          </div>
+          <div className="w-px h-4 bg-gray-300"></div>
+          <div className="flex items-center gap-2">
+            <CheckCircle2 className="w-4 h-4 text-yellow-400" fill="currentColor" />
+            <span className="font-medium">Secure Platform</span>
+          </div>
+          <div className="w-px h-4 bg-gray-300"></div>
+          <div className="flex items-center gap-2">
+            <CheckCircle2 className="w-4 h-4 text-yellow-400" fill="currentColor" />
+            <span className="font-medium">Industry Leading</span>
+          </div>
+        </div>
+      </div>
+      {/* CTA Section */}
         <div className="relative mt-16">
-          <div className="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 border-2 border-gray-700 rounded-2xl p-12 text-center relative overflow-hidden">
+          <div className="bg-gradient-to-br from-black via-gray-950 to-black px-8 lg:px-12 py-12 lg:py-16 text-center relative overflow-hidden">
             {/* Decorative Elements */}
             <div className="absolute inset-0 opacity-10">
               <div className="absolute top-0 right-0 w-64 h-64 bg-yellow-400 rounded-full blur-3xl"></div>
@@ -105,7 +147,7 @@ export async function HomeCompaniesSection() {
               </div>
 
               {/* Stats */}
-              <div className="grid grid-cols-3 gap-8 mt-12 pt-8 border-t border-gray-700">
+              {/* <div className="grid grid-cols-3 gap-8 mt-12 pt-8 border-t border-gray-700">
                 <div>
                   <div className="text-3xl font-black text-yellow-400 mb-1">
                     {companies.length * 50}+
@@ -130,29 +172,10 @@ export async function HomeCompaniesSection() {
                     Countries Worldwide
                   </div>
                 </div>
-              </div>
+              </div> */}
             </div>
           </div>
         </div>
-
-        {/* Trust Indicators */}
-        <div className="mt-12 flex flex-wrap items-center justify-center gap-8 text-sm text-gray-500">
-          <div className="flex items-center gap-2">
-            <CheckCircle2 className="w-4 h-4 text-yellow-400" fill="currentColor" />
-            <span className="font-medium">Verified Organizations</span>
-          </div>
-          <div className="w-px h-4 bg-gray-300"></div>
-          <div className="flex items-center gap-2">
-            <CheckCircle2 className="w-4 h-4 text-yellow-400" fill="currentColor" />
-            <span className="font-medium">Secure Platform</span>
-          </div>
-          <div className="w-px h-4 bg-gray-300"></div>
-          <div className="flex items-center gap-2">
-            <CheckCircle2 className="w-4 h-4 text-yellow-400" fill="currentColor" />
-            <span className="font-medium">Industry Leading</span>
-          </div>
-        </div>
-      </div>
     </section>
   );
 }
