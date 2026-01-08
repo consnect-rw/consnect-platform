@@ -118,13 +118,13 @@ export const BlogView = ({ blog }: { blog: TBlogPage }) => {
           )}
 
           {/* Title */}
-          <h1 className="text-4xl md:text-5xl lg:text-6xl font-black text-white mb-6 leading-tight">
+          <h1 className="text-2xl md:text-5xl lg:text-4xl font-black text-white mb-6 leading-tight">
             {blog.title}
           </h1>
 
           {/* Description */}
           {blog.description && (
-            <p className="text-xl text-gray-300 font-medium leading-relaxed mb-8">
+            <p className="text-sm md:text-lg text-gray-300 font-medium leading-relaxed mb-8">
               {blog.description}
             </p>
           )}
