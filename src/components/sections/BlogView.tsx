@@ -98,7 +98,7 @@ export const BlogView = ({ blog }: { blog: TBlogPage }) => {
   return (
     <div className="w-full bg-gradient-to-b from-gray-50 to-white">
       {/* Hero Section */}
-      <div className="relative w-full bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 overflow-hidden">
+      <div className="relative w-full bg-gradient-to-br from-black via-gray-950 to-black overflow-hidden">
         {/* Decorative Background */}
         <div className="absolute inset-0 opacity-10">
           <div className="absolute top-0 right-0 w-96 h-96 bg-yellow-400 rounded-full blur-3xl"></div>
