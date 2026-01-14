@@ -68,10 +68,13 @@ model Document {
 
      // relations
      serviceId String?
-     service Service? @relation(fields: [serviceId], references: [id])
+     service Service? @relation(fields: [serviceId], references: [id], onDelete: Cascade)
 
      companyId String?
-     company Company? @relation(fields: [companyId], references: [id])
+     company Company? @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+     legalInfoId String?
+     legalInfo CompanyLegalInfo? @relation(fields: [legalInfoId], references: [id], onDelete: Cascade)
 }
 
 model Description {

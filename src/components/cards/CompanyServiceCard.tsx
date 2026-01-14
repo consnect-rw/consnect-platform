@@ -27,7 +27,7 @@ const ServiceCard = ({
 
       {/* Content */}
       <div className="px-6 pb-4 flex-1 flex flex-col">
-        <h3 className="text-xl font-bold text-gray-900 mb-3 line-clamp-2">
+        <h3 className="text-base font-bold text-gray-900 mb-3 line-clamp-2">
           {service.name}
         </h3>
 

@@ -36,7 +36,6 @@ model UserOTP {
      
      expiresAt DateTime
      createdAt DateTime @default(now())
-     expiryAt DateTime
 
      userId String @unique
      user User @relation(fields: [userId], references: [id], onDelete: Cascade)

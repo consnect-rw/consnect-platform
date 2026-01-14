@@ -13,6 +13,7 @@ import { fetchCompanyByHandle } from "@/server/company/company";
 import { SCompanyPage } from "@/types/company/company";
 import Image from "@/components/ui/Image";
 import RichTextView from "@/components/ui/rich-text-viewer";
+import { ShareBtn } from "@/components/buttons/ShareBtn";
 
 export default async function CompanyPage({
   params,
@@ -21,7 +22,6 @@ export default async function CompanyPage({
 }) {
   const { handle } = await params;
   const company = await fetchCompanyByHandle(handle, SCompanyPage);
-     console.log(company?.descriptions)
   if(!company) return (
      <div className="w-full text-lg font-bold text-gray-600 py-18  text-center ">Company Not found!</div>
   )
@@ -71,11 +71,7 @@ export default async function CompanyPage({
                   Visit Website
                 </Link>
               )}
-
-              <button className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-100">
-                <Share2 className="w-4 h-4" />
-                Share
-              </button>
+              <ShareBtn shareTitle={company.name} className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-100" />
             </div>
           </div>
         </div>

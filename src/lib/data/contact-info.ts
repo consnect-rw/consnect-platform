@@ -31,7 +31,7 @@ export const ContactInfo = {
   },
   map: {
     embedUrl:
-      "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d7978.0000000!2d30.0587!3d-1.9441",
+      "https://www.google.com/maps/embed?pb=!4v1768236897931!6m8!1m7!1sW4mIS8BCxpx2lBsXSpYI-g!2m2!1d-1.948875250428143!2d30.12561071395846!3f15.26063091049597!4f9.444513370595928!5f0.7820865974627469",
     note: "Our headquarters are centrally located in Kigali for easy access to our clients and partners."
   },
   additionalInfo: {

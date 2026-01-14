@@ -16,7 +16,7 @@ export default function AdminTenderCategoriesPage() {
      const [page,setPage] = useState(1);
      const {data: categoriesData, isLoading} = useQuery({
           queryKey: ["admin-service-categories", page], 
-          queryFn: () => fetchCategorys(SAdminCategoryCard, {type: ECategoryType.BLOG}, perPage, (page-1)*perPage)
+          queryFn: () => fetchCategorys(SAdminCategoryCard, {type: ECategoryType.TENDER}, perPage, (page-1)*perPage)
      });
      const categories = categoriesData?.data ?? [];
      const totalCategories = categoriesData?.pagination.total ?? 0;

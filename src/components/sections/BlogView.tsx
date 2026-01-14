@@ -30,6 +30,7 @@ import RichTextView from "../ui/rich-text-viewer";
 import { AuthFormToggleBtn } from "../forms/auth/AuthBtn";
 import { createBlogLike } from "@/server/blog/blog-like";
 import { createBlogView } from "@/server/blog/blog-view";
+import { ShareBtn } from "../buttons/ShareBtn";
 
 export const BlogView = ({ blog }: { blog: TBlogPage }) => {
   const [isLiked, setIsLiked] = useState(false);
@@ -54,30 +55,7 @@ export const BlogView = ({ blog }: { blog: TBlogPage }) => {
           if(!res) return;
           setLikes(isLiked ? likes - 1 : likes + 1);
      };
-
-  const shareUrl = typeof window !== "undefined" ? window.location.href : "";
   const shareTitle = blog.title;
-
-  const handleShare = (platform: string) => {
-    const encodedUrl = encodeURIComponent(shareUrl);
-    const encodedTitle = encodeURIComponent(shareTitle);
-
-    const shareUrls: { [key: string]: string } = {
-      facebook: `https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}`,
-      twitter: `https://twitter.com/intent/tweet?url=${encodedUrl}&text=${encodedTitle}`,
-      linkedin: `https://www.linkedin.com/sharing/share-offsite/?url=${encodedUrl}`,
-    };
-
-    if (platform === "copy") {
-      navigator.clipboard.writeText(shareUrl);
-      toast.success("Link copied to clipboard!");
-      setShowShareMenu(false);
-      return;
-    }
-
-    window.open(shareUrls[platform], "_blank", "width=600,height=400");
-    setShowShareMenu(false);
-  };
 
   useEffect(() => {
      if(user){
@@ -251,47 +229,8 @@ export const BlogView = ({ blog }: { blog: TBlogPage }) => {
 
               {/* Share Button */}
               <div className="relative">
-                <button
-                  onClick={() => setShowShareMenu(!showShareMenu)}
-                  className="group flex cursor-pointer items-center gap-2 p-3 bg-gray-100 hover:bg-gray-200 rounded-xl text-gray-700 transition-colors"
-                >
-                  <Share2 className="w-6 h-6 group-hover:scale-110 transition-transform" />
-                  <span className="text-sm font-bold">Share</span>
-                </button>
+                <ShareBtn shareTitle={shareTitle} className="group flex cursor-pointer items-center gap-2 p-3 bg-gray-100 hover:bg-gray-200 rounded-xl text-gray-700 transition-colors" />
 
-                {/* Share Menu */}
-                {showShareMenu && (
-                  <div className="absolute left-0 lg:left-full lg:ml-4 mt-2 lg:mt-0 lg:top-0 bg-white border-2 border-gray-200 rounded-xl shadow-xl p-3 w-48 z-50">
-                    <button
-                      onClick={() => handleShare("facebook")}
-                      className="w-full flex items-center gap-3 px-3 py-2 hover:bg-blue-50 rounded-lg text-left transition-colors group"
-                    >
-                      <Facebook className="w-5 h-5 text-blue-600" />
-                      <span className="font-bold text-gray-900">Facebook</span>
-                    </button>
-                    <button
-                      onClick={() => handleShare("twitter")}
-                      className="w-full flex items-center flex-nowrap gap-3 px-3 py-2 hover:bg-blue-50 rounded-lg text-left transition-colors group"
-                    >
-                      <Twitter className="w-5 h-5 text-blue-400" />
-                      <span className="font-bold text-gray-900">Twitter</span>
-                    </button>
-                    <button
-                      onClick={() => handleShare("linkedin")}
-                      className="w-full flex items-center gap-3 px-3 py-2 hover:bg-blue-50 rounded-lg text-left transition-colors group"
-                    >
-                      <Linkedin className="w-5 h-5 text-blue-700" />
-                      <span className="font-bold text-gray-900">LinkedIn</span>
-                    </button>
-                    <button
-                      onClick={() => handleShare("copy")}
-                      className="w-full flex items-center gap-3 px-3 py-2 hover:bg-gray-100 rounded-lg text-left transition-colors group"
-                    >
-                      <LinkIcon className="w-5 h-5 text-gray-600" />
-                      <span className="font-bold text-gray-900">Copy Link</span>
-                    </button>
-                  </div>
-                )}
               </div>
             </div>
             {/* Comments Section */}

@@ -2,12 +2,13 @@
 
 import ServiceCard from "@/components/cards/CompanyServiceCard";
 import CompanyRequiredNotice from "@/components/containers/user/CompanyRequireNotice";
+import { ServiceFormToggleBtn } from "@/components/forms/company/ServiceForm";
 import Pagination from "@/components/ui/Pagination";
 import { useAuth } from "@/hooks/useAuth";
 import { fetchServices } from "@/server/company/service";
 import { SService } from "@/types/company/service";
 import { useQuery } from "@tanstack/react-query";
-import { Building2, Wrench } from "lucide-react";
+import { Building2, Plus, Wrench } from "lucide-react";
 import { useState } from "react";
 
 export default function ServicesPage() {
@@ -67,10 +68,13 @@ export default function ServicesPage() {
               </p>
             </div>
           </div>
-
-          <div className="text-2xl font-bold text-gray-900">
-            {totalServices} Service{totalServices !== 1 ? 's' : ''}
+          <div className="w-full flex items-center gap-4 justify-between">
+            <div className="text-2xl font-bold text-gray-900">
+              {totalServices} Service{totalServices !== 1 ? 's' : ''}
+            </div>
+            <ServiceFormToggleBtn title="Add new Service" name="Service" icon={<Plus className="w-4 h-4" />} className={"py-2 px-4 text-white font-medium flex items-center gap-2 bg-linear-to-br from-yellow-600 to-amber-600 rounded-lg"} companyId={user.company.id} />
           </div>
+          
         </div>
 
         {/* Services Grid */}
