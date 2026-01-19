@@ -1,30 +1,36 @@
 "use client";
 
 import { useState } from 'react';
-import { FileText, ChevronDown, Building2 } from 'lucide-react';
+import { FileText, ChevronDown, Building2, ShieldUser, Info, Contact2, Phone, FileArchive, Headset, Megaphone, Briefcase, FolderKanban, Star, MoreHorizontal, X } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { FcDocument } from 'react-icons/fc';
+import { cn } from '@/lib/utils';
 
 // Better icons that match the context
 const SettingLinks = [
-  { name: "Company Profile", href: "/dashboard/settings", icon: Building2 },
-  { name: "About Company", href: "/dashboard/settings/about", icon: FileText },
-  { name: "Founders", href: "/dashboard/settings/founders", icon: FileText },
-  { name: "Contact Person", href: "/dashboard/settings/contact-person", icon: FileText },
-  { name: "Documents", href: "/dashboard/settings/documents", icon: FileText },
-  { name: "Social Media", href: "/dashboard/settings/social-media", icon: FileText },
-  { name: "Product Catalogs", href: "/dashboard/settings/catalogs", icon: FileText },
+  { name: "Company", href: "/dashboard/settings", icon: Building2 },
+  { name: "About", href: "/dashboard/settings/about", icon: Info },
+  { name: "Founders", href: "/dashboard/settings/founders", icon: ShieldUser },
+  { name: "Contacts", href: "/dashboard/settings/contact-person", icon: Headset },
+  { name: "Documents", href: "/dashboard/settings/documents", icon: FileArchive },
+  { name: "Social Media", href: "/dashboard/settings/social-media", icon: Megaphone },
+  { name: "Catalogs", href: "/dashboard/settings/catalogs", icon: FileText },
+  {name: "Services", href: "/dashboard/settings/services", icon: Briefcase},
+  {name: "Projects", href: "/dashboard/settings/projects", icon: FolderKanban},
+  {name: "Reviews", href: "/dashboard/settings/reviews", icon: Star},
 ];
 
 export default function CompanySettingsNavBar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const pathname = usePathname();
+  const [moreLinksOn,setMoreLinkOn] = useState(false);
 
   return (
     <>
       {/* Desktop Navigation */}
-      <nav className="hidden md:flex w-full items-center justify-start gap-3 bg-white rounded-xl p-2 shadow-sm border border-gray-200">
-        {SettingLinks.map((offer, index) => (
+      <nav className={cn("hidden relative md:flex w-full items-center justify-start gap-3 bg-white rounded-xl p-2 shadow-sm border border-gray-200", moreLinksOn ? "flex-wrap" : "")}>
+        {SettingLinks.slice(undefined, 6).map((offer, index) => (
           <NavLink
             key={`user-offer-link-${index}`}
             name={offer.name}
@@ -32,6 +38,18 @@ export default function CompanySettingsNavBar() {
             icon={offer.icon}
           />
         ))}
+        <button
+          type='button'
+          onClick={() => setMoreLinkOn(!moreLinksOn)}
+          className={`
+        group relative flex items-center gap-2.5 px-4 py-2.5 rounded-lg font-medium text-sm transition-all duration-200 ease-out
+        ${moreLinksOn 
+          ? 'bg-yellow-400 text-gray-900 shadow-md' 
+          : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+        }
+      `}
+        >{moreLinksOn ? <><X className='w-4 h-4'/> Less</> : <><MoreHorizontal className='w-4 h-4'/> More</>} </button>
+        {moreLinksOn ? <MoreLinks links={SettingLinks.slice(6)} /> : null}
       </nav>
 
       {/* Mobile Navigation */}
@@ -82,8 +100,7 @@ function NavLink({ name, href, icon: Icon, }: {  name: string;  href: string;  i
     <Link prefetch
       href={href}
       className={`
-        group relative flex items-center gap-2.5 px-4 py-2.5 rounded-lg font-medium text-sm
-        transition-all duration-200 ease-out
+        group relative flex items-center gap-2.5 px-4 py-2.5 rounded-lg font-medium text-sm transition-all duration-200 ease-out
         ${isActive 
           ? 'bg-yellow-400 text-gray-900 shadow-md' 
           : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
@@ -129,4 +146,19 @@ function MobileNavLink({ name, href, icon: Icon,}: { name: string; href: string;
       </span>
     </Link>
   );
+}
+
+const MoreLinks = ({links}:{links: {name: string;  href: string;  icon: any;}[]}) => {
+  return (
+    <div className='w-full flex  gap-3'>
+      {links.map((offer, index) => (
+          <NavLink
+            key={`user-offer-link-${index}`}
+            name={offer.name}
+            href={offer.href}
+            icon={offer.icon}
+          />
+        ))}
+    </div>
+  )
 }

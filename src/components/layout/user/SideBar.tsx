@@ -15,7 +15,7 @@ import { IconType } from "react-icons/lib";
 export function UserSideBar () {
      const {user} = useAuth();
      return (
-          <aside className="w-full h-full rounded-xl flex flex-col gap-8 bg-white p-2">
+          <aside className="w-full h-full rounded-xl flex flex-col gap-4 bg-white p-2">
                <div className="w-full flex items-start gap-4 border border-gray-300/50 rounded-lg p-2">
                     <UserAvatar size="sm" className="rounded-full" email={user?.name ?? user?.email ?? "User"}  />
                     <div className="flex flex-col gap-1">
@@ -23,12 +23,13 @@ export function UserSideBar () {
                          <p className="text-xs text-gray-600">{user?.company?.name ?? "Unknown Company"}</p>
                     </div>
                </div>
-               <div className="flex flex-col w-full h-full justify-between">
-                    <nav className="flex flex-col gap-4 w-full items-start justify-start px-2">
+                <nav className="flex flex-col gap-4 h-full overflow-y-auto w-full items-start justify-start px-2">
                          {
                               UserNavLinks.map((link, index) => <NavLink link={link} key={`user-nav-link-${index}`} />)
                          }
                     </nav>
+               <div className="flex flex-col w-full justify-between">
+                   
                     <div className="w-full flex flex-col gap-4 items-start ">
                          <AuthLogoutBtn name="Logout" icon={<LogOut className="w-4 h-4 text-gray-200" />} className="bg-linear-to-bl from-yellow-600 to-amber-600 hover:from-yellow-800 hover:to-amber-800 text-gray-50 cursor-pointer hover:bg-gray-200 w-full flex items-center gap-2 justify-start font-medium text-base py-3" />
                     </div>

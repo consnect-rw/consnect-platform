@@ -93,7 +93,11 @@ export const SCompanyUpdate = {
      foundedYear:true, companySize:true, website:true, logoUrl:true, slogan:true, 
      partnerInterests:true, 
      location: {select: {id:true, country: true, city:true, state:true, zipCode:true, address:true}},
-     verification: {select: {status: true, message:true}}
+     verification: {select: {status: true, message:true}},
+     legal: {select:{
+          id:true, legalName:true, tradeName:true, registrationNumber:true, tin:true, dateOfIncorporation:true, structure:true, 
+          legalDocuments: {select:{title:true, docUrl:true}}
+     }}
 
 } satisfies Prisma.CompanySelect;
 export type TCompanyUpdate = Prisma.CompanyGetPayload<{select: typeof SCompanyUpdate}>

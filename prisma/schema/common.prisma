@@ -2,6 +2,7 @@ enum ECategoryType {
      TENDER 
      SERVICE
      BLOG
+     COMPANY
 }
 
 model Category {
@@ -15,10 +16,15 @@ model Category {
      createdAt DateTime @default(now())
      updatedAt DateTime @updatedAt
 
+     // hierarchy
+     parentId String?
+     parentCategory Category? @relation("parent_category",fields: [parentId], references: [id])
      // relations
      services Service[]
      offers Offer[]
      blogs Blog[]
+     specializations CompanySpecialization[]
+     subCategories Category[] @relation("parent_category")
 }
 
 model Location {
@@ -30,7 +36,7 @@ model Location {
      address String?
 
      companyId String? @unique
-     company Company? @relation(fields: [companyId], references: [id])
+     company Company? @relation(fields: [companyId], references: [id], onDelete: Cascade)
 }
 
 model SocialMedia {
@@ -48,7 +54,7 @@ model SocialMedia {
 enum EDocumentType {
      CERTIFICATION 
      LICENSE
-
+     OTHER
 }
 
 enum EDocumentModelType {
@@ -56,6 +62,7 @@ enum EDocumentModelType {
      TENDER
      OFFER
      SERVICE
+     PROJECT
 }
 
 model Document {
@@ -65,6 +72,7 @@ model Document {
      docUrl String
      type EDocumentType
      modelType EDocumentModelType
+     isVerified Boolean @default(false)
 
      // relations
      serviceId String?
@@ -75,6 +83,9 @@ model Document {
 
      legalInfoId String?
      legalInfo CompanyLegalInfo? @relation(fields: [legalInfoId], references: [id], onDelete: Cascade)
+
+     projectId String?
+     project Project? @relation(fields: [projectId], references: [id], onDelete: Cascade)
 }
 
 model Description {

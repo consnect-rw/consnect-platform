@@ -59,7 +59,13 @@ export default function ProjectsPage() {
   }
 
   return (
-    <div className="w-full min-h-full bg-gray-50/50 p-4 md:p-8">
+    <div className="w-full flex flex-col gap-4">
+      <div className="w-full flex items-center justify-between">
+        <span className="text-lg font-bold text-gray-900 ">
+            {totalProjects} Project{totalProjects !== 1 ? 's' : ''}
+        </span>
+        <Link href={"/dashboard/settings/projects/form"} className="font-medium py-2 px-4 text-white bg-linear-to-bl from-amber-600 to-yellow-600 rounded-lg flex items-center gap-2 " prefetch><Plus className="w-5 h-5" /> Project</Link>
+      </div>
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="bg-white rounded-2xl shadow-sm p-8 mb-8">
@@ -79,10 +85,7 @@ export default function ProjectsPage() {
 
           {/* Summary */}
           <div className="w-full flex items-center justify-between">
-               <span className="text-2xl font-bold text-gray-900 ">
-                    {totalProjects} Project{totalProjects !== 1 ? 's' : ''}
-               </span>
-               <Link href={"/dashboard/projects/form"} className="font-medium py-2 px-4 text-white bg-linear-to-bl from-amber-600 to-yellow-600 rounded-lg flex items-center gap-2 " prefetch><Plus className="w-5 h-5" /> Project</Link>
+               
           </div>
           
         </div>

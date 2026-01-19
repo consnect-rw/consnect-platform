@@ -124,7 +124,7 @@ const ProjectCard = ({
         </p>
 
         {/* Client Info */}
-        <div className="space-y-2 text-sm mb-5">
+        {/* <div className="space-y-2 text-sm mb-5">
           <div className="flex items-center justify-between">
             <span className="text-gray-500">Client:</span>
             <span className="font-medium text-gray-900">{project.clientName}</span>
@@ -139,7 +139,7 @@ const ProjectCard = ({
             <span className="text-gray-500">Phone:</span>
             <span className="font-medium text-gray-700">{project.clientPhone}</span>
           </div>
-        </div>
+        </div> */}
 
         {/* Dates */}
         <div className="text-xs text-gray-500 space-y-1 border-t pt-4">
@@ -153,7 +153,7 @@ const ProjectCard = ({
       {/* Action Buttons */}
       <div className="px-6 pb-6 flex gap-3">
         <Link
-         href={`/dashboard/projects/form?id=${project.id}`}
+         href={`/dashboard/settings/projects/form?id=${project.id}`}
           className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-gray-100 hover:bg-gray-200 text-gray-800 font-medium rounded-xl transition-colors"
         >
           <Pencil className="w-4 h-4" />

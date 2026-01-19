@@ -24,6 +24,9 @@ model Company {
      createdAt DateTime @default(now())
      updatedAt DateTime @updatedAt
 
+     // category
+     specializations CompanySpecialization[] @relation("company_specialization")
+
      // relations
      descriptions Description[]
      socialMedia SocialMedia?
@@ -40,11 +43,10 @@ model Company {
      partnerInterests String[] @default([])
 
      userId String @unique
-     user User @relation(fields: [userId], references: [id])
+     user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
      @@index([handle])
 }
-
 
 model CompanyLegalInfo {
      id String @id @default(uuid())
@@ -69,7 +71,7 @@ model CompanyVerification {
      updatedAt DateTime @updatedAt
 
      companyId String @unique
-     company Company @relation(fields: [companyId], references: [id])
+     company Company @relation(fields: [companyId], references: [id], onDelete:  Cascade)
 }
 
 model Founder {
@@ -95,10 +97,10 @@ model Service {
 
      // relations
      categoryId String
-     category Category @relation(fields: [categoryId], references: [id])
+     category Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
 
      companyId String
-     company Company @relation(fields: [companyId], references: [id])
+     company Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
 
      certifications Document[]
 }
@@ -117,7 +119,7 @@ model ContactPerson {
      role String 
 
      companyId String 
-     company Company @relation(fields: [companyId], references: [id])
+     company Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
 }
 
 model Review {
@@ -133,7 +135,7 @@ model Review {
      updated DateTime @updatedAt
 
      companyId String 
-     company Company @relation(fields: [companyId], references: [id])
+     company Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
 }
 
 enum EProjectPhase {
@@ -159,7 +161,8 @@ model Project {
      
 
      companyId String 
-     company Company @relation(fields: [companyId], references: [id])
+     company Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+     documents Document[]
 }
 
 model ProductCatalog {
@@ -175,4 +178,16 @@ model ProductCatalog {
      companyId String 
      company Company @relation(fields: [companyId], references: [id])
 
+}
+
+model CompanySpecialization {
+     id String @id @default(uuid())
+     name String
+     description String?
+     createdAt DateTime @default(now())
+     updatedAt DateTime @updatedAt
+     
+     categoryId String
+     category Category @relation(fields: [categoryId], references: [id])
+     companies Company [] @relation("company_specialization")
 }

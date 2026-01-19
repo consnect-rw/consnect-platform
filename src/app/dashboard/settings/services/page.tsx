@@ -53,30 +53,15 @@ export default function ServicesPage() {
   }
 
   return (
-    <div className="w-full min-h-full bg-gray-50/50 p-4 md:p-8">
-      <div className="max-w-7xl mx-auto">
-        {/* Header */}
-        <div className="bg-white rounded-2xl shadow-sm p-8 mb-8">
-          <div className="flex items-center gap-4 mb-6">
-            <div className="p-3 bg-yellow-100 rounded-xl">
-              <Wrench className="w-8 h-8 text-yellow-600" />
-            </div>
-            <div>
-              <h1 className="text-3xl font-extrabold text-gray-900">Services</h1>
-              <p className="text-gray-600 mt-1">
-                Manage and showcase the professional services your company offers
-              </p>
-            </div>
+    <div className="w-full flex flex-col gap-4">
+      {/* Header */}
+      <div className="w-full flex items-center gap-4 justify-between">
+          <div className="text-lg font-bold text-gray-900">
+            {totalServices} Service{totalServices !== 1 ? 's' : ''}
           </div>
-          <div className="w-full flex items-center gap-4 justify-between">
-            <div className="text-2xl font-bold text-gray-900">
-              {totalServices} Service{totalServices !== 1 ? 's' : ''}
-            </div>
-            <ServiceFormToggleBtn title="Add new Service" name="Service" icon={<Plus className="w-4 h-4" />} className={"py-2 px-4 text-white font-medium flex items-center gap-2 bg-linear-to-br from-yellow-600 to-amber-600 rounded-lg"} companyId={user.company.id} />
-          </div>
-          
+          <ServiceFormToggleBtn title="Add new Service" name="Service" icon={<Plus className="w-4 h-4" />} className={"py-2 px-4 text-white font-medium flex items-center gap-2 bg-linear-to-br from-yellow-600 to-amber-600 rounded-lg"} companyId={user.company.id} />
         </div>
-
+      <div className="max-w-7xl mx-auto">
         {/* Services Grid */}
         {isLoading ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
