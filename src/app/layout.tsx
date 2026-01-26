@@ -30,7 +30,7 @@ export default async function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+      <body className={`${geistSans.variable} ${geistMono.variable} antialiased h-screen m-0 p-0`}>
         <ThemeProvider
           attribute="class"
           defaultTheme="light"

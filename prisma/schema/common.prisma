@@ -73,6 +73,7 @@ model Document {
      type EDocumentType
      modelType EDocumentModelType
      isVerified Boolean @default(false)
+     message String?
 
      // relations
      serviceId String?

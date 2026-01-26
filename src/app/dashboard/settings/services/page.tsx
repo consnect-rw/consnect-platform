@@ -61,10 +61,10 @@ export default function ServicesPage() {
           </div>
           <ServiceFormToggleBtn title="Add new Service" name="Service" icon={<Plus className="w-4 h-4" />} className={"py-2 px-4 text-white font-medium flex items-center gap-2 bg-linear-to-br from-yellow-600 to-amber-600 rounded-lg"} companyId={user.company.id} />
         </div>
-      <div className="max-w-7xl mx-auto">
+      <div className="w-full mx-auto">
         {/* Services Grid */}
         {isLoading ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4  2xl:grid-cols-5 gap-6">
             {[...Array(6)].map((_, i) => (
               <div
                 key={i}
@@ -91,7 +91,7 @@ export default function ServicesPage() {
             </p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 2xl:grid-cols-5 gap-6 mb-8">
             {services.map((service) => (
               <ServiceCard
                 key={service.id}

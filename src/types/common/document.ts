@@ -42,7 +42,7 @@ export interface IDocumentUpdate {
 }
 
 export const SDocument = {
-     id:true, title:true, description:true, docUrl:true, type:true
+     id:true, title:true, description:true, docUrl:true, type:true, isVerified:true, message:true, 
 } satisfies Prisma.DocumentSelect;
 
 export type TDocument = Prisma.DocumentGetPayload<{select: typeof SDocument}>

@@ -4,6 +4,8 @@
 import CompanyVerification from '@/components/containers/user/CompanyVerification';
 import { useAuth } from '@/hooks/useAuth';
 import { TSessionUser } from '@/types/auth/user';
+import { fetchUserDashboardStats, fetchUserRecentActivity } from '@/server/dashboard/user-dashboard';
+import { useQuery } from '@tanstack/react-query';
 import { Building2, FileText, Tag, MessageSquare, TrendingUp, Users, Award, Calendar, ArrowRight, Plus, Bell, User } from 'lucide-react';
 import { IconType } from 'react-icons/lib';
 
@@ -32,9 +34,9 @@ export default function UserDashboardPage() {
         <StatsGrid />
 
         {/* Main Content Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <RecentActivity />
+        <div className="w-full flex flex-col gap-6">
           <CompanyVerification />
+          <RecentActivity />
         </div>
 
       </div>
@@ -51,12 +53,12 @@ function Header({ user }: { user: TSessionUser }) {
       
       <div className="relative z-10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div className="flex items-center gap-4">
-          <div className="w-16 h-16 bg-gradient-to-br from-yellow-400 to-yellow-500 rounded-2xl flex items-center justify-center text-white font-bold text-xl shadow-lg">
+          <div className="w-16 h-16 bg-linear-to-br from-yellow-400 to-yellow-500 rounded-2xl flex items-center justify-center text-white font-bold text-xl shadow-lg">
                <User className='w-8 h-8' />
           </div>
           <div>
             <h1 className="text-3xl sm:text-4xl font-bold text-gray-900">
-              Hello, <span className="bg-gradient-to-r from-yellow-500 to-yellow-600 bg-clip-text text-transparent">{user.name}</span>
+              Hello, <span className="bg-linear-to-r from-yellow-500 to-yellow-600 bg-clip-text text-transparent">{user.name}</span>
             </h1>
             <p className="text-gray-600 mt-1">{user.company?.name}</p>
           </div>
@@ -122,16 +124,57 @@ function QuickActionCard({ name, href, icon: Icon, color }: {
 
 // Stats Grid Component
 function StatsGrid() {
-  const stats = [
-    { label: "Active Tenders", value: "12", icon: FileText, trend: "+3 this week" },
-    { label: "Total Projects", value: "47", icon: Building2, trend: "8 completed" },
-    { label: "Partner Connections", value: "156", icon: Users, trend: "+12 new" },
-    { label: "Avg. Rating", value: "4.8", icon: Award, trend: "From 23 reviews" },
-  ];
+  const { user } = useAuth();
+  const { data: statsData, isLoading } = useQuery({
+    queryKey: ['user-dashboard-stats', user?.id],
+    queryFn: () => fetchUserDashboardStats(user?.id ?? ""),
+    enabled: !!user?.id,
+  });
+
+  // Show loading skeleton
+  if (isLoading) {
+    return (
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        {[...Array(4)].map((_, index) => (
+          <div key={index} className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 animate-pulse">
+            <div className="flex items-start justify-between mb-4">
+              <div className="w-10 h-10 bg-gray-200 rounded-lg"></div>
+              <div className="w-4 h-4 bg-gray-200 rounded"></div>
+            </div>
+            <div className="h-8 bg-gray-200 rounded w-20 mb-2"></div>
+            <div className="h-4 bg-gray-200 rounded w-32 mb-3"></div>
+            <div className="h-3 bg-gray-100 rounded w-24"></div>
+          </div>
+        ))}
+      </div>
+    );
+  }
+
+  // Show empty state if no data
+  if (!statsData || statsData.length === 0) {
+    return (
+      <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-12 text-center">
+        <div className="inline-flex items-center justify-center w-16 h-16 bg-yellow-100 rounded-full mb-4">
+          <Building2 className="w-8 h-8 text-yellow-600" />
+        </div>
+        <h3 className="text-lg font-semibold text-gray-900 mb-2">No Company Registered</h3>
+        <p className="text-gray-600 mb-6 max-w-md mx-auto">
+          Dashboard statistics will be displayed once you register and verify your company. Complete your company profile to start tracking your performance metrics.
+        </p>
+        <a
+          href="/dashboard/settings"
+          className="inline-flex items-center gap-2 px-6 py-3 bg-yellow-500 hover:bg-yellow-600 text-white font-semibold rounded-lg transition-colors"
+        >
+          <Plus className="w-5 h-5" />
+          Register Company
+        </a>
+      </div>
+    );
+  }
 
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-      {stats.map((stat) => (
+      {statsData.map((stat) => (
         <StatCard key={stat.label} {...stat} />
       ))}
     </div>
@@ -139,12 +182,29 @@ function StatsGrid() {
 }
 
 // Stat Card Component
-function StatCard({ label, value, icon: Icon, trend }: {
+function StatCard({ label, value, trend }: {
   label: string;
   value: string;
-  icon: any;
   trend: string;
 }) {
+  // Map labels to icons
+  const getIcon = () => {
+    switch (label) {
+      case "Active Offers":
+        return Tag;
+      case "Projects":
+        return Building2;
+      case "Messages":
+        return MessageSquare;
+      case "Company Rating":
+        return Award;
+      default:
+        return TrendingUp;
+    }
+  };
+
+  const Icon = getIcon();
+
   return (
     <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow">
       <div className="flex items-start justify-between mb-4">
@@ -162,12 +222,51 @@ function StatCard({ label, value, icon: Icon, trend }: {
 
 // Recent Activity Component
 function RecentActivity() {
-  const activities = [
-    { type: "tender", title: "New bid received", project: "Downtown Plaza Construction", time: "2 hours ago" },
-    { type: "message", title: "Message from BuildTech Co.", project: "Partnership inquiry", time: "5 hours ago" },
-    { type: "review", title: "New review posted", project: "Riverside Complex", time: "1 day ago" },
-    { type: "offer", title: "Offer accepted", project: "Industrial Park Phase 2", time: "2 days ago" },
-  ];
+  const { user } = useAuth();
+  const { data: activityData, isLoading } = useQuery({
+    queryKey: ['user-recent-activity', user?.id],
+    queryFn: () => fetchUserRecentActivity(user?.id ?? ""),
+    enabled: !!user?.id,
+  });
+
+  // Show loading skeleton
+  if (isLoading) {
+    return (
+      <div className="w-full bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+        <div className="flex items-center justify-between mb-6">
+          <h2 className="text-xl font-bold text-gray-900">Recent Activity</h2>
+        </div>
+        
+        <div className="space-y-4">
+          {[...Array(4)].map((_, index) => (
+            <div key={index} className="flex items-start gap-4 p-4 rounded-lg animate-pulse">
+              <div className="w-10 h-10 bg-gray-200 rounded-lg shrink-0"></div>
+              <div className="flex-1 min-w-0">
+                <div className="h-4 bg-gray-200 rounded w-32 mb-2"></div>
+                <div className="h-3 bg-gray-100 rounded w-48 mb-2"></div>
+                <div className="h-3 bg-gray-100 rounded w-20"></div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  // Show empty state if no data
+  if (!activityData || activityData.length === 0) {
+    return (
+      <div className="lg:col-span-2 bg-white rounded-xl shadow-sm border border-gray-200 p-8 text-center">
+        <div className="inline-flex items-center justify-center w-14 h-14 bg-gray-100 rounded-full mb-3">
+          <Calendar className="w-6 h-6 text-gray-400" />
+        </div>
+        <h3 className="text-base font-semibold text-gray-900 mb-1">No Activity Yet</h3>
+        <p className="text-sm text-gray-600">
+          Your activity will appear here once you start posting offers, completing projects, or receiving messages.
+        </p>
+      </div>
+    );
+  }
 
   return (
     <div className="lg:col-span-2 bg-white rounded-xl shadow-sm border border-gray-200 p-6">
@@ -179,8 +278,8 @@ function RecentActivity() {
       </div>
       
       <div className="space-y-4">
-        {activities.map((activity, index) => (
-          <ActivityItem key={index} {...activity} />
+        {activityData.map((activity, index) => (
+          <ActivityItem key={index} title={activity.title} message={activity.message} timestamp={activity.timestamp} />
         ))}
       </div>
     </div>
@@ -188,33 +287,63 @@ function RecentActivity() {
 }
 
 // Activity Item Component
-function ActivityItem({ type, title, project, time }: {
-  type: string;
+function ActivityItem({ title, message, timestamp }: {
   title: string;
-  project: string;
-  time: string;
+  message: string;
+  timestamp: Date;
 }) {
+  // Map activity title to icon and type
+  const getActivityType = () => {
+    const lowerTitle = title.toLowerCase();
+    if (lowerTitle.includes("offer")) return "offer";
+    if (lowerTitle.includes("project")) return "project";
+    if (lowerTitle.includes("review")) return "review";
+    if (lowerTitle.includes("message")) return "message";
+    return "activity";
+  };
+
   const getIcon = () => {
+    const type = getActivityType();
     switch (type) {
-      case "tender": return FileText;
-      case "message": return MessageSquare;
-      case "review": return Award;
-      case "offer": return Tag;
-      default: return FileText;
+      case "offer":
+        return Tag;
+      case "project":
+        return Building2;
+      case "review":
+        return Award;
+      case "message":
+        return MessageSquare;
+      default:
+        return FileText;
     }
   };
-  
+
+  // Format timestamp to relative time
+  const formatTimeAgo = (date: Date) => {
+    const now = new Date();
+    const diffMs = now.getTime() - new Date(date).getTime();
+    const diffMins = Math.floor(diffMs / 60000);
+    const diffHours = Math.floor(diffMs / 3600000);
+    const diffDays = Math.floor(diffMs / 86400000);
+
+    if (diffMins < 1) return "Just now";
+    if (diffMins < 60) return `${diffMins}m ago`;
+    if (diffHours < 24) return `${diffHours}h ago`;
+    if (diffDays < 7) return `${diffDays}d ago`;
+    return new Date(date).toLocaleDateString();
+  };
+
   const Icon = getIcon();
-  
+
   return (
     <div className="flex items-start gap-4 p-4 rounded-lg hover:bg-gray-50 transition-colors cursor-pointer">
-      <div className="w-10 h-10 bg-yellow-100 rounded-lg flex items-center justify-center flex-shrink-0">
+      <div className="w-10 h-10 bg-yellow-100 rounded-lg flex items-center justify-center shrink-0">
         <Icon className="w-5 h-5 text-yellow-600" />
       </div>
       <div className="flex-1 min-w-0">
         <h3 className="font-semibold text-gray-900 text-sm">{title}</h3>
-        <p className="text-sm text-gray-600 truncate">{project}</p>
-        <p className="text-xs text-gray-500 mt-1">{time}</p>
+        <p className="text-sm text-gray-600 truncate">{message}</p>
+        <p className="text-xs text-gray-500 mt-1">{formatTimeAgo(timestamp)}</p>
       </div>
     </div>
   );

@@ -44,8 +44,8 @@ export default function ReviewsPage() {
   }
 
   return (
-    <div className="w-full min-h-full bg-gray-50/50 p-4 md:p-8">
-      <div className="max-w-7xl mx-auto">
+    <div className="w-full">
+      <div className="w-full mx-auto">
         {/* Header */}
         <div className="bg-white rounded-2xl shadow-sm p-8 mb-8">
           <div className="flex items-center gap-4 mb-6">

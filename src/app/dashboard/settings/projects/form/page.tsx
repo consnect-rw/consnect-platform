@@ -1,6 +1,7 @@
 "use client";
 
 import CompanyRequiredNotice from "@/components/containers/user/CompanyRequireNotice";
+import { DocumentInput } from "@/components/forms/common/DocumentForm";
 import { SelectInputGroup, TextAreaInputGroup, TextInputGroup } from "@/components/forms/InputGroups";
 import { MainForm, MainFormLoader } from "@/components/forms/MainForm";
 import { ColumnInputWrapper, Grid2InputWrapper } from "@/components/forms/wrappers";
@@ -11,7 +12,7 @@ import queryClient from "@/lib/queryClient";
 import { createProject, fetchProjectById, updateProject } from "@/server/company/project";
 import { SProject } from "@/types/company/project";
 import { deleteSingleImage } from "@/util/s3Helpers";
-import { EProjectPhase } from "@prisma/client";
+import { EDocumentModelType, EDocumentType, EProjectPhase } from "@prisma/client";
 import { useQuery } from "@tanstack/react-query";
 import { format } from "date-fns";
 import { Building2, CloudUpload, Trash2 } from "lucide-react";
@@ -19,17 +20,33 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
+const DefaultProjectDocuments: {title:string, url?:""}[] = [
+     {title: "Completion Certificate"},
+     {title: "Project Contact"},
+]
+
 export default function CompanyProjectsFormPage () {
      const {user} = useAuth();
      const searchParams = useSearchParams();
      const [images,setImages] = useState<string[]>([])
      const router = useRouter();
+     const [projectDocs,setProjectDocs] = useState<{title:string, url?: string}[]>(DefaultProjectDocuments);
 
      const projectId = searchParams.get("id");
      const {data: project, isLoading} = useQuery({
           queryKey:["project", projectId],
           queryFn: () => projectId ? fetchProjectById(projectId,SProject) : null
      });
+
+     const onFileDelete = (title:string) => {
+          const exItems = projectDocs.filter(doc => doc.title !== title);
+          return setProjectDocs([{title},...exItems]);
+     }
+
+     const onFileUpload = (doc: {title:string, url:string}) => {
+          const exItems = projectDocs.filter(d => d.title !== doc.title);
+          return setProjectDocs([...exItems, doc]);
+     }
 
      const submitData = async (data: FormData) => {
           const title = data.get("title") as string;
@@ -49,13 +66,14 @@ export default function CompanyProjectsFormPage () {
                     initiatedOn: new Date(initiatedOn),phase,
                     ...(completedOn ? {completedOn: new Date(completedOn)}  : {}),
                     company: {connect:{id: user?.company?.id}},
+                    documents: {create: projectDocs.filter((d): d is {title: string, url: string} => Boolean(d.url)).map(d => ({title: d.title, docUrl: d.url, type: EDocumentType.OTHER, modelType: EDocumentModelType.PROJECT}) )},
                     images
                });
 
                if(!newProject) return toast.error("Error adding new project");
                queryClient.invalidateQueries();
                toast.success("Success adding new project!");
-               return router.push("/dashboard/projects");
+               return router.push("/dashboard/settings/projects");
           }
 
           const updatedProject = await updateProject(project.id, {
@@ -66,12 +84,13 @@ export default function CompanyProjectsFormPage () {
                ...(clientPhone ? {clientPhone} :{}),
                ...(initiatedOn ? {initiatedOn: new Date(initiatedOn)} :{}),
                ...(completedOn ? {initiatedOn: new Date(completedOn)} :{}),
+               documents: {deleteMany: {},create: projectDocs.filter((d): d is {title: string, url: string} => Boolean(d.url)).map(d => ({title: d.title, docUrl: d.url, type: EDocumentType.OTHER, modelType: EDocumentModelType.PROJECT}) )},
                images
           } );
           if(!updatedProject) return toast.error("Error updating project");
           queryClient.invalidateQueries();
           toast.success("Success updating project!");
-          return router.push("/dashboard/projects");
+          return router.push("/dashboard/settings/projects");
      }
 
      const handleDeleteImage = async(image:string) => {
@@ -94,6 +113,12 @@ export default function CompanyProjectsFormPage () {
      useEffect(() => {
           if(project){
                setImages(project.images);
+               if(project.documents && project.documents.length > 0) {
+                    const projectDocuments = project.documents;
+                    const docNames = new Set(projectDocuments.map(d => d.title))
+                    const missingDocs  = projectDocs.filter(d => !docNames.has(d.title));
+                    setProjectDocs([...missingDocs, ...(projectDocuments.map(d => ({title: d.title, url: d.docUrl})))]);
+               }
           }
      }, [project])
      if (!user?.company) {
@@ -120,6 +145,9 @@ export default function CompanyProjectsFormPage () {
                               <Grid2InputWrapper title="Project Dates">
                                    <TextInputGroup type="date" name="initiated-on" label={`Start Date: ${project?.initiatedOn ? format(project?.initiatedOn, "yyyy-MM-dd") : ""}`} required={project ? false : true}  />
                                    <TextInputGroup type="date" name="completed-on" label={`End Date: ${project?.completedOn ? format(project.completedOn, "yyyy-MM-dd") : ""}`}  />
+                              </Grid2InputWrapper>
+                              <Grid2InputWrapper title="Supporting Documents">
+                                   {projectDocs.map(doc => <DocumentInput doc={doc} key={`${doc.title}`} onDelete={() => onFileDelete(doc.title)} onUpload={onFileUpload} />)}
                               </Grid2InputWrapper>
                               <div className="w-full flex flex-col gap-4 items-start">
                                    <h3 className="text-lg font-medium text-gray-800">Project Images:</h3>

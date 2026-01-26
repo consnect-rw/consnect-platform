@@ -22,7 +22,7 @@ export default function CompanyProductCatalogsPage () {
      const catalogs = catalogsData?.data ?? [];
      if (!user?.company) {
           return (
-               <CompanyRequiredNotice message="Please first create your company to add product catalogs"/>
+              <CompanyRequiredNotice message="Please first create your company to add product catalogs"/>
           );
      }
      return (
@@ -32,7 +32,7 @@ export default function CompanyProductCatalogsPage () {
                </div>
                {
                     catalogs.length === 0 ? <p className="font-medium text-gray-600">No product catalogs added yet!</p> :
-                    <div className="w-full grid grid-cols-1 lg:grid-cols-3 gap-4">
+                    <div className="w-full grid grid-cols-1 lg:grid-cols-3 2xl:grid-cols-4 gap-4">
                          {
                               catalogs.map(c => <ProductCatalogCard catalog={c} key={c.id} />)
                          }
@@ -57,7 +57,7 @@ const ProductCatalogCard = ({ catalog }: { catalog: TProductCatalog }) => {
   return (
     <div className="group relative bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-2xl transition-all duration-300 border border-gray-200">
       {/* Image container */}
-      <div className="relative aspect-[4/3] overflow-hidden">
+      <div className="relative aspect-4/3 overflow-hidden">
         <Image
           src={catalog.image}
           alt={catalog.name}
@@ -65,7 +65,7 @@ const ProductCatalogCard = ({ catalog }: { catalog: TProductCatalog }) => {
         />
 
         {/* Hover overlay with View & Download */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end justify-center gap-4 p-6">
+        <div className="absolute inset-0 bg-linear-to-t from-black/70 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end justify-center gap-4 p-6">
           <Link href={catalog.fileUrl} target="_blank" type="button"
             className="flex items-center gap-2 px-5 py-3 bg-white/90 hover:bg-white text-gray-900 font-medium rounded-xl shadow-lg backdrop-blur-sm transition-all"
           >

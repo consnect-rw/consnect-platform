@@ -1,6 +1,7 @@
 "use client";
 import { LoginForm } from "@/components/forms/auth/LoginForm";
 import { CurrentYear } from "@/components/layout/CurrentYear";
+import { TSessionUser } from "@/types/auth/user";
 import { getRedirectPath } from "@/util/auth";
 import { ArrowLeft, Sparkles } from "lucide-react";
 import Link from "next/link";
@@ -8,8 +9,11 @@ import { useRouter } from "next/navigation";
 
 export default function LoginPage() {
      const router =useRouter();
+     const onLoginComplete = (user: TSessionUser) => {
+      return router.push(getRedirectPath(user.role));
+     }
   return (
-    <div className="min-h-screen w-full bg-gradient-to-br from-gray-100 via-slate-100 to-gray-50 flex items-center justify-center p-4 sm:p-6 lg:p-8">
+    <div className="min-h-screen w-full bg-linear-to-br from-gray-100 via-slate-100 to-gray-50 flex items-center justify-center p-4 sm:p-6 lg:p-8">
       {/* Animated background elements */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute top-20 left-10 w-72 h-72 bg-gray-300 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-blob"></div>
@@ -27,7 +31,7 @@ export default function LoginPage() {
               {/* Logo/Brand Badge */}
               <div className="mb-6 lg:mb-8 flex flex-col gap-2 items-start">
                 <Link href={"/"} prefetch className="flex items-center justify-center gap-2 py-1.5 px-3 rounded-lg text-gray-700 hover:text-yellow-600 text-sm "><ArrowLeft className="w-4 h-4" /> Back To Home</Link>
-                <div className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-amber-100 to-orange-100 rounded-full">
+                <div className="inline-flex items-center gap-2 px-4 py-2 bg-linear-to-r from-amber-100 to-orange-100 rounded-full">
                   <Sparkles className="w-4 h-4 text-amber-600" />
                   <span className="text-sm font-semibold text-amber-700">CONSNECT</span>
                 </div>
@@ -36,7 +40,7 @@ export default function LoginPage() {
               {/* Welcome Text */}
               <div className="mb-8 lg:mb-10">
                 <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-3">
-                  <span className="bg-gradient-to-r from-gray-600 to-yellow-600 bg-clip-text text-transparent">
+                  <span className="bg-linear-to-r from-gray-600 to-yellow-600 bg-clip-text text-transparent">
                     Welcome Back
                   </span>
                 </h1>
@@ -47,7 +51,7 @@ export default function LoginPage() {
 
               {/* Login Form - Your existing component goes here */}
               <div className="w-full">
-               <LoginForm onComplete={user => router.push(getRedirectPath(user.role))} />
+               <LoginForm onComplete={onLoginComplete} />
               </div>
               
 
@@ -71,7 +75,7 @@ export default function LoginPage() {
             </div>
 
             {/* Right Section - Image & Branding */}
-            <div className="hidden lg:flex relative bg-gradient-to-br from-black via-yellow-950 to-black p-12 flex-col justify-between overflow-hidden">
+            <div className="hidden lg:flex relative bg-linear-to-br from-black via-yellow-950 to-black p-12 flex-col justify-between overflow-hidden">
               {/* Decorative Pattern */}
               <div className="absolute inset-0 opacity-10">
                 <div className="absolute top-0 right-0 w-96 h-96 bg-white rounded-full -translate-y-1/2 translate-x-1/2"></div>

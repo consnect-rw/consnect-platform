@@ -123,24 +123,6 @@ const ProjectCard = ({
           {project.description}
         </p>
 
-        {/* Client Info */}
-        {/* <div className="space-y-2 text-sm mb-5">
-          <div className="flex items-center justify-between">
-            <span className="text-gray-500">Client:</span>
-            <span className="font-medium text-gray-900">{project.clientName}</span>
-          </div>
-          <div className="flex items-center justify-between">
-            <span className="text-gray-500">Email:</span>
-            <span className="font-medium text-gray-700 truncate max-w-[180px]">
-              {project.clientEmail}
-            </span>
-          </div>
-          <div className="flex items-center justify-between">
-            <span className="text-gray-500">Phone:</span>
-            <span className="font-medium text-gray-700">{project.clientPhone}</span>
-          </div>
-        </div> */}
-
         {/* Dates */}
         <div className="text-xs text-gray-500 space-y-1 border-t pt-4">
           <div>Initiated: {format(new Date(project.initiatedOn), 'MMM d, yyyy')}</div>

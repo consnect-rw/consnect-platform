@@ -47,3 +47,20 @@ export const SAdminCategoryCard = {
 } satisfies Prisma.CategorySelect;
 
 export type TAdminCategoryCard = Prisma.CategoryGetPayload<{select: typeof SAdminCategoryCard}>
+
+export const SAdminCompanyCategory = {
+     id:true, name:true, createdAt:true,
+     subCategories: {
+          select: {
+               name:true, id:true,
+               _count:{select: {specializations:true}},
+               specializations:{
+                    select:{
+                         id:true, name:true,
+                         _count: {select:{companies:true}}
+                    }
+               }
+          }
+     }
+} satisfies Prisma.CategorySelect;
+export type TAdminCompanyCategory = Prisma.CategoryGetPayload<{select: typeof SAdminCompanyCategory}>

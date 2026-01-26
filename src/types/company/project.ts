@@ -1,4 +1,5 @@
 import { Prisma } from "@prisma/client"
+import { SDocument } from "../common/document"
 
 export interface IDefaultProject {
      id:string
@@ -48,5 +49,6 @@ export const SProject  = {
      id:true, title:true, description:true, images:true, phase:true, 
      clientEmail:true, clientName:true, clientPhone:true, createdAt:true,
      initiatedOn:true, completedOn:true, 
+     documents: {select: SDocument}
 } satisfies Prisma.ProjectSelect;
 export type TProject = Prisma.ProjectGetPayload<{select: typeof SProject}>

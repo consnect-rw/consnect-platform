@@ -56,7 +56,7 @@ export default function CompanyDocumentsForm () {
                </div>
                 {documents.length === 0 ? <p className="text-lg font-medium text-gray-600">Documents found!</p> :
 
-                <div className="w-full grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                <div className="w-full grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 2xl:grid-cols-6 gap-4">
                   {
                     documents.map(doc => <DocumentCard key={doc.id} document={doc} />)
                   }
@@ -147,7 +147,7 @@ const DocumentCard = ({
       <div
         className={`
           relative overflow-hidden
-          bg-gradient-to-br from-white to-gray-50
+          bg-linear-to-br from-white to-gray-50
           border-2 ${colors.border}
           rounded-2xl
           transition-all duration-300 ease-out
@@ -167,7 +167,7 @@ const DocumentCard = ({
 
         {/* Gradient Overlay */}
         <div
-          className={`absolute top-0 right-0 w-64 h-64 bg-gradient-to-bl ${colors.gradient} rounded-full blur-3xl -z-0 transition-opacity duration-300 ${
+          className={`absolute top-0 right-0 w-64 h-64 bg-linear-to-bl ${colors.gradient} rounded-full blur-3xl z-0 transition-opacity duration-300 ${
             isHovered ? "opacity-100" : "opacity-50"
           }`}
         ></div>
@@ -181,7 +181,7 @@ const DocumentCard = ({
               <div
                 className={`
                   relative p-3 rounded-xl
-                  bg-gradient-to-br from-gray-100 to-gray-200
+                  bg-linear-to-br from-gray-100 to-gray-200
                   border-2 ${colors.border}
                   ${colors.icon}
                   transition-transform duration-300

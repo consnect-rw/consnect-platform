@@ -38,6 +38,17 @@ export default function CompanySettingsNavBar() {
             icon={offer.icon}
           />
         ))}
+        {moreLinksOn ? 
+            
+            // <MoreLinks links={SettingLinks.slice(6)} />
+            SettingLinks.slice(6).map((offer, index) => (
+          <NavLink
+            key={`user-offer-link-${index+6}`}
+            name={offer.name}
+            href={offer.href}
+            icon={offer.icon}
+          />))
+        : null}
         <button
           type='button'
           onClick={() => setMoreLinkOn(!moreLinksOn)}
@@ -49,7 +60,6 @@ export default function CompanySettingsNavBar() {
         }
       `}
         >{moreLinksOn ? <><X className='w-4 h-4'/> Less</> : <><MoreHorizontal className='w-4 h-4'/> More</>} </button>
-        {moreLinksOn ? <MoreLinks links={SettingLinks.slice(6)} /> : null}
       </nav>
 
       {/* Mobile Navigation */}

@@ -14,16 +14,24 @@ import { createCategory, updateCategory } from "@/server/common/category";
 import { ECategoryType } from "@prisma/client";
 import Image from "@/components/ui/Image";
 import { deleteSingleImage } from "@/util/s3Helpers";
-import { TAdminCategoryCard } from "@/types/common/category";
+import { TAdminCategoryCard, TAdminCompanyCategory } from "@/types/common/category";
 
-export const CategoryForm = ({category, type, onComplete}:{category?: TAdminCategoryCard, onComplete: () => void, type: ECategoryType}) => {
+type TCategorySimple  = {id:string, name:string, description?: string, image?: string}
+
+export const CategoryForm = ({category, type, onComplete, parentId}:{category?: TAdminCategoryCard | TCategorySimple, onComplete: () => void, type: ECategoryType, parentId?:string}) => {
      const [image,setImage] = useState("");
      const submitForm = async(data:FormData) => {
           const name = data.get("name") as string
           const description = data.get("description") as string
 
           if(!category) {
-               const response = await createCategory({name, type, description, image});
+               const response = await createCategory({
+                    name, 
+                    type, 
+                    ...(description && {description}),
+                    ...(image ? {image} : {}),
+                    ...(parentId ? {parentCategory: {connect: {id: parentId}}} : {})
+               });
                if(!response) return toast.error("Error creating the category!", {description: "Please try again later"});
                toast.success("Category created successfully");
                queryClient.invalidateQueries();
@@ -33,7 +41,8 @@ export const CategoryForm = ({category, type, onComplete}:{category?: TAdminCate
           const response = await updateCategory(category.id ?? "", {
                ...(name ? {name} : {} ),
                ...(description ? {description} : {} ),
-               ...(image ? {image} : {} )
+               ...(image ? {image} : {} ),
+               ...(parentId ? {parentCategory: {connect: {id: parentId}}} : {})
           });
           if(!response) return toast.error("Error updating the category!", {description: "Please try again later"});
           toast.success("Category updated successfully");
@@ -60,7 +69,7 @@ export const CategoryForm = ({category, type, onComplete}:{category?: TAdminCate
 
      return (
           <MainForm btnTitle={category ? "Update Category" : "Save Category"} submitData={submitForm}>
-               <TextInputGroup name="name" label={`Category Name: ${category?.name}`} placeholder="enter category name..." required={category ? false : true} />
+               <TextInputGroup name="name" label={`Category Name`} defaultValue={category?.name} placeholder="enter category name..." required={category ? false : true} />
                <div className="w-full flex flex-col gap-2 items-start ">
                     {
                          image ? 
@@ -76,19 +85,19 @@ export const CategoryForm = ({category, type, onComplete}:{category?: TAdminCate
      )
 }
 
-export const CategoryFormToggleBtn = ({title, categoryType, category, ...btnProps}:{title: string, categoryType:ECategoryType, category?:TAdminCategoryCard} & ComponentProps<typeof EntityButton> ) => {
+export const CategoryFormToggleBtn = ({title, categoryType, category, parentId, ...btnProps}:{title: string, categoryType:ECategoryType, category?:TAdminCategoryCard | TCategorySimple, parentId?: string} & ComponentProps<typeof EntityButton> ) => {
      const [open,setOpen] = useState(false);
      
      if(!open) return <EntityButton  onClick={() => setOpen(true)} {...btnProps} />
      return (
           <Dialog open={open} onClose={() => {}} className="relative z-50">
                <div className="fixed inset-0 bg-black/50 bg-opacity-30 flex justify-center items-center ">
-               <DialogPanel className="bg-white p-6 rounded-lg shadow-lg w-[90vw] lg:w-[40%] max-h-[90%] overflow-y-auto flex flex-col items-center justify-start gap-[10px]" onClick={(e) => e.stopPropagation()}>
-                    <div className="w-full flex items-center justify-between gap-[8px]">
+               <DialogPanel className="bg-white p-6 rounded-lg shadow-lg w-[90vw] lg:w-[40%] max-h-[90%] overflow-y-auto flex flex-col items-center justify-start gap-3" onClick={(e) => e.stopPropagation()}>
+                    <div className="w-full flex items-center justify-between gap-2">
                          <h3 className="text-xl text-slate-800 font-bold">{title}</h3>
                          <X size={28} className="text-gray-600 border rounded-full p-1 cursor-pointer hover:text-gray-800" onClick={() => setOpen(false)} />
                     </div>
-                    <CategoryForm type={categoryType} category={category} onComplete={() => setOpen(false)} />
+                    <CategoryForm parentId={parentId} type={categoryType} category={category} onComplete={() => setOpen(false)} />
                </DialogPanel >
                </div>
           </Dialog>

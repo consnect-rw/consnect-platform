@@ -66,6 +66,9 @@ model CompanyVerification {
      id String @id @default(uuid())
      status ECompanyStatus
      message String
+     isBronzeVerified Boolean @default(false)
+     isSilverVerified Boolean @default(false)
+     isGoldVerified Boolean @default(false)
 
      createdAt DateTime @default(now())
      updatedAt DateTime @updatedAt
@@ -153,6 +156,8 @@ model Project {
      clientName String
      clientEmail String 
      clientPhone String 
+
+     // documents
 
      createdAt DateTime @default(now())
      updatedAt DateTime @updatedAt

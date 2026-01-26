@@ -112,7 +112,7 @@ const AdminCompanyCard = ({
           </div>
           <div>
             <span className="text-gray-500">Email:</span>
-            <span className="ml-2 font-medium text-gray-700 truncate block max-w-[180px]">
+            <span className="ml-2 font-medium text-gray-700 truncate block max-w-45">
               {company.email}
             </span>
           </div>
@@ -152,7 +152,7 @@ const AdminCompanyCard = ({
 
       {/* Action Buttons */}
       <div className="px-6 pb-6 mt-6 flex gap-3">
-        <Link href={`/company/${company.handle}`}
+        <Link href={`/admin/companies/${company.id}`}
           className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-gray-100 hover:bg-gray-200 text-gray-800 font-medium rounded-xl transition-colors"
         >
           <Eye className="w-4 h-4" />

@@ -66,33 +66,10 @@ export default function ProjectsPage() {
         </span>
         <Link href={"/dashboard/settings/projects/form"} className="font-medium py-2 px-4 text-white bg-linear-to-bl from-amber-600 to-yellow-600 rounded-lg flex items-center gap-2 " prefetch><Plus className="w-5 h-5" /> Project</Link>
       </div>
-      <div className="max-w-7xl mx-auto">
-        {/* Header */}
-        <div className="bg-white rounded-2xl shadow-sm p-8 mb-8">
-          <div className="flex items-center gap-4 mb-6">
-            <div className="p-3 bg-yellow-100 rounded-xl">
-              <Building2 className="w-8 h-8 text-yellow-600" />
-            </div>
-            <div>
-              <h1 className="text-3xl font-extrabold text-gray-900">
-                Company Projects
-              </h1>
-              <p className="text-gray-600 mt-1">
-                Showcase and manage your completed and ongoing projects
-              </p>
-            </div>
-          </div>
-
-          {/* Summary */}
-          <div className="w-full flex items-center justify-between">
-               
-          </div>
-          
-        </div>
-
+      <div className="w-full mx-auto">
         {/* Projects Grid */}
         {isLoading ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-6">
             {[...Array(6)].map((_, i) => (
               <div
                 key={i}
@@ -118,7 +95,7 @@ export default function ProjectsPage() {
             </p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-6 mb-8">
             {projects.map((project) => (
               <ProjectCard
                 key={project.id}

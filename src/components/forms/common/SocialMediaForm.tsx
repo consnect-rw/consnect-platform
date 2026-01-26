@@ -72,11 +72,11 @@ const SocialMediaLinkInput = ({key, isFocused,platform, hasValue,onUpdate, onFoc
      const Icon = platform.icon;
      return (
           <div  className={`flex items-center gap-3 p-3 rounded-lg border transition-all ${ isFocused  ? 'border-amber-500 bg-amber-50/50 shadow-sm'  : hasValue ? 'border-green-200 bg-green-50/30' : 'border-gray-200 hover:border-gray-300'}`} >
-               <div className={`flex-shrink-0 ${platform.color}`}>
+               <div className={`shrink-0 ${platform.color}`}>
                     <Icon className="w-5 h-5" />
                </div>
                {/* Label */}
-               <div className="hidden sm:block w-24 flex-shrink-0">
+               <div className="hidden sm:block w-24 shrink-0">
                     <span className="text-sm font-medium text-gray-700">
                     {platform.label}
                     </span>
@@ -136,10 +136,10 @@ export default function SocialMediaForm({ companyId, onComplete, socialMedia }:I
      }, [socialMedia])
 
      return (
-          <div className="p-5 bg-gradient-to-br from-white to-amber-50/30 rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition-all">
+          <div className="p-5 bg-linear-to-br from-white to-amber-50/30 rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition-all">
                {/* Header */}
                <div className="flex items-center gap-3 mb-5 pb-4 border-b border-gray-100">
-               <div className="flex items-center justify-center w-10 h-10 bg-gradient-to-br from-amber-400 to-orange-500 rounded-lg shadow-sm">
+               <div className="flex items-center justify-center w-10 h-10 bg-linear-to-br from-amber-400 to-orange-500 rounded-lg shadow-sm">
                <ExternalLink className="w-5 h-5 text-white" />
                </div>
                <div>
@@ -204,7 +204,7 @@ export default function SocialMediaForm({ companyId, onComplete, socialMedia }:I
                </div>
 
                {/* Submit Button */}
-               <button type="button" onClick={submit}  className="px-4 py-2 rounded-lg font-medium bg-gradient-to-r from-amber-500 to-orange-500 text-white hover:shadow-lg transition-all active:scale-95 w-full flex items-center justify-center gap-2">
+               <button type="button" onClick={submit}  className="px-4 py-2 rounded-lg font-medium bg-linear-to-r from-amber-500 to-orange-500 text-white hover:shadow-lg transition-all active:scale-95 w-full flex items-center justify-center gap-2">
                     <Plus className="w-4 h-4" />
                     <span>Save Social Links</span>
                </button>
