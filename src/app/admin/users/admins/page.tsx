@@ -41,9 +41,9 @@ export default function AdminsPage() {
      const totalAdmins = usersData?.pagination.total ?? 0;
 
      return (
-          <div className="min-h-screen bg-gradient-to-br rounded-xl overflow-hidden from-gray-50 via-gray-100 to-yellow-50">
+          <div className="min-h-screen bg-linear-to-br rounded-xl overflow-hidden from-gray-50 via-gray-100 to-yellow-50">
                {/* Modern Header with Yellow & Gray Theme */}
-      <div className="relative overflow-hidden bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 border-b-4 border-yellow-400">
+      <div className="relative overflow-hidden bg-linear-to-br from-gray-900 via-gray-800 to-gray-900 border-b-4 border-yellow-400">
         <div className="relative max-w-7xl mx-auto px-6 py-8">
           {/* Top bar */}
           <div className="flex items-center justify-between flex-wrap mb-8">
@@ -123,7 +123,7 @@ export default function AdminsPage() {
         </div>
 
         {/* Bottom accent line */}
-        <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-yellow-400 to-transparent"></div>
+        <div className="absolute bottom-0 left-0 right-0 h-1 bg-linear-to-r from-transparent via-yellow-400 to-transparent"></div>
       </div>
 
       {/* Main Content Area */}

@@ -93,11 +93,11 @@ const AdminRow = ({ admin }: { admin: TAdminRow }) => {
           {/* Name and Status Row */}
           <div className="flex items-start justify-between gap-3">
             <div className="flex items-start gap-3">
-              <div className="flex-shrink-0 w-12 h-12 bg-gradient-to-br from-yellow-400 to-yellow-600 rounded-full flex items-center justify-center text-white font-bold text-lg">
+              <div className="shrink-0 w-12 h-12 bg-linear-to-br from-yellow-400 to-yellow-600 rounded-full flex items-center justify-center text-white font-bold text-lg">
                 {admin.name?.charAt(0).toUpperCase() || admin.email.charAt(0).toUpperCase()}
               </div>
               <div>
-                <h3 className="font-bold text-gray-900 text-lg">{admin.name || 'No Name'}</h3>
+                <h3 className="font-bold text-gray-900 text-lg">{admin.name || 'No Name'} <span className="text-xs text-yellow-600 bg-yellow-50 rounded-sm p-1">{admin.adminRole}</span></h3>
                 <div className="flex items-center gap-2 mt-1">
                   <Mail className="w-4 h-4 text-gray-400" />
                   <span className="text-sm text-gray-600">{admin.email}</span>
@@ -164,7 +164,7 @@ const AdminRow = ({ admin }: { admin: TAdminRow }) => {
 
         {/* Action Buttons */}
         <div className="flex lg:flex-col gap-2 lg:ml-4">
-               <UserFormToggleBtn entityId={admin.id} name={"Edit"} icon={<Edit className="w-4 h-4" />} title="Edit Admin info" role={"ADMIN"} className="flex-1 lg:flex-none flex items-center justify-center gap-2 px-4 py-2.5 bg-gradient-to-r from-yellow-500 to-amber-600 hover:from-yellow-600 hover:to-amber-700 text-white font-medium rounded-lg transition-all shadow-sm hover:shadow-md" /> 
+               <UserFormToggleBtn entityId={admin.id} name={"Edit"} icon={<Edit className="w-4 h-4" />} title="Edit Admin info" role={"ADMIN"} className="flex-1 lg:flex-none flex items-center justify-center gap-2 px-4 py-2.5 bg-linear-to-r from-yellow-500 to-amber-600 hover:from-yellow-600 hover:to-amber-700 text-white font-medium rounded-lg transition-all shadow-sm hover:shadow-md" /> 
 
           <button
             onClick={handleDeactivate}
@@ -172,8 +172,8 @@ const AdminRow = ({ admin }: { admin: TAdminRow }) => {
             className={cn(
               "flex-1 lg:flex-none flex items-center justify-center gap-2 px-4 py-2.5 font-medium rounded-lg transition-all shadow-sm hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed",
               admin.active
-                ? "bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white"
-                : "bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white"
+                ? "bg-linear-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white"
+                : "bg-linear-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white"
             )}
           >
             {deactivating ? (

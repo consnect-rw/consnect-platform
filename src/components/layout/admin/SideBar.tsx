@@ -14,25 +14,40 @@ import { IconType } from "react-icons/lib";
 
 export function AdminSideBar () {
      const {user} = useAuth();
+     if(!user || user.role !== "ADMIN") return null;
      return (
-          <aside className="w-full h-full rounded-xl flex flex-col gap-8 bg-white p-2">
-               <div className="w-full flex items-start gap-4 border border-gray-300/50 rounded-lg p-2">
-                    <UserAvatar size="sm" className="rounded-full" email={user?.name ?? user?.email ?? "User"}  />
+          <aside className="w-full h-full rounded-xl flex flex-col justify-between gap-4 bg-white">
+               {/* Scrollable Content Area - THIS IS THE KEY CHANGE */}
+               <div className="w-full flex flex-col gap-4 flex-1 min-h-0 overflow-hidden p-1">
+               {/* User Profile Section */}
+               <div className="w-full flex items-start gap-2 border-b border-gray-200/50 p-2 shrink-0">
+                    <UserAvatar size="sm" className="rounded-full" email={user?.name ?? user?.email ?? "User"} />
                     <div className="flex flex-col gap-1">
-                         <h3 className="text-sm font-bold text-gray-800 ">{user?.name ?? user?.email}</h3>
-                         <p className="text-xs text-gray-600">{user?.role}</p>
+                    <h3 className="text-sm font-bold text-gray-800">{user?.name ?? user?.email}</h3>
+                    <p className="text-xs text-gray-600">{user?.role}</p>
                     </div>
                </div>
-               <div className="flex flex-col w-full h-full justify-between">
-                    <nav className="flex flex-col gap-4 w-full items-start justify-start px-2">
-                         {
-                              AdminNavLinks.map((link, index) => <NavLink link={link} key={`user-nav-link-${index}`} />)
-                         }
-                    </nav>
-                    <div className="w-full flex flex-col gap-4 items-start ">
-                         <NavLink link={{name: "Settings", href:"/admin/settings", icon: Cog}} />
-                         <AuthLogoutBtn name="Logout" icon={<LogOut className="w-4 h-4 text-gray-200" />} className="bg-linear-to-br from-gray-600 to-gray-800 cursor-pointer hover:bg-gray-200 w-full flex items-center gap-2 justify-start text-white font-medium text-base py-3" />
-                    </div>
+
+               {/* Navigation Links - Scrollable */}
+               <nav className="flex flex-col gap-3 w-full flex-1 overflow-y-auto px-2">
+                    {AdminNavLinks.map((link, index) => {
+                         const roles = new Set(link.roles);
+                         if(!roles.has(user?.adminRole)) return null;
+                         return (
+                         <NavLink link={link} key={`user-nav-link-${index}`} />
+                         );
+                    })}
+               </nav>
+               </div>
+
+               {/* Footer - Fixed at Bottom */}
+               <div className="w-full flex flex-col gap-2 items-start p-2 shrink-0">
+               <NavLink link={{name: "Settings", href:"#", icon: Cog}} />
+               <AuthLogoutBtn 
+                    name="Logout" 
+                    icon={<LogOut className="w-4 h-4 text-gray-200" />} 
+                    className="bg-linear-to-br from-gray-600 to-gray-800 cursor-pointer hover:bg-gray-200 w-full flex items-center gap-2 justify-start text-white font-medium text-base py-3" 
+               />
                </div>
           </aside>
      )
@@ -53,7 +68,7 @@ const NavLink = ({link, count}: INavLinkProps) => {
      const Icon = link.icon;
      return (
           <Link 
-               className={cn("w-full flex items-center gap-2 py-2 px-4 rounded-lg text-base font-medium text-gray-800 hover:bg-gray-200", isActive ? "bg-yellow-50 text-yellow-800" : "" )}
+               className={cn("w-full flex items-center  gap-2 py-2 px-4 rounded-lg text-sm 2xl:text-base font-medium text-gray-800 hover:bg-gray-200", isActive ? "bg-yellow-50 text-yellow-800" : "" )}
                href={link.href}
           >
                <Icon className={cn("w-5 h-5 text-gray-600", isActive ? "text-yellow-600" :"")} />
@@ -65,7 +80,8 @@ const NavLink = ({link, count}: INavLinkProps) => {
 
 export const AdminMobileTopBar = () => {
      const [showMenu, setShowMenu] = useState(false);
-     const {user} = useAuth()
+     const {user} = useAuth();
+     if(!user || user.role !== "ADMIN") return null;
      return (
           <div className="w-full flex lg:hidden items-center justify-between">
                <div className="flex items-center gap-2">
@@ -88,9 +104,13 @@ export const AdminMobileTopBar = () => {
                               </div>
                               <div className="flex flex-col w-full h-full justify-between">
                                    <nav className="flex flex-col gap-4 w-full items-start justify-start px-2">
-                                        {
-                                             AdminNavLinks.map((link, index) => <NavLink link={link} key={`user-nav-link-${index}`} />)
-                                        }
+                                        {AdminNavLinks.map((link, index) => {
+                                             const roles = new Set(link.roles);
+                                             if(!roles.has(user?.adminRole)) return null;
+                                             return (
+                                             <NavLink link={link} key={`user-nav-link-${index}`} />
+                                             );
+                                        })}
                                    </nav>
                                    <div className="w-full flex flex-col gap-4 items-start ">
                                         <NavLink link={{name: "Settings", href:"/dashboard/settings", icon: Cog}} />

@@ -35,7 +35,8 @@ export const SSessionUser = {
      name:true,
      email:true, 
      phone:true,
-     role:true, 
+     role:true,
+     adminRole:true,
      active:true,
      image:true,
      company:{select:{
@@ -54,7 +55,7 @@ export const SAdminUserRow = {
 export type TAdminUserRow = Prisma.UserGetPayload<{select: typeof SAdminUserRow}>
 
 export const SAdminRow = {
-     id:true, email:true, name:true, isEmailVerified:true, isTwoFactorEnabled:true, active:true, 
+     id:true, email:true, name:true, isEmailVerified:true, isTwoFactorEnabled:true, active:true, adminRole:true,
      createdAt:true
 } satisfies Prisma.UserSelect;
 export type TAdminRow = Prisma.UserGetPayload<{select: typeof SAdminRow}>
