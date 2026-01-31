@@ -1,0 +1,198 @@
+enum ECompanyStatus {
+     PENDING
+     VERIFIED
+     REJECTED
+}
+
+model Company {
+     id String @id @default(uuid())
+     name String
+     handle String @unique
+     phone String
+     email String @unique
+
+     foundedYear Int
+     companySize Int
+
+     website String?
+     logoUrl String?
+     slogan String?
+     location Location?
+     legal CompanyLegalInfo?
+
+     // timestamps
+     createdAt DateTime @default(now())
+     updatedAt DateTime @updatedAt
+
+     // category
+     specializations CompanySpecialization[] @relation("company_specialization")
+
+     // relations
+     descriptions Description[]
+     socialMedia SocialMedia?
+     founders Founder[]
+     contactPersons ContactPerson[]
+     reviews Review[]
+     projects Project[]
+     offers Offer[]
+     offerInterests OfferInterest[]
+     catalogs ProductCatalog[]
+     services Service[]
+     documents Document[]
+     verification CompanyVerification?
+     partnerInterests String[] @default([])
+
+     userId String @unique
+     user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+     @@index([handle])
+}
+
+model CompanyLegalInfo {
+     id String @id @default(uuid())
+     legalName String 
+     tradeName String
+     registrationNumber String 
+     tin String
+     dateOfIncorporation DateTime
+     structure String
+     legalDocuments Document[]
+
+     companyId String @unique
+     company Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+}
+
+model CompanyVerification {
+     id String @id @default(uuid())
+     status ECompanyStatus
+     message String
+     isBronzeVerified Boolean @default(false)
+     isSilverVerified Boolean @default(false)
+     isGoldVerified Boolean @default(false)
+
+     createdAt DateTime @default(now())
+     updatedAt DateTime @updatedAt
+
+     companyId String @unique
+     company Company @relation(fields: [companyId], references: [id], onDelete:  Cascade)
+}
+
+model Founder {
+     id String @id @default(uuid())
+     name String
+     title String
+     image String?
+
+     companyId String
+     company Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+}
+
+
+
+model Service {
+     id String @id @default(uuid())
+     name String
+     description String
+
+     // timestamps
+     createdAt DateTime @default(now())
+     updatedAt DateTime @updatedAt
+
+     // relations
+     categoryId String
+     category Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+
+     companyId String
+     company Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+     certifications Document[]
+}
+
+enum EContactPersonLevel {
+     PRIMARY
+     SECONDARY
+}
+
+model ContactPerson {
+     id String @id @default(uuid())
+     level EContactPersonLevel
+     contactPhone String 
+     contactEmail String 
+     name String 
+     role String 
+
+     companyId String 
+     company Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+}
+
+model Review {
+     id String @id @default(uuid())
+     name String 
+     email String 
+     phone String 
+     review String 
+     rating Int 
+     
+     // timestamps
+     createdAt DateTime @default(now())
+     updated DateTime @updatedAt
+
+     companyId String 
+     company Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+}
+
+enum EProjectPhase {
+     EXECUTION
+     COMPLETED
+}
+
+model Project {
+     id String @id @default(uuid())
+     title String
+     description String
+     images String[]
+     phase EProjectPhase
+
+     clientName String
+     clientEmail String 
+     clientPhone String 
+
+     // documents
+
+     createdAt DateTime @default(now())
+     updatedAt DateTime @updatedAt
+     initiatedOn DateTime
+     completedOn DateTime?
+     
+
+     companyId String 
+     company Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+     documents Document[]
+}
+
+model ProductCatalog {
+     id String @id @default(uuid())
+     name String 
+     description String 
+     image String 
+     fileUrl String 
+
+     createdAt DateTime @default(now())
+     updatedAt DateTime @updatedAt
+
+     companyId String 
+     company Company @relation(fields: [companyId], references: [id])
+
+}
+
+model CompanySpecialization {
+     id String @id @default(uuid())
+     name String
+     description String?
+     createdAt DateTime @default(now())
+     updatedAt DateTime @updatedAt
+     
+     categoryId String
+     category Category @relation(fields: [categoryId], references: [id])
+     companies Company [] @relation("company_specialization")
+}

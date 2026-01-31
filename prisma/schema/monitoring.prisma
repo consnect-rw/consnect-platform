@@ -1,0 +1,23 @@
+enum ELogType {
+     AUTH
+     USER_ACTION
+     SYSTEM
+     ERROR
+}
+
+model Log {
+     id String @id @default(uuid ())
+     type ELogType
+     actionByUserId String?
+     actionOnUserId String?
+     userIp String
+     userAgent String?
+     resourceType String
+     resourceId String?
+     institutionId String?
+     changes String?
+     description String?
+     success Boolean @default(true)
+     module String @default("default")
+     createdAt DateTime @default(now())
+}

@@ -4,6 +4,9 @@ import "./globals.css";
 import QueryProvider from "@/context/QueryProvider";
 import { Toaster } from "sonner";
 import { ThemeProvider } from "next-themes";
+import { AuthProvider } from "@/context/AuthContext";
+import { getSessionUser } from "@/lib/actions";
+import { ViewProvider } from "@/context/ViewContext";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -20,14 +23,14 @@ export const metadata: Metadata = {
   description: "Leading in construction tenders and offers in Rwanda",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
   return (
     <html lang="en">
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+      <body className={`${geistSans.variable} ${geistMono.variable} antialiased h-screen m-0 p-0`}>
         <ThemeProvider
           attribute="class"
           defaultTheme="light"
@@ -36,7 +39,9 @@ export default function RootLayout({
         >
           
               <QueryProvider>
-              {children}
+                  <ViewProvider>
+                    {children}
+                  </ViewProvider>
             </QueryProvider>
             <Toaster
               position="bottom-center"

@@ -1,0 +1,39 @@
+model Offer {
+     id String @id @default(uuid())
+     title String 
+     description String
+
+     createdAt DateTime @default(now())
+     updatedAt DateTime @updatedAt
+
+     // relations
+     categoryId String
+     category Category @relation(fields: [categoryId], references: [id])
+
+     companyId String
+     company Company @relation(fields: [companyId], references: [id])
+
+     interests OfferInterest[]
+}
+
+enum EOfferInterestStatus {
+     PENDING
+     ACCEPTED
+     REJECTED
+}
+
+model OfferInterest {
+     id String @id @default(uuid())
+     status EOfferInterestStatus
+     message String
+
+     createdAt DateTime @default(now())
+     updatedAt DateTime @updatedAt
+
+     // relations
+     companyId String
+     company Company @relation(fields: [companyId], references: [id])
+
+     offerId String
+     offer Offer @relation(fields: [offerId], references: [id])
+}

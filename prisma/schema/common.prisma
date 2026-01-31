@@ -1,0 +1,101 @@
+enum ECategoryType {
+     TENDER 
+     SERVICE
+     BLOG
+     COMPANY
+}
+
+model Category {
+     id String @id @default(uuid())
+     name String 
+     type ECategoryType 
+     description String?
+     image String?
+
+     // timestamps 
+     createdAt DateTime @default(now())
+     updatedAt DateTime @updatedAt
+
+     // hierarchy
+     parentId String?
+     parentCategory Category? @relation("parent_category",fields: [parentId], references: [id])
+     // relations
+     services Service[]
+     offers Offer[]
+     blogs Blog[]
+     specializations CompanySpecialization[]
+     subCategories Category[] @relation("parent_category")
+}
+
+model Location {
+     id String @id @default(uuid())
+     country String
+     city String
+     state String?
+     zipCode String?
+     address String?
+
+     companyId String? @unique
+     company Company? @relation(fields: [companyId], references: [id], onDelete: Cascade)
+}
+
+model SocialMedia {
+     id String @id @default(uuid())
+     facebook String?
+     twitter String?
+     linkedin String?
+     instagram String?
+     youtube String?
+
+     companyId String @unique
+     company Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+}
+
+enum EDocumentType {
+     CERTIFICATION 
+     LICENSE
+     OTHER
+}
+
+enum EDocumentModelType {
+     COMPANY
+     TENDER
+     OFFER
+     SERVICE
+     PROJECT
+}
+
+model Document {
+     id String @id @default(uuid())
+     title String
+     description String?
+     docUrl String
+     type EDocumentType
+     modelType EDocumentModelType
+     isVerified Boolean @default(false)
+     message String?
+
+     // relations
+     serviceId String?
+     service Service? @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+
+     companyId String?
+     company Company? @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+     legalInfoId String?
+     legalInfo CompanyLegalInfo? @relation(fields: [legalInfoId], references: [id], onDelete: Cascade)
+
+     projectId String?
+     project Project? @relation(fields: [projectId], references: [id], onDelete: Cascade)
+}
+
+model Description {
+     id String @id @default(uuid())
+     title String
+     description String
+     featuredImage String?
+     rank Int 
+
+     companyId String?
+     company Company? @relation(fields: [companyId], references: [id], onDelete: Cascade)
+}

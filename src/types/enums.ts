@@ -4,3 +4,15 @@ export enum EAspectRatio {
      STANDARD = 4 / 3, // Aspect ratio for standard photography
      PORTRAIT = 2/ 3, // Aspect ratio for standard photography
 }
+
+export enum EDeviceView {
+     MOBILE,
+     TABLET,
+     DESKTOP
+
+}
+
+export enum ESessionFetchMode {
+     SESSION_ONLY,
+     SESSION_AND_USER,
+}

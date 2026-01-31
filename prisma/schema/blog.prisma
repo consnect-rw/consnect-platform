@@ -1,0 +1,64 @@
+enum EBlogStatus {
+     DRAFT
+     PUBLISHED
+     ARCHIVED
+}
+
+model Blog {
+     id String @id @default(uuid())
+     title String
+     description String
+     detailedDescription String
+     featuredImageUrl String
+     images String[]
+     status EBlogStatus @default(DRAFT)
+     tags String[] @default([])
+
+     readingTime          Int?
+
+     createdAt DateTime @default(now())
+     updatedAt DateTime @updatedAt
+     publishedAt DateTime? 
+
+     categoryId String
+     category Category @relation(fields: [categoryId], references: [id])
+     authorId String
+     author User @relation(fields: [authorId], references: [id])
+     comments Comment[]
+     likes BlogLike[]
+     views BlogView[]
+}
+
+model Comment {
+     id String @id @default(uuid())
+     content String
+     createdAt DateTime @default(now())
+     updatedAt DateTime @updatedAt
+
+     blogId String 
+     blog Blog @relation(fields: [blogId], references: [id])
+
+     userId String
+     user User @relation(fields: [userId], references: [id])
+}
+
+model BlogLike {
+     userId String
+     blogId String
+
+     user User @relation(fields: [userId], references: [id])
+     blog Blog @relation(fields: [blogId], references: [id])
+
+     @@id([userId, blogId]) // ✅ Prevents duplicates at DB level
+}
+
+model BlogView {
+     userId String
+     blogId String
+     createdAt DateTime @default(now())
+
+     user User @relation(fields: [userId], references: [id])
+     blog Blog @relation(fields: [blogId], references: [id])
+
+     @@id([userId, blogId]) // ✅ Prevents duplicates at DB level
+}
