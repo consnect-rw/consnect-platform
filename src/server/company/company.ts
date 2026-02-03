@@ -70,10 +70,25 @@ export const fetchCompanyById = cache(async <T extends Prisma.CompanySelect>(id:
 
 export const fetchCompanyByHandle = cache(async <T extends Prisma.CompanySelect>(handle:string, selectType: T): Promise<Prisma.CompanyGetPayload<{select:T}> | null> => {
      try {
-          const res= await prisma.company.findUnique({where:{handle},select: selectType});
+          // First try: exact match with the provided handle
+          let res = await prisma.company.findUnique({where:{handle},select: selectType});
+          
+          // Second try: case-insensitive search if exact match fails
+          if (!res) {
+               res = await prisma.company.findFirst({
+                    where: {
+                         handle: {
+                              equals: handle,
+                              mode: 'insensitive'
+                         }
+                    },
+                    select: selectType
+               });
+          }
+          
           return res;
      } catch (error) {
-          console.log(`Error fetching Company data for id: ${handle}`, error);
+          console.log(`Error fetching Company data for handle: ${handle}`, error);
           return null;
      }
 })

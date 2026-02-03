@@ -22,3 +22,22 @@ export const capitalize = (text: string) => text.charAt(0).toUpperCase() + text.
 
 // Generate random ID (optional for frontend temp objects)
 export const generateId = () => Math.random().toString(36).substring(2, 10);
+
+// Generate URL-safe slug from text (for company handles, etc.)
+export const generateSlug = (text: string): string => {
+  return text
+    .toLowerCase() // Convert to lowercase
+    .trim() // Remove leading/trailing spaces
+    .replace(/[^\w\s-]/g, '') // Remove special characters except spaces and hyphens
+    .replace(/[\s_]+/g, '-') // Replace spaces and underscores with hyphens
+    .replace(/^-+|-+$/g, ''); // Remove leading/trailing hyphens
+};
+
+// Decode URL-encoded handle (for matching database values)
+export const decodeHandle = (handle: string): string => {
+  try {
+    return decodeURIComponent(handle);
+  } catch {
+    return handle;
+  }
+};
