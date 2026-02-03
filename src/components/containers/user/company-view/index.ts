@@ -1,0 +1,12 @@
+export { CollapsibleSection } from "./CollapsibleSection";
+export { AdminContactPersonCard } from "./AdminContactPersonCard";
+export { BasicInformationSection } from "./BasicInformationSection";
+export { DescriptionsSection } from "./DescriptionsSection";
+export { FoundersSection } from "./FoundersSection";
+export { ContactPersonsSection } from "./ContactPersonsSection";
+export { ServicesSection } from "./ServicesSection";
+export { LegalDocumentsSection } from "./LegalDocumentsSection";
+export { ProjectsSection } from "./ProjectsSection";
+export { CatalogsSection } from "./CatalogsSection";
+export { SpecializationsSection } from "./SpecializationsSection";
+export { ReviewsSection } from "./ReviewsSection";

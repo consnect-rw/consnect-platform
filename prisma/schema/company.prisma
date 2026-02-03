@@ -120,6 +120,11 @@ model ContactPerson {
      contactEmail String 
      name String 
      role String 
+     experienceYears Int @default(1)
+     expertiseAreas String[]
+     regNumber String?
+     certificates Document[]
+     isLicenseVerified Boolean @default(false)
 
      companyId String 
      company Company @relation(fields: [companyId], references: [id], onDelete: Cascade)

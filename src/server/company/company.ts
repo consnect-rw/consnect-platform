@@ -46,7 +46,7 @@ export async function deleteCompany (id:string) {
 
 export const fetchCompanys = cache(async <T extends Prisma.CompanySelect>(
           selectType: T, search?: Prisma.CompanyWhereInput, take:number = 20, skip:number = 0,
-          orderBy: Prisma.CompanyOrderByWithRelationInput | Prisma.CompanyOrderByWithRelationInput[]  = { createdAt: 'asc' }
+          orderBy: Prisma.CompanyOrderByWithRelationInput | Prisma.CompanyOrderByWithRelationInput[]  = { createdAt: 'desc' }
      ):Promise<{data: Prisma.CompanyGetPayload<{select: T}>[], pagination: {total:number}}> => {
      try {
           const res = await prisma.company.findMany({where: search, take, skip, select: selectType, orderBy});

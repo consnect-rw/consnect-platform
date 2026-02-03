@@ -118,6 +118,7 @@ export type TAdminCompanyCard = Prisma.CompanyGetPayload<{select: typeof SAdminC
 
 export const SCompanyCard = {
      id:true, handle:true, name:true, website:true, logoUrl:true, slogan:true, 
+     verification: {select: {isBronzeVerified:true, isGoldVerified:true, isSilverVerified:true, status:true}},
      descriptions:{select:{description:true}, where:{title: "Overview"}},
 } satisfies Prisma.CompanySelect;
 export type TCompanyCard = Prisma.CompanyGetPayload<{select: typeof SCompanyCard}>
@@ -129,9 +130,11 @@ export const SCompanyPage = {
      socialMedia:{select:{facebook:true, twitter:true, linkedin:true, instagram:true, youtube:true}},
      descriptions: {select:{title:true, description:true}},
      founders: {select:{image:true, name:true, title:true}},
-     contactPersons:{select:{name:true, contactPhone:true, contactEmail:true, role:true, }},
+     contactPersons:{select:{name:true, contactPhone:true, contactEmail:true, role:true, regNumber:true, }},
      projects:{select:{title:true, clientName:true, phase:true, images:true,  description:true}},
-     catalogs:{select:{name:true, description:true, image:true, fileUrl:true}}
+     catalogs:{select:{name:true, description:true, image:true, fileUrl:true}},
+     verification: {select: {status:true, isBronzeVerified:true, isGoldVerified:true, isSilverVerified:true}},
+     reviews: {select: SReview}
 } satisfies Prisma.CompanySelect;
 export type TCompanyPage = Prisma.CompanyGetPayload<{select: typeof SCompanyPage}>
 

@@ -63,6 +63,7 @@ enum EDocumentModelType {
      OFFER
      SERVICE
      PROJECT
+     CONTACT_PERSON
 }
 
 model Document {
@@ -87,6 +88,9 @@ model Document {
 
      projectId String?
      project Project? @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+     contactPersonId String?
+     contactPerson ContactPerson? @relation(fields: [contactPersonId], references: [id], onDelete: Cascade)
 }
 
 model Description {
