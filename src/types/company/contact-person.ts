@@ -1,4 +1,5 @@
 import { Prisma } from "@prisma/client"
+import { SDocument } from "../common/document"
 
 export interface IDefaultContactPerson {
      id:string
@@ -32,7 +33,8 @@ export interface IContactPersonUpdate {
 }
 
 export const SContactPerson = {
-     id:true, level:true, contactEmail:true, contactPhone:true, name:true, role:true
+     id:true, level:true, contactEmail:true, contactPhone:true, name:true, role:true,
+     regNumber: true, experienceYears: true, expertiseAreas: true, certificates: {select: SDocument}
 } satisfies Prisma.ContactPersonSelect;
 
 export type TContactPerson = Prisma.ContactPersonGetPayload<{select: typeof SContactPerson}>

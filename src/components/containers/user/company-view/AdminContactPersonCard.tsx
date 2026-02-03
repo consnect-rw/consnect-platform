@@ -1,59 +1,11 @@
 "use client";
 
-import CompanyRequiredNotice from "@/components/containers/user/CompanyRequireNotice";
-import { ContactPersonFormToggleBtn } from "@/components/forms/company/ContactPersonForm";
-import { useAuth } from "@/hooks/useAuth";
-import queryClient from "@/lib/queryClient";
-import { deleteContactPerson, fetchContactPersons } from "@/server/company/contact-person";
-import { SContactPerson, TContactPerson } from "@/types/company/contact-person";
-import { useQuery } from "@tanstack/react-query";
-import { Pencil, Plus, Trash2, Eye, X, Mail, Phone, FileText, Clock, Award, ExternalLink, Shield } from "lucide-react";
-import { toast } from "sonner";
+import { TContactPerson } from "@/types/company/contact-person";
 import { useState } from "react";
+import { Eye, X, Mail, Phone, FileText, Clock, Award, ExternalLink, Shield } from "lucide-react";
 
-export default function CompanyContactPersonForm () {
-     const {user} = useAuth();
-     const {data:contactPersonsData, isLoading} = useQuery({
-          queryKey: ["company-contact-persons", user?.company?.id],
-          queryFn: () => user?.company ? fetchContactPersons(SContactPerson, {company:{id: user.company.id}}) : null
-     });
-     const contactPersons = contactPersonsData?.data ?? [];
-     if (!user?.company) {
-          return (
-               <CompanyRequiredNotice message="Please first create your company to add contact persons!"/>
-          );
-     }
-     
-     return (
-          <div className="w-full flex flex-col gap-4">
-               <div className="w-full flex items-center justify-end">
-                    <ContactPersonFormToggleBtn className={"flex items-center gap-4 py-2 px-4 bg-linear-to-bl from-yellow-600 to-amber-600 text-white cursor-pointer rounded-lg"} title="Add New contact Person" name="Contact Person" icon={<Plus className="w-5 h-5" />} companyId={user.company.id} />
-               </div>
-               {
-                    contactPersons.length === 0 ? <p className="text-gray-600 font-medium">No contact persons added yet</p>: 
-                    <div className="w-full grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
-                         {
-                              contactPersons.map(p => <ContactPersonCard key={`company-founder-${p.id}`} person={p} />)
-                         }
-                    </div>
-               }
-          </div>
-     )
-}
-
-const ContactPersonCard = ({ person }: { person: TContactPerson }) => {
+export const AdminContactPersonCard = ({ contact }: { contact: TContactPerson }) => {
   const [showDialog, setShowDialog] = useState(false);
-
-  const handleDelete = async() => {
-    if(confirm("Are you sure you want to delete the contact person")){
-      const res = await deleteContactPerson(person.id);
-      if(!res) return toast.error("Error deleting contact person");
-      queryClient.invalidateQueries();
-      return toast.success("Deleted contact person successfully!")
-    }else {
-      return;
-    }
-  }
 
   const getLevelColor = (level: string) => {
     switch(level) {
@@ -74,7 +26,7 @@ const ContactPersonCard = ({ person }: { person: TContactPerson }) => {
   };
 
   // Check if person is IER certified (has registration number)
-  const isIERCertified = !!person.regNumber;
+  const isIERCertified = !!contact.regNumber;
 
   return (
     <>
@@ -84,16 +36,16 @@ const ContactPersonCard = ({ person }: { person: TContactPerson }) => {
           <div className="flex items-start gap-3">
             {/* Avatar */}
             <div className="w-12 h-12 bg-linear-to-br from-yellow-400 to-yellow-600 rounded-lg flex items-center justify-center text-lg font-bold text-white shrink-0 shadow-sm">
-              {person.name.charAt(0).toUpperCase()}
+              {contact.name.charAt(0).toUpperCase()}
             </div>
             
             {/* Name and Role */}
             <div className="flex-1 min-w-0">
-              <h3 className="font-bold text-gray-900 text-base truncate">{person.name}</h3>
-              <p className="text-sm text-gray-600 truncate">{person.role}</p>
+              <h3 className="font-bold text-gray-900 text-base truncate">{contact.name}</h3>
+              <p className="text-sm text-gray-600 truncate">{contact.role}</p>
               <div className="flex items-center gap-2 mt-1">
-                <span className={`text-xs font-semibold ${getLevelTextColor(person.level)} uppercase`}>
-                  {person.level}
+                <span className={`text-xs font-semibold ${getLevelTextColor(contact.level)} uppercase`}>
+                  {contact.level}
                 </span>
                 {isIERCertified && (
                   <span className="flex items-center gap-1 text-xs font-medium text-green-600 bg-green-50 px-2 py-0.5 rounded-full">
@@ -110,36 +62,22 @@ const ContactPersonCard = ({ person }: { person: TContactPerson }) => {
         <div className="px-4 py-3 space-y-2">
           <div className="flex items-center gap-2 text-sm text-gray-600">
             <Mail className="w-4 h-4 text-gray-400" />
-            <span className="truncate">{person.contactEmail}</span>
+            <span className="truncate">{contact.contactEmail}</span>
           </div>
           <div className="flex items-center gap-2 text-sm text-gray-600">
             <Phone className="w-4 h-4 text-gray-400" />
-            <span>{person.contactPhone}</span>
+            <span>{contact.contactPhone}</span>
           </div>
         </div>
 
-        {/* Card Footer - Actions */}
-        <div className="px-4 py-3 bg-gray-50 border-t border-gray-100 flex gap-2">
+        {/* Card Footer - View Action */}
+        <div className="px-4 py-3 bg-gray-50 border-t border-gray-100">
           <button
             onClick={() => setShowDialog(true)}
-            className="flex-1 flex items-center justify-center gap-2 px-3 py-2 bg-linear-to-r from-yellow-500 to-yellow-600 hover:from-yellow-600 hover:to-yellow-700 text-white text-sm font-medium rounded-lg transition-all duration-200"
+            className="w-full flex items-center justify-center gap-2 px-3 py-2 bg-linear-to-r from-yellow-500 to-yellow-600 hover:from-yellow-600 hover:to-yellow-700 text-white text-sm font-medium rounded-lg transition-all duration-200"
           >
             <Eye className="w-4 h-4" />
-            View
-          </button>
-          <ContactPersonFormToggleBtn 
-            className="flex items-center justify-center gap-2 px-3 py-2 bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 text-sm font-medium rounded-lg transition-all duration-200"
-            title="Edit contact person"
-            name=""
-            companyId=""
-            person={person}
-            icon={<Pencil className="w-4 h-4" />}
-          />
-          <button
-            onClick={handleDelete}
-            className="flex items-center justify-center gap-2 px-3 py-2 bg-white border border-red-300 hover:bg-red-50 text-red-600 text-sm font-medium rounded-lg transition-all duration-200"
-          >
-            <Trash2 className="w-4 h-4" />
+            View Details
           </button>
         </div>
       </div>
@@ -156,14 +94,14 @@ const ContactPersonCard = ({ person }: { person: TContactPerson }) => {
               <div className="relative flex items-start justify-between">
                 <div className="flex items-center gap-4">
                   <div className="w-16 h-16 bg-linear-to-br from-yellow-400 to-yellow-600 rounded-xl flex items-center justify-center text-2xl font-bold text-white shadow-lg">
-                    {person.name.charAt(0).toUpperCase()}
+                    {contact.name.charAt(0).toUpperCase()}
                   </div>
                   <div>
-                    <h2 className="text-2xl font-bold text-white">{person.name}</h2>
-                    <p className="text-yellow-400 font-medium">{person.role}</p>
+                    <h2 className="text-2xl font-bold text-white">{contact.name}</h2>
+                    <p className="text-yellow-400 font-medium">{contact.role}</p>
                     <div className="flex items-center gap-2 mt-1">
-                      <span className={`${getLevelColor(person.level)} text-white text-xs font-bold px-2 py-1 rounded-full`}>
-                        {person.level}
+                      <span className={`${getLevelColor(contact.level)} text-white text-xs font-bold px-2 py-1 rounded-full`}>
+                        {contact.level}
                       </span>
                       {isIERCertified && (
                         <span className="flex items-center gap-1 text-xs font-medium text-green-400 bg-green-900/30 px-2 py-1 rounded-full">
@@ -195,11 +133,11 @@ const ContactPersonCard = ({ person }: { person: TContactPerson }) => {
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="p-4 bg-gray-50 rounded-lg border border-gray-200">
                       <p className="text-xs font-semibold text-gray-500 uppercase mb-1">Email</p>
-                      <p className="text-sm font-medium text-gray-900">{person.contactEmail}</p>
+                      <p className="text-sm font-medium text-gray-900">{contact.contactEmail}</p>
                     </div>
                     <div className="p-4 bg-gray-50 rounded-lg border border-gray-200">
                       <p className="text-xs font-semibold text-gray-500 uppercase mb-1">Phone</p>
-                      <p className="text-sm font-medium text-gray-900">{person.contactPhone}</p>
+                      <p className="text-sm font-medium text-gray-900">{contact.contactPhone}</p>
                     </div>
                   </div>
                 </div>
@@ -215,7 +153,7 @@ const ContactPersonCard = ({ person }: { person: TContactPerson }) => {
                       <div className="flex items-center justify-between mb-3">
                         <div>
                           <p className="text-xs font-semibold text-green-700 uppercase mb-1">Registration Number</p>
-                          <p className="text-lg font-mono font-bold text-green-900">{person.regNumber}</p>
+                          <p className="text-lg font-mono font-bold text-green-900">{contact.regNumber}</p>
                         </div>
                         <div className="w-12 h-12 bg-green-600 rounded-full flex items-center justify-center">
                           <Shield className="w-6 h-6 text-white" />
@@ -223,11 +161,11 @@ const ContactPersonCard = ({ person }: { person: TContactPerson }) => {
                       </div>
                       
                       {/* License Documents */}
-                      {person.certificates && person.certificates.length > 0 && (
+                      {contact.certificates && contact.certificates.length > 0 && (
                         <div className="mt-4 pt-4 border-t border-green-200">
                           <p className="text-xs font-semibold text-green-700 uppercase mb-2">License Documents</p>
                           <div className="space-y-2">
-                            {person.certificates.map((cert) => (
+                            {contact.certificates.map((cert) => (
                               <a
                                 key={cert.id}
                                 href={cert.docUrl}
@@ -255,14 +193,14 @@ const ContactPersonCard = ({ person }: { person: TContactPerson }) => {
                 )}
 
                 {/* Professional Information */}
-                {(person.experienceYears || (person.expertiseAreas && person.expertiseAreas.length > 0)) && (
+                {(contact.experienceYears || (contact.expertiseAreas && contact.expertiseAreas.length > 0)) && (
                   <div>
                     <h3 className="text-lg font-bold text-gray-900 mb-3 flex items-center gap-2">
                       <Award className="w-5 h-5 text-yellow-600" />
                       Professional Information
                     </h3>
                     <div className="space-y-4">
-                      {person.experienceYears && (
+                      {contact.experienceYears && (
                         <div className="p-4 bg-gray-50 rounded-lg border border-gray-200">
                           <div className="flex items-center gap-3">
                             <div className="w-12 h-12 bg-linear-to-br from-yellow-400 to-yellow-600 rounded-lg flex items-center justify-center">
@@ -270,17 +208,17 @@ const ContactPersonCard = ({ person }: { person: TContactPerson }) => {
                             </div>
                             <div>
                               <p className="text-xs font-semibold text-gray-500 uppercase">Experience</p>
-                              <p className="text-xl font-bold text-gray-900">{person.experienceYears} Years</p>
+                              <p className="text-xl font-bold text-gray-900">{contact.experienceYears} Years</p>
                             </div>
                           </div>
                         </div>
                       )}
 
-                      {person.expertiseAreas && person.expertiseAreas.length > 0 && (
+                      {contact.expertiseAreas && contact.expertiseAreas.length > 0 && (
                         <div className="p-4 bg-yellow-50 rounded-lg border border-yellow-200">
                           <p className="text-xs font-semibold text-yellow-800 uppercase mb-3">Expertise Areas</p>
                           <div className="flex flex-wrap gap-2">
-                            {person.expertiseAreas.map((area, index) => (
+                            {contact.expertiseAreas.map((area, index) => (
                               <span
                                 key={index}
                                 className="px-3 py-1.5 bg-white border border-yellow-300 text-gray-800 rounded-lg text-sm font-medium shadow-sm hover:bg-yellow-100 transition-colors"
@@ -298,25 +236,10 @@ const ContactPersonCard = ({ person }: { person: TContactPerson }) => {
             </div>
 
             {/* Dialog Footer */}
-            <div className="px-6 py-4 bg-gray-50 border-t border-gray-200 flex gap-3">
-              <ContactPersonFormToggleBtn 
-                className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 bg-linear-to-r from-gray-100 to-gray-200 hover:from-gray-200 hover:to-gray-300 text-gray-800 font-medium rounded-lg transition-all duration-200"
-                title="Edit contact person"
-                name="Edit"
-                companyId=""
-                person={person}
-                icon={<Pencil className="w-4 h-4" />}
-              />
-              <button
-                onClick={handleDelete}
-                className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 bg-linear-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white font-medium rounded-lg transition-all duration-200"
-              >
-                <Trash2 className="w-4 h-4" />
-                Delete
-              </button>
+            <div className="px-6 py-4 bg-gray-50 border-t border-gray-200">
               <button
                 onClick={() => setShowDialog(false)}
-                className="px-4 py-2.5 bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 font-medium rounded-lg transition-all duration-200"
+                className="w-full px-4 py-2.5 bg-gray-200 hover:bg-gray-300 text-gray-700 font-medium rounded-lg transition-all duration-200"
               >
                 Close
               </button>

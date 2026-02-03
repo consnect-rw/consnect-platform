@@ -46,7 +46,7 @@ export async function deleteBlog (id:string) {
 
 export const fetchBlogs = cache(async <T extends Prisma.BlogSelect>(
           selectType: T, search?: Prisma.BlogWhereInput, take:number = 20, skip:number = 0,
-          orderBy: Prisma.BlogOrderByWithRelationInput | Prisma.BlogOrderByWithRelationInput[]  = { createdAt: 'asc' }
+          orderBy: Prisma.BlogOrderByWithRelationInput | Prisma.BlogOrderByWithRelationInput[]  = { createdAt: 'desc' }
      ):Promise<{data: Prisma.BlogGetPayload<{select: T}>[], pagination: {total:number}}> => {
      try {
           const res = await prisma.blog.findMany({where: search, take, skip, select: selectType, orderBy});

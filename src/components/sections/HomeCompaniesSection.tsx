@@ -22,7 +22,7 @@ export async function HomeCompaniesSection() {
   }
 
   return (
-    <section className="py-20 bg-gradient-to-b from-gray-50 to-white relative overflow-hidden">
+    <section className="py-20 bg-linear-to-b from-gray-50 to-white relative overflow-hidden">
       {/* Decorative Background Elements */}
       <div className="absolute inset-0 opacity-30">
         <div className="absolute top-20 left-10 w-72 h-72 bg-yellow-200 rounded-full blur-3xl"></div>
@@ -108,7 +108,7 @@ export async function HomeCompaniesSection() {
       </div>
       {/* CTA Section */}
         <div className="relative mt-16">
-          <div className="bg-gradient-to-br from-black via-gray-950 to-black px-8 lg:px-12 py-12 lg:py-16 text-center relative overflow-hidden">
+          <div className="bg-linear-to-br from-black via-gray-950 to-black px-8 lg:px-12 py-12 lg:py-16 text-center relative overflow-hidden">
             {/* Decorative Elements */}
             <div className="absolute inset-0 opacity-10">
               <div className="absolute top-0 right-0 w-64 h-64 bg-yellow-400 rounded-full blur-3xl"></div>
