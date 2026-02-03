@@ -36,7 +36,11 @@ export default async function CompanyPage({
 }: {
   params: Promise<{ handle: string }>;
 }) {
-  const { handle } = await params;
+  const { handle: rawHandle } = await params;
+  
+  // Decode URL-encoded handle (e.g., "A%26U-ARCHITECTS-Ltd" -> "A&U-ARCHITECTS-Ltd")
+  const handle = decodeURIComponent(rawHandle);
+  
   const company = await fetchCompanyByHandle(handle, SCompanyPage);
   
   if (!company) {
