@@ -1,64 +1,3 @@
-// import { SocialMediaLinks } from "@/lib/data/social-media";
-// import Image from "next/image";
-// import Link from "next/link";
-// import { FaFacebook, FaInstagram, FaWhatsapp, FaXTwitter } from "react-icons/fa6";
-
-// export default function Footer () {
-//      return (
-//           <footer className="w-full py-8 bg-black text-white flex flex-col gap-8">
-//                <div className="w-full max-w-7xl mx-auto flex items-center justify-between flex-wrap px-2 lg:px-0">
-//                     <Image src={"/logo/consnect-rb.png"} width={200} height={100} className="w-24 rounded-lg object-cover bg-gray-200" alt="consnect"  />
-//                     <div className="flex items-center gap-4">
-//                          <Link target="_blank" className="text-gray-200" title="Consnect Facebook"  href={SocialMediaLinks.facebook}><FaFacebook size={22} /></Link>
-//                          <Link target="_blank" className="text-gray-200" title="Consnect Twitter" href={SocialMediaLinks.twitter}><FaXTwitter size={22} /></Link>
-//                          <Link target="_blank" className="text-gray-200" title="Consnect Instagram" href={SocialMediaLinks.instagram}><FaInstagram size={22} /></Link>
-//                          <Link target="_blank" className="text-gray-200" title="whatsapp channel" href={SocialMediaLinks.whatsappChannel}><FaWhatsapp size={22} /></Link>
-//                     </div>
-//                </div>
-//                <div className="w-full max-w-7xl mx-auto grid md:grid-cols-2 lg:grid-cols-3 gap-8 px-2 lg:px-0">
-//                     <div className="w-full flex flex-col gap-4">
-//                          <h4 className="text-xl font-bold text-white">Company</h4>
-//                          <div className="flex flex-col gap-2 w-19/20 mx-auto">
-//                               <FooterLink name="About" href="/about" />
-//                               <FooterLink name="FAQS" href="/faqs" />
-//                               <FooterLink name="How To" href="/get-started" />
-//                          </div>
-//                     </div>
-//                     <div className="w-full flex flex-col gap-4">
-//                          <h4 className="text-xl font-bold text-white">Resources</h4>
-//                          <div className="flex flex-col gap-2 w-19/20 mx-auto">
-//                               <FooterLink name="Tenders" href="/tender" />
-//                               <FooterLink name="Offers" href="/offer" />
-//                               <FooterLink name="Companies" href="/company" />
-//                               <FooterLink name="Register " href="/auth/register" />
-//                          </div>
-//                     </div>
-//                     <div className="w-full flex flex-col gap-4">
-//                          <h4 className="text-xl font-bold text-white">Address</h4>
-//                          <div className="flex flex-col gap-2 w-19/20 mx-auto">
-//                               <FooterLink name="Contact Us" href="/contact" />
-//                               <span className="text-gray-200 font-medium text-sm">Location: Rwanda, Kigali - Kimironko</span>
-//                               <span className="text-gray-200 font-medium text-sm">Phone: +250 789 407 079</span>
-//                               <span className="text-gray-200 font-medium text-sm">Email: info@consnect.rw</span>
-//                          </div>
-//                     </div>
-//                </div>
-//                <div className="w-full max-w-7xl mx-auto flex flex-col lg:flex-row gap-4 items-center justify-center lg:justify-between border-t border-gray-600/50 pt-8">
-//                     <p className="text-gray-200 font-medium text-sm">All rights reserved &copy; {new Date().getFullYear()}</p>
-//                     <div className="flex items-center justify-center gap-4">
-//                          <FooterLink name="Terms & Conditions"  href="/terms"/>
-//                          <FooterLink name="Privacy Policy"  href="/privacy"/>
-//                     </div>
-//                </div>
-//           </footer>
-//      )
-// }
-
-// const FooterLink = ({name, href} : {name:string, href: string}) => (
-//      <Link href={href} className="text-gray-200 font-medium text-sm hover:text-white transition-all duration-200">{name}</Link>
-// )
-
-
 import { SocialMediaLinks } from "@/lib/data/social-media";
 import Image from "next/image";
 import Link from "next/link";
@@ -78,7 +17,7 @@ import {
 
 export default function Footer() {
   return (
-    <footer className="relative w-full bg-gradient-to-br from-black via-gray-950 to-black text-white overflow-hidden">
+    <footer className="relative w-full bg-linear-to-br from-black via-gray-950 to-black text-white overflow-hidden">
       {/* Decorative Background Elements */}
       <div className="absolute inset-0 overflow-hidden opacity-5">
         <div className="absolute top-0 right-0 w-96 h-96 bg-yellow-400 rounded-full blur-3xl"></div>
@@ -203,8 +142,8 @@ export default function Footer() {
               <div className="flex flex-col gap-3">
                 <FooterLink name="Browse Tenders" href="/tender" />
                 <FooterLink name="View Offers" href="/offer" />
-                <FooterLink name="Companies" href="/company" />
-                <FooterLink name="Blog & Insights" href="/blogs" />
+                <FooterLink name="Companies" href="/companies" />
+                <FooterLink name="Blog & Insights" href="/blog" />
               </div>
             </div>
 
@@ -216,9 +155,9 @@ export default function Footer() {
               </h4>
               <div className="flex flex-col gap-3">
                 <FooterLink name="Register Company" href="/auth/register" />
-                <FooterLink name="Post a Tender" href="/tender/create" />
-                <FooterLink name="Create Offer" href="/offer/create" />
-                <FooterLink name="Pricing" href="/pricing" />
+                <FooterLink name="Post a Tender" href="/tender" />
+                <FooterLink name="Create Offer" href="/offer" />
+                <FooterLink name="Pricing" href="/#" />
               </div>
             </div>
 
@@ -230,7 +169,7 @@ export default function Footer() {
               </h4>
               <div className="flex flex-col gap-4">
                 <div className="flex items-start gap-3">
-                  <MapPin className="w-5 h-5 text-yellow-400 flex-shrink-0 mt-0.5" />
+                  <MapPin className="w-5 h-5 text-yellow-400 shrink-0 mt-0.5" />
                   <div>
                     <p className="text-gray-300 font-medium text-sm leading-relaxed">
                       Kigali, Rwanda
@@ -241,7 +180,7 @@ export default function Footer() {
                 </div>
 
                 <div className="flex items-center gap-3">
-                  <Phone className="w-5 h-5 text-yellow-400 flex-shrink-0" />
+                  <Phone className="w-5 h-5 text-yellow-400 shrink-0" />
                   <a
                     href="tel:+250789407079"
                     className="text-gray-300 hover:text-yellow-400 font-medium text-sm transition-colors"
@@ -251,7 +190,7 @@ export default function Footer() {
                 </div>
 
                 <div className="flex items-center gap-3">
-                  <Mail className="w-5 h-5 text-yellow-400 flex-shrink-0" />
+                  <Mail className="w-5 h-5 text-yellow-400 shrink-0" />
                   <a
                     href="mailto:info@consnect.com"
                     className="text-gray-300 hover:text-yellow-400 font-medium text-sm transition-colors"
@@ -266,7 +205,7 @@ export default function Footer() {
 
         {/* Newsletter Section */}
         <div className="w-full max-w-7xl mx-auto px-6 py-8 border-t border-white/10">
-          <div className="bg-gradient-to-r from-yellow-400 to-yellow-500 rounded-2xl p-8 text-center">
+          <div className="bg-linear-to-r from-yellow-400 to-yellow-500 rounded-2xl p-8 text-center">
             <div className="max-w-2xl mx-auto">
               <h3 className="text-2xl md:text-3xl font-black text-gray-900 mb-3">
                 Stay Updated
