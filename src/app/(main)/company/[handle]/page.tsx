@@ -21,6 +21,7 @@ import {
   FileText,
   Briefcase,
   Shield,
+  Wrench,
 } from "lucide-react";
 import { fetchCompanyByHandle } from "@/server/company/company";
 import { SCompanyPage } from "@/types/company/company";
@@ -30,6 +31,7 @@ import { ShareBtn } from "@/components/buttons/ShareBtn";
 import { CompanyVerificationBadge } from "@/components/ui/badges/CompanyVerificationBadge";
 import { ConsnectBadge } from "@/components/ui/badges/ConsnectBadge";
 import { ReviewForm } from "@/components/forms/company/ReviewForm";
+import { ServiceCard } from "@/components/cards/ServiceCard";
 
 export default async function CompanyPage({
   params,
@@ -37,8 +39,6 @@ export default async function CompanyPage({
   params: Promise<{ handle: string }>;
 }) {
   const { handle: rawHandle } = await params;
-  
-  // Decode URL-encoded handle (e.g., "A%26U-ARCHITECTS-Ltd" -> "A&U-ARCHITECTS-Ltd")
   const handle = decodeURIComponent(rawHandle);
   
   const company = await fetchCompanyByHandle(handle, SCompanyPage);
@@ -153,6 +153,32 @@ export default async function CompanyPage({
                   className="inline-flex items-center gap-2 px-6 py-3 bg-white/10 text-white font-bold rounded-lg hover:bg-white/20 transition-all border border-white/20"
                 />
               </div>
+
+              {/* Specializations */}
+              {company.specializations && company.specializations.length > 0 && (
+                <div className="pt-6 border-t border-gray-700">
+                  <h3 className="text-sm font-bold text-gray-400 mb-3 uppercase tracking-wider">
+                    Specializations
+                  </h3>
+                  <div className="flex flex-wrap gap-2">
+                    {company.specializations.map((spec, i) => (
+                      <div
+                        key={i}
+                        className="px-4 py-2 bg-white/10 border border-white/20 rounded-lg hover:bg-white/20 transition-colors"
+                      >
+                        <span className="text-sm font-bold text-white">
+                          {spec.name}
+                        </span>
+                        {spec.category && (
+                          <span className="text-xs text-gray-400 ml-2">
+                            • {spec.category.name}
+                          </span>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -535,6 +561,25 @@ export default async function CompanyPage({
                 </div>
               </div>
             ))}
+          </div>
+        </section>
+      )}
+
+      {/* ================= SERVICES ================= */}
+      {company.services.length > 0 && (
+        <section className="bg-gray-50 border-y-2 border-gray-200">
+          <div className="max-w-7xl mx-auto px-6 py-16">
+            <h2 className="text-3xl font-black text-gray-900 mb-8 flex items-center gap-3">
+              <div className="w-12 h-12 bg-yellow-400 rounded-xl flex items-center justify-center">
+                <Wrench className="w-6 h-6 text-gray-900" />
+              </div>
+              Our Services
+            </h2>
+            <div className="grid md:grid-cols-2 gap-6">
+              {company.services.map((service) => (
+                <ServiceCard key={service.id} service={service} />
+              ))}
+            </div>
           </div>
         </section>
       )}

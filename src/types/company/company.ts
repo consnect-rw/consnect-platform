@@ -134,7 +134,9 @@ export const SCompanyPage = {
      projects:{select:{title:true, clientName:true, phase:true, images:true,  description:true}},
      catalogs:{select:{name:true, description:true, image:true, fileUrl:true}},
      verification: {select: {status:true, isBronzeVerified:true, isGoldVerified:true, isSilverVerified:true}},
-     reviews: {select: SReview}
+     reviews: {select: SReview},
+     services: {select: SService},
+     specializations:{select:{name:true, category:{select: {name:true}}}}
 } satisfies Prisma.CompanySelect;
 export type TCompanyPage = Prisma.CompanyGetPayload<{select: typeof SCompanyPage}>
 
