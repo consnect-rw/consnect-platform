@@ -1,79 +1,81 @@
 "use client";
 
-import { AdminUsersContainer } from "@/components/containers/admin/AdminUsersContainer";
+import { UserFormToggleBtn } from "@/components/forms/auth/UserForm";
 import Pagination from "@/components/ui/Pagination";
 import { fetchUsers } from "@/server/auth/user";
-import { SAdminUserRow } from "@/types/auth/user";
+import { SAdminRow } from "@/types/auth/user";
 import { EUserRole } from "@prisma/client";
 import { useQuery } from "@tanstack/react-query";
+import { Plus, Search, ShieldUser } from "lucide-react";
 import { useState } from "react";
-import { Search, Users} from "lucide-react";
+import { AdminsContainer } from "./AdminsContainer";
 
-export default function AdminUsersPage() {
-  const perPage = 30;
-  const [page, setPage] = useState(1);
-  const [searchItem, setSearchItem] = useState("");
-  
-  const { data: usersData, isLoading } = useQuery({
-    queryKey: ["admin-users", page, searchItem],
-    queryFn: () =>
-      fetchUsers(
-        SAdminUserRow,
-        {
-          ...(searchItem
-            ? {
-                OR: [
-                  { name: { contains: searchItem } },
-                  { email: { contains: searchItem } },
-                  { phone: { contains: searchItem } },
-                  { company: { name: { contains: searchItem } } },
-                ],
-              }
-            : {}),
-          role: EUserRole.USER,
-        },
-        perPage,
-        (page - 1) * perPage
-      ),
-  });
+export default function AdminsView () {
+     const perPage = 30;
+     const [page, setPage] = useState(1);
+     const [searchItem, setSearchItem] = useState("");
+     
+     const { data: usersData, isLoading } = useQuery({
+     queryKey: ["admin-admins", page, searchItem],
+     queryFn: () =>
+          fetchUsers(
+          SAdminRow,
+          {
+               ...(searchItem
+               ? {
+                    OR: [
+                    { name: { contains: searchItem } },
+                    { email: { contains: searchItem } },
+                    { phone: { contains: searchItem } },
+                    ],
+               }
+               : {}),
+               role: EUserRole.ADMIN,
+          },
+          perPage,
+          (page - 1) * perPage
+          ),
+     });
 
-  const users = usersData?.data ?? [];
-  const totalUsers = usersData?.pagination.total ?? 0;
+     const admins = usersData?.data ?? [];
+     const totalAdmins = usersData?.pagination.total ?? 0;
 
-  return (
-    <div className="min-h-screen bg-linear-to-br rounded-xl overflow-hidden from-gray-50 via-gray-100 to-yellow-50">
-      {/* Modern Header with Yellow & Gray Theme */}
+     return (
+          <div className="min-h-screen bg-linear-to-br rounded-xl overflow-hidden from-gray-50 via-gray-100 to-yellow-50">
+               {/* Modern Header with Yellow & Gray Theme */}
       <div className="relative overflow-hidden bg-linear-to-br from-gray-900 via-gray-800 to-gray-900 border-b-4 border-yellow-400">
         <div className="relative max-w-7xl mx-auto px-6 py-8">
           {/* Top bar */}
-          <div className="flex items-center justify-between mb-8">
+          <div className="flex items-center justify-between flex-wrap mb-8">
             <div className="flex items-center space-x-4">
               <div className="relative">
                 <div className="absolute inset-0 bg-yellow-400 blur-xl opacity-50 animate-pulse"></div>
                 <div className="relative bg-yellow-400 p-3 rounded-xl shadow-lg">
-                  <Users className="w-8 h-8 text-gray-900" strokeWidth={2.5} />
+                  <ShieldUser className="w-8 h-8 text-gray-900" strokeWidth={2.5} />
                 </div>
               </div>
               <div>
                 <h1 className="text-4xl font-black text-white tracking-tight">
-                  User Management
+                  Admins Management
                 </h1>
                 <p className="text-gray-400 font-medium mt-1">
-                  Manage and monitor all platform users
+                  Manage and monitor all admins
                 </p>
               </div>
             </div>
-
+               <div className="flex items-center gap-4">
+                    <UserFormToggleBtn title="New Admin" role={EUserRole.ADMIN} name="New Admin" icon={<Plus className="w-4 h-4" />} className="py-2 px-4 rounded-lg bg-linear-to-br from-yellow-500 to-amber-800 text-white font-medium text-lg flex items-center gap-2 " />
+               </div>
           </div>
 
           {/* Stats Cards */}
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
             <div className="group bg-white/10 backdrop-blur-sm border border-white/20 rounded-xl p-4 hover:bg-white/15 transition-all duration-200 hover:scale-105 transform">
               <div className="text-yellow-400 text-sm font-bold uppercase tracking-wider mb-1">
-                Total Users
-              </div>
+                Total Admins
+               </div>
               <div className="text-3xl font-black text-white">
-                {totalUsers.toLocaleString()}
+                {totalAdmins.toLocaleString()}
               </div>
             </div>
 
@@ -82,30 +84,11 @@ export default function AdminUsersPage() {
                 Active Now
               </div>
               <div className="text-3xl font-black text-white flex items-baseline">
-                {Math.floor(totalUsers * 0.23).toLocaleString()}
+                {Math.floor(totalAdmins * 0.23).toLocaleString()}
                 <span className="text-sm font-semibold text-green-400 ml-2">● Online</span>
               </div>
             </div>
 
-            <div className="group bg-white/10 backdrop-blur-sm border border-white/20 rounded-xl p-4 hover:bg-white/15 transition-all duration-200 hover:scale-105 transform">
-              <div className="text-yellow-400 text-sm font-bold uppercase tracking-wider mb-1">
-                New This Week
-              </div>
-              <div className="text-3xl font-black text-white flex items-baseline">
-                {Math.floor(totalUsers * 0.08).toLocaleString()}
-                <span className="text-sm font-semibold text-yellow-400 ml-2">+12%</span>
-              </div>
-            </div>
-
-            <div className="group bg-white/10 backdrop-blur-sm border border-white/20 rounded-xl p-4 hover:bg-white/15 transition-all duration-200 hover:scale-105 transform">
-              <div className="text-yellow-400 text-sm font-bold uppercase tracking-wider mb-1">
-                Growth Rate
-              </div>
-              <div className="text-3xl font-black text-white flex items-baseline">
-                <span className="text-2xl mr-1">↗</span>
-                24.5%
-              </div>
-            </div>
           </div>
 
           {/* Search and View Controls */}
@@ -150,24 +133,24 @@ export default function AdminUsersPage() {
             <div className="relative">
               <div className="w-16 h-16 border-4 border-gray-200 border-t-yellow-400 rounded-full animate-spin"></div>
               <div className="absolute inset-0 flex items-center justify-center">
-                <Users className="w-6 h-6 text-yellow-400" />
+                <ShieldUser className="w-6 h-6 text-yellow-400" />
               </div>
             </div>
           </div>
         ) : (
           <>
-            <AdminUsersContainer users={users} />
+            <AdminsContainer admins={admins} />
             <div className="mt-8">
               <Pagination
                 itemsPerPage={perPage}
                 currentPage={page}
-                totalItems={totalUsers}
+                totalItems={totalAdmins}
                 onPageChange={setPage}
               />
             </div>
           </>
         )}
       </div>
-    </div>
-  );
+          </div>
+     )
 }

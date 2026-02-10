@@ -8,6 +8,7 @@ import { AuthPasswordInput, AuthSubmitBtn, AuthTextInput } from "../AuthForms";
 // import { getSessionUser } from "@/lib/actions";
 import Link from "next/link";
 import { getSessionUser } from "@/server/auth/user";
+import { createAuthLog } from "@/server/auth/auth-log";
 
 export const LoginForm = ({onComplete}:{onComplete: (user: TSessionUser) => void}) => {
      // const {setUser} = useAuth();
@@ -29,6 +30,7 @@ export const LoginForm = ({onComplete}:{onComplete: (user: TSessionUser) => void
                const {user} = await getSessionUser();
                if(!user) return toast.warning("User account not found!");
                // setUser(user);
+               await createAuthLog(user.id, "LOGIN", true);
                toast.success("Login success");
                return onComplete(user);
           } catch (error) {

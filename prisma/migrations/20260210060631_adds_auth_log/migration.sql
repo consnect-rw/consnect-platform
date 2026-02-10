@@ -1,0 +1,18 @@
+-- CreateEnum
+CREATE TYPE "EAction" AS ENUM ('LOGIN', 'LOGOUT', 'PASSWORD_CHANGE', 'TWO_FACTOR_ENABLE', 'TWO_FACTOR_DISABLE', 'EMAIL_VERIFICATION', 'ACCOUNT_LOCK', 'ACCOUNT_UNLOCK');
+
+-- CreateTable
+CREATE TABLE "AuthLog" (
+    "id" TEXT NOT NULL,
+    "ipAddress" TEXT NOT NULL,
+    "userAgent" TEXT,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "userId" TEXT NOT NULL,
+    "action" "EAction" NOT NULL,
+    "success" BOOLEAN NOT NULL,
+
+    CONSTRAINT "AuthLog_pkey" PRIMARY KEY ("id")
+);
+
+-- AddForeignKey
+ALTER TABLE "AuthLog" ADD CONSTRAINT "AuthLog_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
