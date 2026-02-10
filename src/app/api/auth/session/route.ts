@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
-import { getSessionUser } from "@/lib/actions";
+import { getSessionUser } from "@/server/auth/user";
 import { NextResponse } from "next/server";
 
 export async function GET(req: Request) {

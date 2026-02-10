@@ -38,6 +38,7 @@ model User {
      blogComments Comment[]
      sentMessages Message[] @relation("MessageSender")
      receivedMessages Message[] @relation("MessageReceiver")
+     authLogs AuthLog[]
 }
 
 model UserOTP {
@@ -49,4 +50,34 @@ model UserOTP {
 
      userId String @unique
      user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+enum EAuthAction {
+     LOGIN
+     LOGOUT
+     PASSWORD_CHANGE
+     TWO_FACTOR_ENABLE
+     TWO_FACTOR_DISABLE
+     EMAIL_VERIFICATION
+     ACCOUNT_LOCK
+     ACCOUNT_UNLOCK
+}
+model AuthLog {
+     id String @id @default(uuid())
+
+     // network info
+     ipAddress String
+     userAgent String?
+
+     // timestamp
+     createdAt DateTime @default(now())
+
+     //actor
+     userId String
+     user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+     //context
+     action EAuthAction
+     success Boolean
+
 }

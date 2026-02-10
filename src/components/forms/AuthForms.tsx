@@ -3,17 +3,18 @@
 
 import { useState } from "react";
 import { FaEye, FaEyeSlash } from "react-icons/fa6";
-import { FcGoogle } from "react-icons/fc";
 import { toast } from "sonner";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
 import { Loader2 } from "lucide-react";
 import { signOut } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import { useAuth } from "@/hooks/useAuth";
+import { createAuthLog } from "@/server/auth/auth-log";
 
 export const AuthTextInput = ({label, type, name, placeholder,action}:{label: string,type?:string, name:string, placeholder: string, action?:(res:string)=> unknown }) => {
      return (
-          <div className="w-full flex flex-col items-start justify-normal gap-[5px]">
+          <div className="w-full flex flex-col items-start justify-normal gap-2">
                <label className="text-base font-bold text-gray-700" htmlFor={name}>{label}</label>
                <Input className="w-full text-sm active:outline-blue-400" required type={type || "text"} name={name} id={name} placeholder={placeholder} onChange={e => action ?  action(e.target.value) : null}  />
           </div>
@@ -47,11 +48,13 @@ export const AuthSubmitBtn = ({name, loading}:{name:string, loading: boolean}) =
 export const AuthLogoutBtn = ({name, className, variant, size, icon}:{name?:string, className?:string, variant?:"link" | "default" | "destructive" | "outline" | "secondary" | "ghost" | null | undefined, size?:"sm" | "default" | "lg" | null | undefined, icon?:React.ReactNode}) => {
      const [loading,setLoading] = useState(false);
      const router = useRouter();
+     const {user} = useAuth();
 
      const handleClick = async() => {
           try {
                setLoading(true);
                await signOut();
+               await createAuthLog(user?.id ?? "", "LOGOUT", true);
                toast.success("You have been logged out!");
                return router.push("/auth/login");
           } catch (error) {

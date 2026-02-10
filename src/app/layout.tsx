@@ -4,8 +4,6 @@ import "./globals.css";
 import QueryProvider from "@/context/QueryProvider";
 import { Toaster } from "sonner";
 import { ThemeProvider } from "next-themes";
-import { AuthProvider } from "@/context/AuthContext";
-import { getSessionUser } from "@/lib/actions";
 import { ViewProvider } from "@/context/ViewContext";
 
 const geistSans = Geist({
