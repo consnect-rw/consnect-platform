@@ -37,6 +37,12 @@ model Location {
 
      companyId String? @unique
      company Company? @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+     offerId String? @unique
+     offer Offer? @relation(fields: [offerId], references: [id], onDelete: Cascade)
+
+     projectId String? @unique
+     project Project? @relation(fields: [projectId], references: [id], onDelete: Cascade)
 }
 
 model SocialMedia {

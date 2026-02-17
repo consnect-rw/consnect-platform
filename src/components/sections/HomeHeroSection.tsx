@@ -1,30 +1,4 @@
-// import React from 'react'
-// import { Button } from '../ui/button'
-// import { ArrowRight } from 'lucide-react'
-// import Link from 'next/link'
 
-// const HomeHeroSection = () => {
-//   return (
-//     <section className='w-full py-24 px-8'>
-//           <div className='w-full max-w-7xl flex flex-col items-center mx-auto gap-4'>
-//                <h1 className='text-4xl md:text-6xl lg:text-7xl font-extrabold text-black text-center max-w-4xl'>Grow Your Business  <span className='text-yellow-600'>with Consnect</span></h1>
-//                <p className='text-center text-base font-medium max-w-2xl text-gray-600'>Win more projects, showcase your expertise, and connect with clients and suppliers across the construction ecosystem.</p>
-//                <div className='flex items-center gap-4'>
-//                     <Link href={"/auth/register"}>
-//                       <Button size={"lg"} className='bg-yellow-600 rounded-full font-medium text-white flex items-center gap-2 hover:bg-yellow-700'>Get Started <span className='p-1 rounded-full'><ArrowRight size={24} /></span></Button>
-//                     </Link>
-//                     <Link href={"/contact"}>
-//                     <Button size={"lg"} className='rounded-full' variant={"outline"}>Book A demo</Button>
-//                     </Link>
-//                </div>
-//           </div>
-//     </section>
-//   )
-// }
-
-// export default HomeHeroSection
-
-import React from "react";
 import { Button } from "../ui/button";
 import {
   ArrowRight,
@@ -39,7 +13,7 @@ import Link from "next/link";
 
 const HomeHeroSection = () => {
   return (
-    <section className="relative w-full overflow-hidden bg-gradient-to-br from-gray-50 via-white to-yellow-50">
+    <section className="relative w-full overflow-hidden bg-linear-to-br from-gray-50 via-white to-yellow-50">
       {/* Decorative Background Elements */}
       <div className="absolute inset-0 overflow-hidden">
         {/* Large Background Circles */}
@@ -154,7 +128,7 @@ const HomeHeroSection = () => {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto">
           {/* Card 1 */}
           <div className="group bg-white border-2 border-gray-200 hover:border-yellow-400 rounded-2xl p-6 transition-all hover:-translate-y-2 hover:shadow-xl">
-            <div className="w-12 h-12 bg-gradient-to-br from-yellow-400 to-yellow-500 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+            <div className="w-12 h-12 bg-linear-to-br from-yellow-400 to-yellow-500 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
               <FileText className="w-6 h-6 text-gray-900" strokeWidth={2.5} />
             </div>
             <h3 className="text-xl font-black text-gray-900 mb-2">
@@ -167,7 +141,7 @@ const HomeHeroSection = () => {
 
           {/* Card 2 */}
           <div className="group bg-white border-2 border-gray-200 hover:border-yellow-400 rounded-2xl p-6 transition-all hover:-translate-y-2 hover:shadow-xl">
-            <div className="w-12 h-12 bg-gradient-to-br from-yellow-400 to-yellow-500 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+            <div className="w-12 h-12 bg-linear-to-br from-yellow-400 to-yellow-500 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
               <Building2 className="w-6 h-6 text-gray-900" strokeWidth={2.5} />
             </div>
             <h3 className="text-xl font-black text-gray-900 mb-2">
@@ -180,7 +154,7 @@ const HomeHeroSection = () => {
 
           {/* Card 3 */}
           <div className="group bg-white border-2 border-gray-200 hover:border-yellow-400 rounded-2xl p-6 transition-all hover:-translate-y-2 hover:shadow-xl">
-            <div className="w-12 h-12 bg-gradient-to-br from-yellow-400 to-yellow-500 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+            <div className="w-12 h-12 bg-linear-to-br from-yellow-400 to-yellow-500 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
               <Users className="w-6 h-6 text-gray-900" strokeWidth={2.5} />
             </div>
             <h3 className="text-xl font-black text-gray-900 mb-2">
@@ -193,13 +167,13 @@ const HomeHeroSection = () => {
         </div>
 
         {/* Stats Bar */}
-        <div className="mt-20 bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 rounded-2xl p-8 shadow-2xl">
+        <div className="mt-20 bg-linear-to-r from-gray-900 via-gray-800 to-gray-900 rounded-2xl p-8 shadow-2xl">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
             <div>
               <div className="flex items-center justify-center gap-2 mb-2">
                 <TrendingUp className="w-5 h-5 text-yellow-400" />
                 <div className="text-3xl md:text-4xl font-black text-yellow-400">
-                  500+
+                  30+
                 </div>
               </div>
               <div className="text-sm text-gray-400 font-bold">

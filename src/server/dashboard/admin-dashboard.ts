@@ -221,7 +221,7 @@ export const fetchAdminRecentActivity = cache(
         ...recentOffers.map((offer) => ({
           id: offer.id,
           type: "Offer Created",
-          description: `${offer.company.name} created: "${offer.title}"`,
+          description: `${offer.company?.name} created: "${offer.title}"`,
           createdAt: offer.createdAt,
         }))
       );

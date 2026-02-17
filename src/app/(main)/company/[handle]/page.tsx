@@ -184,6 +184,57 @@ export default async function CompanyPage({
         </div>
       </section>
 
+      {/* ================= PROJECTS ================= */}
+      {company.projects.length > 0 && (
+        <section className="bg-gray-50 border-y-2 border-gray-200">
+          <div className="max-w-7xl mx-auto px-6 py-16">
+            <h2 className="text-3xl font-black text-gray-900 mb-8 flex items-center gap-3">
+              <div className="w-12 h-12 bg-yellow-400 rounded-xl flex items-center justify-center">
+                <Briefcase className="w-6 h-6 text-gray-900" />
+              </div>
+              Projects & Portfolio
+            </h2>
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {company.projects.map((project, i) => (
+                <div
+                  key={i}
+                  className="bg-white rounded-xl border-2 border-gray-200 overflow-hidden hover:border-yellow-400 hover:shadow-lg transition-all group"
+                >
+                  {/* Project Image */}
+                  {project.images && project.images.length > 0 && (
+                    <div className="relative h-48 bg-gray-100 overflow-hidden">
+                      <Image
+                        src={project.images[0]}
+                        alt={project.title}
+                        className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-300"
+                      />
+                    </div>
+                  )}
+                  <div className="p-6">
+                    <h3 className="font-black text-gray-900 text-lg mb-2">
+                      {project.title}
+                    </h3>
+                    {project.clientName && (
+                      <p className="text-sm text-gray-600 font-medium mb-3">
+                        Client: {project.clientName}
+                      </p>
+                    )}
+                    {project.phase && (
+                      <span className="inline-block px-3 py-1 bg-yellow-100 text-yellow-800 text-xs font-bold rounded-full mb-3">
+                        {project.phase}
+                      </span>
+                    )}
+                    <p className="text-sm text-gray-700 leading-relaxed">
+                      {project.description}
+                    </p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
       {/* ================= ABOUT SECTION ================= */}
       <section className="max-w-7xl mx-auto px-6 py-16">
         <div className="grid md:grid-cols-3 gap-8">
@@ -462,57 +513,6 @@ export default async function CompanyPage({
                 </ul>
               </div>
             ))}
-          </div>
-        </section>
-      )}
-
-      {/* ================= PROJECTS ================= */}
-      {company.projects.length > 0 && (
-        <section className="bg-gray-50 border-y-2 border-gray-200">
-          <div className="max-w-7xl mx-auto px-6 py-16">
-            <h2 className="text-3xl font-black text-gray-900 mb-8 flex items-center gap-3">
-              <div className="w-12 h-12 bg-yellow-400 rounded-xl flex items-center justify-center">
-                <Briefcase className="w-6 h-6 text-gray-900" />
-              </div>
-              Projects & Portfolio
-            </h2>
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {company.projects.map((project, i) => (
-                <div
-                  key={i}
-                  className="bg-white rounded-xl border-2 border-gray-200 overflow-hidden hover:border-yellow-400 hover:shadow-lg transition-all group"
-                >
-                  {/* Project Image */}
-                  {project.images && project.images.length > 0 && (
-                    <div className="relative h-48 bg-gray-100 overflow-hidden">
-                      <Image
-                        src={project.images[0]}
-                        alt={project.title}
-                        className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-300"
-                      />
-                    </div>
-                  )}
-                  <div className="p-6">
-                    <h3 className="font-black text-gray-900 text-lg mb-2">
-                      {project.title}
-                    </h3>
-                    {project.clientName && (
-                      <p className="text-sm text-gray-600 font-medium mb-3">
-                        Client: {project.clientName}
-                      </p>
-                    )}
-                    {project.phase && (
-                      <span className="inline-block px-3 py-1 bg-yellow-100 text-yellow-800 text-xs font-bold rounded-full mb-3">
-                        {project.phase}
-                      </span>
-                    )}
-                    <p className="text-sm text-gray-700 leading-relaxed">
-                      {project.description}
-                    </p>
-                  </div>
-                </div>
-              ))}
-            </div>
           </div>
         </section>
       )}
