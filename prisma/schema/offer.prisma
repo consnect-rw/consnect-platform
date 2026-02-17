@@ -1,19 +1,181 @@
+
+enum OfferType {
+     WORK_TASK              // Construction work/labor
+     MATERIAL_SUPPLY        // Materials and supplies
+     EQUIPMENT_RENTAL       // Equipment and machinery rental
+     CONSULTANCY            // Professional services
+     SUBCONTRACTING         // Subcontractor work
+     MAINTENANCE            // Maintenance services
+}
+
+enum EOfferPriority {
+     LOW
+     MEDIUM
+     HIGH
+     URGENT
+}
+
+enum EOfferStatus {
+     DRAFT
+     PUBLISHED
+     CLOSED
+     CANCELLED
+}
+
+enum OfferVisibility {
+     PUBLIC                 // Visible to all registered companies
+     PRIVATE                // Only visible to invited companies
+     RESTRICTED             // Visible but requires approval to view details
+}
+
+enum EOFferContractType {
+     FIXED_PRICE            // A set price for the entire project
+     TIME_AND_MATERIALS     // Pay based on hours worked and materials used
+     COST_PLUS              // Pay actual costs plus a fee
+     UNIT_PRICING           // Pay based on units of work completed
+     PERFORMANCE_BASED      // Payment based on achieving specific outcomes
+}
+
+enum EOfferExecutionStatus {
+     NONE
+     NEGOTIATING
+     AWARDED
+     IN_PROGRESS
+     COMPLETED
+}
 model Offer {
      id String @id @default(uuid())
      title String 
      description String
+     type OfferType
+     priority EOfferPriority
+     status EOfferStatus
+     executionStatus EOfferExecutionStatus @default(NONE)
+     visibility OfferVisibility
+     contractType EOFferContractType
 
-     createdAt DateTime @default(now())
-     updatedAt DateTime @updatedAt
+     siteLocation Location?
+
+     scopeOfWork String?
+     specificTasks String[]
+     requiredSkills String[]
+     deliverables String[]
+
+     technicalSpecifications String?
+     qualityStandards String?
+     safetyRequirements String?
+     requiredCertifications String[]
+
+     timeline OfferTimeLine?
+     pricing OfferPricing?
+     submissionInfo OfferSubmissionInfo?
 
      // relations
      categoryId String
      category Category @relation(fields: [categoryId], references: [id])
 
-     companyId String
-     company Company @relation(fields: [companyId], references: [id])
+     companyId String?
+     company Company? @relation(fields: [companyId], references: [id])
+
+     projectId String?
+     project Project? @relation(fields: [projectId], references: [id])
 
      interests OfferInterest[]
+     documents OfferDocument[]
+     invitations OfferInvitation[]
+
+     createdAt DateTime @default(now())
+     updatedAt DateTime @updatedAt
+     deletedAt DateTime?
+
+     @@index([type])
+     @@index([status])
+     @@index([priority])
+     @@index([categoryId])
+     @@index([createdAt])
+}
+
+enum EDurationUnit {
+     HOURS
+     DAYS
+     WEEKS
+     MONTHS
+     YEARS
+}
+model OfferTimeLine {
+     id String @id @default(uuid())
+     startDate DateTime?
+     endDate DateTime?
+     deadline DateTime?
+     duration Int?
+     durationUnit EDurationUnit?
+
+     offerId String @unique
+     offer Offer @relation(fields: [offerId], references: [id], onDelete: Cascade)
+}
+model OfferPricing {
+     id String @id @default(uuid())
+     budgetMin Decimal? @db.Decimal(15,2)
+     budgetMax Decimal? @db.Decimal(15,2)
+     currency String?
+     paymentTerms String?
+     paymentMethods String[]
+
+     offerId String @unique
+     offer Offer @relation(fields: [offerId], references: [id], onDelete: Cascade)
+}
+
+enum EOfferDocumentType {
+     DRAWING_AUTOCAD        // .dwg files
+     DRAWING_ARCHICAD       // .pla, .pln files
+     BOQ                    // Bill of Quantities (Excel)
+     SPECIFICATION          // Technical specifications
+     SITE_PHOTO             // Site photographs
+     SITE_VIDEO             // Site videos
+     CONTRACT_DRAFT         // Contract terms
+     PERMIT                 // Permits and approvals
+     CERTIFICATION          // Required certifications
+     OTHER                  // Other documents
+}
+
+enum EOfferDocumentAccessLevel {
+     PUBLIC                 // Visible to everyone
+     INTERESTED_ONLY        // Only to companies that showed interest
+     SHORTLISTED_ONLY       // Only to shortlisted companies
+     PRIVATE                // only to the owner
+}
+model OfferDocument {
+     id String @id @default(uuid())
+     type EOfferDocumentType
+     url String
+     description String?
+     fileType String?
+     fileSize Int?
+     accessLevel EOfferDocumentAccessLevel
+
+     uploadedAt       DateTime             @default(now())
+     updatedAt        DateTime             @updatedAt
+     downloadCount    Int                  @default(0)
+
+     offerId String
+     offer Offer @relation(fields: [offerId], references: [id], onDelete: Cascade)
+
+     @@index([offerId, accessLevel])
+}
+
+model OfferSubmissionInfo{
+     id String @id @default(uuid())
+
+     proposalFormat String?
+     submissionGuidelines String?
+     contactEmail String?
+     contactPhone String?
+     expiresAt DateTime?
+     autoClose Boolean @default(true)
+
+
+     offerId String @unique
+     offer Offer @relation(fields: [offerId], references: [id], onDelete: Cascade)
 }
 
 enum EOfferInterestStatus {
@@ -27,13 +189,46 @@ model OfferInterest {
      status EOfferInterestStatus
      message String
 
+     viewedByOwner Boolean @default(false)
+     shortlistedAt DateTime?
+     respondedAt DateTime?
+
      createdAt DateTime @default(now())
      updatedAt DateTime @updatedAt
 
      // relations
-     companyId String
-     company Company @relation(fields: [companyId], references: [id])
+     companyId String?
+     company Company? @relation(fields: [companyId], references: [id])
 
      offerId String
      offer Offer @relation(fields: [offerId], references: [id])
+
+     @@unique([companyId, offerId])
+}
+
+enum EOfferInvitationStatus {
+     PENDING
+     ACCEPTED
+     REJECTED
+}
+model OfferInvitation {
+     id String @id @default(uuid())
+     message String
+     reply String?
+     viewed Boolean @default(false)
+     respondedAt DateTime?
+     status EOfferInvitationStatus
+
+     sentAt DateTime @default(now())
+     expiresAt DateTime?
+
+     companyId        String
+     company          Company         @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+     offerId String
+     offer Offer @relation(fields: [offerId], references: [id])
+
+     @@unique([offerId, companyId])
+     @@index([offerId])
+     @@index([companyId])
 }

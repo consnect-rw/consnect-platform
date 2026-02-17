@@ -11,14 +11,15 @@ import { cn } from '@/lib/utils';
 const SettingLinks = [
   { name: "Company", href: "/dashboard/settings", icon: Building2 },
   { name: "About", href: "/dashboard/settings/about", icon: Info },
+  {name: "Projects", href: "/dashboard/settings/projects", icon: FolderKanban},
+  {name: "Reviews", href: "/dashboard/settings/reviews", icon: Star},
   { name: "Founders", href: "/dashboard/settings/founders", icon: ShieldUser },
   { name: "Contacts", href: "/dashboard/settings/contact-person", icon: Headset },
   { name: "Documents", href: "/dashboard/settings/documents", icon: FileArchive },
   { name: "Social Media", href: "/dashboard/settings/social-media", icon: Megaphone },
   { name: "Catalogs", href: "/dashboard/settings/catalogs", icon: FileText },
   {name: "Services", href: "/dashboard/settings/services", icon: Briefcase},
-  {name: "Projects", href: "/dashboard/settings/projects", icon: FolderKanban},
-  {name: "Reviews", href: "/dashboard/settings/reviews", icon: Star},
+  
 ];
 
 export default function CompanySettingsNavBar() {
