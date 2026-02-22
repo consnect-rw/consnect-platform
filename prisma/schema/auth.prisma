@@ -32,6 +32,8 @@ model User {
      userOTP UserOTP?
      likedBlogs BlogLike[]
      viewedBlogs BlogView[]
+
+     verificationToken EmailVerificationToken?
      
      company Company?
      blogs Blog[]
@@ -39,6 +41,17 @@ model User {
      sentMessages Message[] @relation("MessageSender")
      receivedMessages Message[] @relation("MessageReceiver")
      authLogs AuthLog[]
+}
+
+model EmailVerificationToken {
+     id String @id @default(uuid())
+     token String @unique
+     isEmailSent Boolean @default(false)
+     expiresAt DateTime
+     createdAt DateTime @default(now())
+
+     userId String @unique
+     user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model UserOTP {

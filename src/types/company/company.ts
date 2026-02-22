@@ -7,7 +7,7 @@ import { IBaseFounder, SFounder } from "./founder"
 import { IBaseReview, SReview } from "./review"
 import { IBaseService, SService } from "./service"
 import { SDocument } from "../common/document"
-import { SProject } from "./project"
+import { SProject, SProjectDetailed } from "./project"
 import { SProductCatalog } from "./product-catalog"
 
 export interface IDefaultCompany {
@@ -131,8 +131,8 @@ export const SCompanyPage = {
      descriptions: {select:{title:true, description:true}},
      founders: {select:{image:true, name:true, title:true}},
      contactPersons:{select:{name:true, contactPhone:true, contactEmail:true, role:true, regNumber:true, }},
-     projects:{select:{title:true, clientName:true, phase:true, images:true,  description:true}},
-     catalogs:{select:{name:true, description:true, image:true, fileUrl:true}},
+     projects:{select: SProjectDetailed},
+     catalogs:{select:{id:true, name:true, description:true, image:true, fileUrl:true}},
      verification: {select: {status:true, isBronzeVerified:true, isGoldVerified:true, isSilverVerified:true}},
      reviews: {select: SReview},
      services: {select: SService},

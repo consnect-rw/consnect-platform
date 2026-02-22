@@ -52,3 +52,11 @@ export const SProject  = {
      documents: {select: SDocument}
 } satisfies Prisma.ProjectSelect;
 export type TProject = Prisma.ProjectGetPayload<{select: typeof SProject}>
+
+export const SProjectDetailed = {
+     id:true, title:true, description:true, images:true, phase:true, 
+     location:true, clientName:true, clientEmail:true, clientPhone:true, 
+     createdAt:true, updatedAt:true, initiatedOn:true, completedOn:true, 
+     documents: {select: SDocument},
+} satisfies Prisma.ProjectSelect;
+export type TProjectDetailed = Prisma.ProjectGetPayload<{select: typeof SProjectDetailed}>

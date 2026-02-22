@@ -93,7 +93,7 @@ const UserRow = ({ user }: { user: TAdminUserRow }) => {
           {/* Name and Status Row */}
           <div className="flex items-start justify-between gap-3">
             <div className="flex items-start gap-3">
-              <div className="flex-shrink-0 w-12 h-12 bg-gradient-to-br from-yellow-400 to-yellow-600 rounded-full flex items-center justify-center text-white font-bold text-lg">
+              <div className="flex-shrink-0 w-12 h-12 bg-linear-to-br from-yellow-400 to-yellow-600 rounded-full flex items-center justify-center text-white font-bold text-lg">
                 {user.name?.charAt(0).toUpperCase() || user.email.charAt(0).toUpperCase()}
               </div>
               <div>
@@ -197,7 +197,7 @@ const UserRow = ({ user }: { user: TAdminUserRow }) => {
             <Eye className="w-4 h-4" />
             <span className="hidden sm:inline">View</span>
           </Link> */}
-            <UserFormToggleBtn title="Edit User Info" role={"USER"} icon={<Edit className="w-4 h-4" />} name="Edit" className="flex-1 lg:flex-none flex items-center justify-center gap-2 px-4 py-2.5 bg-gradient-to-r from-yellow-500 to-amber-600 hover:from-yellow-600 hover:to-amber-700 text-white font-medium rounded-lg transition-all shadow-sm hover:shadow-md"  />
+            <UserFormToggleBtn title="Edit User Info" entityId={user.id} role={"USER"} icon={<Edit className="w-4 h-4" />} name="Edit" className="flex-1 lg:flex-none flex items-center justify-center gap-2 px-4 py-2.5 bg-linear-to-r from-yellow-500 to-amber-600 hover:from-yellow-600 hover:to-amber-700 text-white font-medium rounded-lg transition-all shadow-sm hover:shadow-md"  />
 
           <button
             onClick={handleDeactivate}
@@ -205,8 +205,8 @@ const UserRow = ({ user }: { user: TAdminUserRow }) => {
             className={cn(
               "flex-1 lg:flex-none flex items-center justify-center gap-2 px-4 py-2.5 font-medium rounded-lg transition-all shadow-sm hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed",
               user.active
-                ? "bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white"
-                : "bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white"
+                ? "bg-linear-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white"
+                : "bg-linear-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white"
             )}
           >
             {deactivating ? (
