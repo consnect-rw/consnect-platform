@@ -78,7 +78,7 @@ export default async function CompanyPage({
           <div className="flex flex-col gap-8 items-start">
             {/* Logo and Info Section, Badge */}
             <div className="w-full flex items-start justify-between gap-4">
-              <div className="flex items-start gap-4">
+              <div className="flex flex-col md:flex-row items-start gap-4">
                 {/* Logo Section */}
                 <div className="relative shrink-0 group">
                   <div className="w-36 h-36 bg-white rounded-2xl flex items-center justify-center shadow-2xl overflow-hidden ring-4 ring-white/10 group-hover:ring-yellow-400/50 transition-all">
