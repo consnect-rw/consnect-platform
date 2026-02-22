@@ -39,6 +39,7 @@ export const SSessionUser = {
      adminRole:true,
      active:true,
      image:true,
+     isEmailVerified:true,
      company:{select:{
           name:true, id:true, location: {select:{country:true, city:true}},
           verification: {select: {status:true, message:true, createdAt:true, updatedAt:true}}

@@ -9,9 +9,12 @@ import { AuthPasswordInput, AuthSubmitBtn, AuthTextInput } from "../AuthForms";
 import Link from "next/link";
 import { getSessionUser } from "@/server/auth/user";
 import { createAuthLog } from "@/server/auth/auth-log";
+import { useRouter } from "next/navigation";
+import { useAuth } from "@/hooks/useAuth";
 
 export const LoginForm = ({onComplete}:{onComplete: (user: TSessionUser) => void}) => {
-     // const {setUser} = useAuth();
+     const {setUser} = useAuth();
+     const router= useRouter();
      const [loading, setLoading] = useState(false);
      const submitForm = async(event: ChangeEvent<HTMLFormElement>) => {
           event.preventDefault();
@@ -29,9 +32,13 @@ export const LoginForm = ({onComplete}:{onComplete: (user: TSessionUser) => void
                
                const {user} = await getSessionUser();
                if(!user) return toast.warning("User account not found!");
-               // setUser(user);
+               setUser(user);
                await createAuthLog(user.id, "LOGIN", true);
                toast.success("Login success");
+               if(user.role === "USER" && !user.isEmailVerified) {
+                    toast.info("Please verify your email to access all features");
+                    return router.push(`/auth/verify-email`);
+               }
                return onComplete(user);
           } catch (error) {
                console.log(error);

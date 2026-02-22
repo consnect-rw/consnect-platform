@@ -41,11 +41,6 @@ export async function updateUser (id:string, data:Prisma.UserUpdateInput) {
 export async function deleteUser (id:string) {
      try {
           const res = await prisma.user.delete({where: {id}});
-          
-          const User = await prisma.user.findUnique({where:{id}});
-
-          if (!User) throw new Error("User not found");
-
           if(res) revalidatePages();
            
           return res;
