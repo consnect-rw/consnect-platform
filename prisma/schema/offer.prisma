@@ -115,8 +115,8 @@ model OfferTimeLine {
 }
 model OfferPricing {
      id String @id @default(uuid())
-     budgetMin Decimal? @db.Decimal(15,2)
-     budgetMax Decimal? @db.Decimal(15,2)
+     budgetMin Float?
+     budgetMax Float?
      currency String?
      paymentTerms String?
      paymentMethods String[]

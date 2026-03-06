@@ -30,11 +30,6 @@ export async function updateOfferInterest (id:string, data:Prisma.OfferInterestU
 export async function deleteOfferInterest (id:string) {
      try {
           const res = await prisma.offerInterest.delete({where: {id}});
-          
-          const OfferInterest = await prisma.offerInterest.findUnique({where:{id}});
-
-          if (!OfferInterest) throw new Error("OfferInterest not found");
-
           if(res) revalidatePages();
            
           return res;

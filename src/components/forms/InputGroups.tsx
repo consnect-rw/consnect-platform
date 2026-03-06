@@ -25,7 +25,7 @@ export const PasswordInputGroup = ({label, placeholder,name, required=true, acti
                <label className="w-full rounded-md text-base font-medium text-gray-800" htmlFor={name}>{label}</label>
                <div className="w-full relative">
                     <Input type={showPassword ? 'text' :"password"} className="w-full placeholder:text-sm" name={name} id={name} placeholder={placeholder} required={required} onChange={(e:ChangeEvent<HTMLInputElement>) => action ? action(e.target.value) : () =>{}} />
-                    <i onClick={()=> setShowPassword(prev => !prev)} className="absolute top-[50%] -translate-y-[50%] right-[10px] text-gray-700 cursor-pointer " >{showPassword ? <FaEye /> : <FaEyeSlash />}</i>
+                    <i onClick={()=> setShowPassword(prev => !prev)} className="absolute top-[50%] -translate-y-[50%] right-2.5 text-gray-700 cursor-pointer " >{showPassword ? <FaEye /> : <FaEyeSlash />}</i>
                </div>
           </div>
      )
@@ -55,7 +55,7 @@ export const ObjSelectInputGroup = ({label, name, required=true,values, action}:
      return (
           <div className="w-full flex flex-col items-start gap-1">
                <label className="text-base font-medium text-gray-800" htmlFor={name}>{label}</label>
-               <select onChange={(e:ChangeEvent<HTMLSelectElement>) => action ? action(e.target.value) : () => {}}  className=" w-full rounded-md text-[0.8rem] text-gray-900 border border-gray-400 bg-gray-200 outline-none py-[9.5px] px-[10px]" name={name} id={name} required={required}>
+               <select onChange={(e:ChangeEvent<HTMLSelectElement>) => action ? action(e.target.value) : () => {}}  className=" w-full rounded-md text-[0.8rem] text-gray-900 border border-gray-400 bg-gray-200 outline-none py-[9.5px] px-2.5" name={name} id={name} required={required}>
                     <option value="">Select {name}</option>
                     {
                          values.map((value, index) => <option key={`${name}-${index}`} value={value.value} >{value.label}</option>)
@@ -100,7 +100,7 @@ export const TextAreaInputGroup = ({label, placeholder,name, required=true, acti
      };
      return (
           <div className="w-full  flex flex-col items-start gap-1">
-               <div className="w-full flex items-center justify-start gap-[10px]">
+               <div className="w-full flex items-center justify-start gap-2.5">
                     <label className="w-full rounded-md text-base font-medium text-gray-800" htmlFor={name}>{label}</label>
                     <span className="text-gray-600 text-xs mt-1 whitespace-nowrap">
                     {wordCount} / {maxWords} words
@@ -114,7 +114,7 @@ export const TextAreaInputGroup = ({label, placeholder,name, required=true, acti
 export const SubmitBtn = ({...btnProps}:ComponentProps<typeof CustomButton>) => {
 
      return (
-          <CustomButton {...btnProps} type="submit" className={btnProps.className ?? "w-full flex items-center justify-center gap-2 rounded-lg cursor-pointer py-2 px-4 disabled:cursor-not-allowed bg-gradient-to-bl from-amber-600 to-amber-700 text-white"} />
+          <CustomButton {...btnProps} type="submit" className={btnProps.className ?? "w-full flex items-center justify-center gap-2 rounded-lg cursor-pointer py-2 px-4 disabled:cursor-not-allowed bg-linear-to-bl from-amber-600 to-amber-700 text-white"} />
      )
      
 }

@@ -4,13 +4,29 @@ import { updateDocument } from "@/server/common/document";
 import { TDocument } from "@/types/common/document";
 import { useState } from "react";
 import { toast } from "sonner";
-import { FileText, ExternalLink, CheckCircle, XCircle, Clock, AlertCircle, Loader2 } from "lucide-react";
-import Link from "next/link";
+import { FileText, Eye, CheckCircle, XCircle, Clock, AlertCircle, Loader2, Download } from "lucide-react";
+import dynamic from "next/dynamic";
+
+// Dynamically import PdfViewer to avoid SSR issues with PDF.js
+const PdfViewer = dynamic(() => import("../ui/PdfViewer").then(mod => ({ default: mod.PdfViewer })), {
+  ssr: false,
+  loading: () => (
+    <div className="flex items-center justify-center h-full">
+      <div className="text-center">
+        <div className="w-12 h-12 border-4 border-yellow-400 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+        <p className="text-gray-600 font-medium">Loading PDF Viewer...</p>
+      </div>
+    </div>
+  ),
+});
 
 export const DocumentCard = ({ document }: { document: TDocument }) => {
   const [message, setMessage] = useState("");
   const [updating, setUpdating] = useState(false);
   const [showRejectInput, setShowRejectInput] = useState(false);
+  const [showPdfViewer, setShowPdfViewer] = useState(false);
+
+  const isPdf = document.docUrl?.toLowerCase().endsWith(".pdf");
 
   const handleUpdate = async (verified: boolean) => {
     if (!verified && !message.trim()) {
@@ -79,6 +95,7 @@ export const DocumentCard = ({ document }: { document: TDocument }) => {
   };
 
   return (
+    <>
     <div className="bg-white rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition-shadow duration-200 p-6">
       {/* Header Section */}
       <div className="flex items-start justify-between mb-4">
@@ -144,16 +161,36 @@ export const DocumentCard = ({ document }: { document: TDocument }) => {
 
       {/* Action Buttons */}
       <div className="flex items-center gap-3 pt-4 border-t border-gray-100">
-        {/* View Document Link */}
-        <Link
+        {/* View Document Button */}
+        {isPdf ? (
+          <button
+            onClick={() => setShowPdfViewer(true)}
+            className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-yellow-400 hover:bg-yellow-500 rounded-lg transition-colors"
+          >
+            <Eye className="w-4 h-4 text-gray-900" />
+            <span className="text-gray-900 font-bold">View Document</span>
+          </button>
+        ) : (
+          <a
+            href={document.docUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-yellow-400 hover:bg-yellow-500 rounded-lg transition-colors"
+          >
+            <Eye className="w-4 h-4 text-gray-900" />
+            <span className="text-gray-900 font-bold">View Document</span>
+          </a>
+        )}
+
+        {/* Download Button */}
+        <a
           href={document.docUrl}
-          target="_blank"
-          rel="noopener noreferrer"
+          download
           className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
         >
-          <ExternalLink className="w-4 h-4" />
-          View Document
-        </Link>
+          <Download className="w-4 h-4" />
+          Download
+        </a>
 
         {/* Approve/Reject Buttons (only if not verified) */}
         {document.isVerified !== true && (
@@ -209,5 +246,25 @@ export const DocumentCard = ({ document }: { document: TDocument }) => {
         )}
       </div>
     </div>
+
+    {/* PDF Viewer Dialog */}
+    {showPdfViewer && isPdf && (
+      <div
+        className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+        onClick={() => setShowPdfViewer(false)}
+      >
+        <div
+          className="bg-white rounded-2xl w-full max-w-6xl h-[90vh] shadow-2xl flex flex-col overflow-hidden"
+          onClick={(e) => e.stopPropagation()}
+        >
+          <PdfViewer
+            pdfUrl={document.docUrl}
+            title={document.title}
+            onClose={() => setShowPdfViewer(false)}
+          />
+        </div>
+      </div>
+    )}
+  </>
   );
 };

@@ -30,13 +30,8 @@ export async function updateOffer (id:string, data:Prisma.OfferUpdateInput) {
 export async function deleteOffer (id:string) {
      try {
           const res = await prisma.offer.delete({where: {id}});
-          
-          const Offer = await prisma.offer.findUnique({where:{id}});
-
-          if (!Offer) throw new Error("Offer not found");
 
           if(res) revalidatePages();
-           
           return res;
      } catch (error) {
           console.log("Error deleting Offer with id: ", id, error);

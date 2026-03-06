@@ -30,11 +30,6 @@ export async function updateCompany (id:string, data:Prisma.CompanyUpdateInput) 
 export async function deleteCompany (id:string) {
      try {
           const res = await prisma.company.delete({where: {id}});
-          
-          const Company = await prisma.company.findUnique({where:{id}});
-
-          if (!Company) throw new Error("Company not found");
-
           if(res) revalidatePages();
            
           return res;
