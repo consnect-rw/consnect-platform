@@ -1,3 +1,7 @@
+enum EProjectPhase {
+     EXECUTION
+     COMPLETED
+}
 model Project {
      id String @id @default(uuid())
      title String

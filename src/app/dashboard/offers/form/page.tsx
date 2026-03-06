@@ -18,8 +18,7 @@ export default function OfferFormPage () {
           router.push("/dashboard/offers");
      }
      return (
-          <div className="w-full bg-white rounded-xl p-4 lg:p-8">
-               {/* <OfferForm onComplete={handleFormComplete} offerId={offerId} /> */}
-          </div>
+          <OfferForm companyId={user.company.id} onComplete={handleFormComplete} offerId={offerId} />
+          
      )
 }

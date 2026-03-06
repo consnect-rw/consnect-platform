@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { Document, Page, pdfjs } from "react-pdf";
 import "react-pdf/dist/Page/AnnotationLayer.css";
 import "react-pdf/dist/Page/TextLayer.css";
@@ -13,12 +13,20 @@ import {
   Loader2,
   FileText,
   X,
+  AlertCircle,
 } from "lucide-react";
 
-// Configure PDF.js worker
-pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.js`;
+// Configure PDF.js worker - Use local worker file from public directory
+if (typeof window !== 'undefined') {
+  try {
+    pdfjs.GlobalWorkerOptions.workerSrc = '/pdf.worker.min.mjs';
+  } catch (error) {
+    console.error("Failed to set PDF worker:", error);
+  }
+}
 
 interface PdfViewerProps {
+
   pdfUrl: string;
   title?: string;
   onClose?: () => void;
@@ -33,15 +41,50 @@ export const PdfViewer = ({
   const [pageNumber, setPageNumber] = useState<number>(1);
   const [scale, setScale] = useState<number>(1.0);
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
+
+  // Memoize options to prevent unnecessary reloads
+  const pdfOptions = useMemo(() => ({
+    cMapUrl: `https://unpkg.com/pdfjs-dist@${pdfjs.version}/cmaps/`,
+    cMapPacked: true,
+    standardFontDataUrl: `https://unpkg.com/pdfjs-dist@${pdfjs.version}/standard_fonts/`,
+  }), []);
+
+  useEffect(() => {
+    // Reset state when pdfUrl changes
+    setNumPages(0);
+    setPageNumber(1);
+    setIsLoading(true);
+    setError(null);
+  }, [pdfUrl]);
 
   const onDocumentLoadSuccess = ({ numPages }: { numPages: number }) => {
+    console.log("PDF loaded successfully. Pages:", numPages);
     setNumPages(numPages);
     setIsLoading(false);
+    setError(null);
   };
 
   const onDocumentLoadError = (error: Error) => {
     console.error("Error loading PDF:", error);
     setIsLoading(false);
+    
+    // Provide user-friendly error messages
+    let errorMessage = "Failed to load PDF document";
+    
+    if (error.message.includes("CORS")) {
+      errorMessage = "CORS Error: PDF file cannot be accessed due to security restrictions";
+    } else if (error.message.includes("404") || error.message.includes("Not Found")) {
+      errorMessage = "PDF file not found (404)";
+    } else if (error.message.includes("403") || error.message.includes("Forbidden")) {
+      errorMessage = "Access denied to PDF file (403)";
+    } else if (error.message.includes("network") || error.message.includes("fetch")) {
+      errorMessage = "Network error: Unable to fetch PDF file";
+    } else if (error.message.includes("Invalid PDF")) {
+      errorMessage = "Invalid PDF file format";
+    }
+    
+    setError(errorMessage);
   };
 
   const goToPrevPage = () => {
@@ -161,55 +204,94 @@ export const PdfViewer = ({
 
       {/* PDF Viewer */}
       <div className="flex-1 overflow-auto p-6 flex justify-center">
-        {isLoading && (
-          <div className="flex flex-col items-center justify-center gap-4 py-16">
-            <Loader2 className="w-12 h-12 text-yellow-400 animate-spin" />
-            <p className="text-gray-600 font-medium">Loading PDF...</p>
-          </div>
-        )}
-
         <div className="inline-block">
           <Document
             file={pdfUrl}
+            options={pdfOptions}
             onLoadSuccess={onDocumentLoadSuccess}
             onLoadError={onDocumentLoadError}
             loading={
               <div className="flex flex-col items-center justify-center gap-4 py-16">
                 <Loader2 className="w-12 h-12 text-yellow-400 animate-spin" />
                 <p className="text-gray-600 font-medium">Loading PDF...</p>
+                <p className="text-xs text-gray-500 max-w-md text-center">
+                  This may take a moment for larger files
+                </p>
               </div>
             }
             error={
-              <div className="flex flex-col items-center justify-center gap-4 py-16 px-6 text-center">
+              <div className="flex flex-col items-center justify-center gap-4 py-16 px-6 text-center max-w-lg">
                 <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center">
-                  <FileText className="w-8 h-8 text-red-600" />
+                  <AlertCircle className="w-8 h-8 text-red-600" />
                 </div>
                 <div>
                   <p className="text-lg font-bold text-gray-900 mb-2">
                     Failed to load PDF
                   </p>
-                  <p className="text-gray-600">
-                    The PDF file could not be loaded. Please try again or download the
-                    file.
+                  <p className="text-gray-600 mb-4">
+                    {error || "The PDF file could not be loaded. This might be due to:"}
+                  </p>
+                  {!error && (
+                    <ul className="text-sm text-gray-600 text-left space-y-2 mb-4">
+                      <li className="flex items-start gap-2">
+                        <span className="text-red-500 shrink-0">•</span>
+                        <span>Network connectivity issues</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <span className="text-red-500 shrink-0">•</span>
+                        <span>File access restrictions (CORS)</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <span className="text-red-500 shrink-0">•</span>
+                        <span>Invalid or corrupted PDF file</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <span className="text-red-500 shrink-0">•</span>
+                        <span>File no longer available</span>
+                      </li>
+                    </ul>
+                  )}
+                </div>
+                <div className="flex gap-3">
+                  <button
+                    onClick={handleDownload}
+                    className="px-6 py-3 bg-yellow-400 text-gray-900 font-bold rounded-lg hover:bg-yellow-300 transition-all flex items-center gap-2"
+                  >
+                    <Download className="w-5 h-5" />
+                    Download PDF
+                  </button>
+                  <a
+                    href={pdfUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="px-6 py-3 bg-gray-900 text-white font-bold rounded-lg hover:bg-gray-800 transition-all flex items-center gap-2"
+                  >
+                    <FileText className="w-5 h-5" />
+                    Open in New Tab
+                  </a>
+                </div>
+                <div className="mt-4 p-3 bg-gray-50 rounded-lg border border-gray-200 w-full">
+                  <p className="text-xs text-gray-500">
+                    <span className="font-semibold">Debug Info:</span> {pdfUrl.substring(0, 100)}...
                   </p>
                 </div>
-                <button
-                  onClick={handleDownload}
-                  className="px-6 py-3 bg-yellow-400 text-gray-900 font-bold rounded-lg hover:bg-yellow-300 transition-all flex items-center gap-2"
-                >
-                  <Download className="w-5 h-5" />
-                  Download PDF
-                </button>
               </div>
             }
           >
-            <Page
-              pageNumber={pageNumber}
-              scale={scale}
-              className="shadow-lg"
-              renderTextLayer={true}
-              renderAnnotationLayer={true}
-            />
+            {numPages > 0 && (
+              <Page
+                pageNumber={pageNumber}
+                scale={scale}
+                className="shadow-lg"
+                renderTextLayer={true}
+                renderAnnotationLayer={true}
+                loading={
+                  <div className="flex items-center justify-center h-96 bg-gray-100 rounded-lg">
+                    <Loader2 className="w-8 h-8 text-yellow-400 animate-spin" />
+                  </div>
+                }
+              />
+            )}
           </Document>
         </div>
       </div>

@@ -57,7 +57,8 @@ export default function SettingsPage () {
           const name = data.get("name") as string;
           const phone = data.get("phone") as string;
           const email = data.get("email") as string;
-          const website = data.get("website") as string;
+          // const website = data.get("website") as string;
+          const website = ""
           const slogan = data.get("slogan") as string;
           const foundedYear = data.get("founded-year");
           const companySize = data.get("company-size");
@@ -189,7 +190,7 @@ export default function SettingsPage () {
                          <TextInputGroup name="name" label={`Company Name`} defaultValue={companyData?.name} required={companyData ? false :true} />
                          <TextInputGroup name="phone" label={`Company Phone`} defaultValue={companyData?.phone} required={companyData ? false :true} />
                          <TextInputGroup name="email" label={`Company Email`} defaultValue={companyData?.email} type="email" required={companyData ? false :true} />
-                         <TextInputGroup name="website" label={`Website`} type="url" defaultValue={companyData?.website ?? undefined} required={false} />
+                         {/* <TextInputGroup name="website" label={`Website`} type="url" defaultValue={companyData?.website ?? undefined} required={false} /> */}
                          <TextInputGroup name="slogan" label={`Slogan`} defaultValue={companyData?.slogan ?? undefined} required={false} />
                     </Grid2InputWrapper>
                     

@@ -2,9 +2,22 @@
 
 import { useState } from "react";
 import Image from "@/components/ui/Image";
-import { FileText, Eye, Download, X } from "lucide-react";
+import { FileText, Eye, Download } from "lucide-react";
 import { TProductCatalog } from "@/types/company/product-catalog";
-import { PdfViewer } from "@/components/ui/PdfViewer";
+import dynamic from "next/dynamic";
+
+// Dynamically import PdfViewer to avoid SSR issues with PDF.js
+const PdfViewer = dynamic(() => import("@/components/ui/PdfViewer").then(mod => ({ default: mod.PdfViewer })), {
+  ssr: false,
+  loading: () => (
+    <div className="flex items-center justify-center h-full">
+      <div className="text-center">
+        <div className="w-12 h-12 border-4 border-yellow-400 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+        <p className="text-gray-600 font-medium">Loading PDF Viewer...</p>
+      </div>
+    </div>
+  ),
+});
 
 interface CatalogCardProps {
   catalog: TProductCatalog;
