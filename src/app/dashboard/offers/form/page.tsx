@@ -9,13 +9,13 @@ import { useRouter, useSearchParams } from "next/navigation";
 export default function OfferFormPage () {
      const router = useRouter();
      const searchParams = useSearchParams();
-     const offerId = searchParams.get("id") || undefined;
+     const offerId = searchParams.get("offerId") || undefined;
      const {user} = useAuth();
      if (!user?.company) {
      return <CompanyRequiredNotice message="Please complete company profile to be able to view offers and send offer interests" />
      }
      const handleFormComplete = () => {
-          router.push("/dashboard/offers");
+          return router.push("/dashboard/offers");
      }
      return (
           <OfferForm companyId={user.company.id} onComplete={handleFormComplete} offerId={offerId} />

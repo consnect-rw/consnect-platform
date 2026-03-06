@@ -9,14 +9,6 @@ import { useQuery } from '@tanstack/react-query';
 import { Building2, FileText, Tag, MessageSquare, TrendingUp, Users, Award, Calendar, ArrowRight, Plus, Bell, User } from 'lucide-react';
 import { IconType } from 'react-icons/lib';
 
-// Mock user data - replace with actual useAuth hook
-const mockUser = {
-  name: "John Doe",
-  company: "BuildCorp Solutions",
-  memberSince: "Jan 2024",
-  avatar: "JD"
-};
-
 export default function UserDashboardPage() {
   const { user } = useAuth();
 

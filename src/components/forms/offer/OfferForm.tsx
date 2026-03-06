@@ -8,7 +8,7 @@ import { fetchOfferById } from "@/server/offer/offer";
 import { fetchCategorys } from "@/server/common/category";
 import { EDurationUnit, EOFferContractType, EOfferPriority, EOfferStatus, OfferType, OfferVisibility } from "@prisma/client";
 import { fetchProjects } from "@/server/company/project";
-import { ChangeEvent, useState } from "react";
+import { ChangeEvent, useEffect, useState } from "react";
 import { WordsInput } from "@/components/ui/upload/WordsInput";
 import { IOfferDocument, OfferDocumentForm } from "./OfferDocumentForm";
 import { generateToken } from "@/util/token-fns";
@@ -16,6 +16,7 @@ import { ChevronLeft, ChevronRight, Check, MapPin, FolderPlus } from "lucide-rea
 import { createOffer, updateOffer } from "@/server/offer/offer";
 import { toast } from "sonner";
 import queryClient from "@/lib/queryClient";
+import { SOfferEdit } from "@/types/offer/offer";
 
 enum EPaymentMethod {
      BANK_TRANSFER = "BANK_TRANSFER",
@@ -104,7 +105,7 @@ export const OfferForm = ({onComplete, offerId, companyId}:{onComplete: () => vo
 
      const {data: offerData, isLoading: fetchingOfferData} = useQuery({
           queryKey: ["offer-form-data", offerId],
-          queryFn: () => offerId ? fetchOfferById(offerId, {id:true, title:true}) : null
+          queryFn: () => offerId ? fetchOfferById(offerId, SOfferEdit) : null
      });
 
      const {data: categoriesData, isLoading: fetchingCategories} = useQuery({
@@ -126,6 +127,107 @@ export const OfferForm = ({onComplete, offerId, companyId}:{onComplete: () => vo
      const projects = projectsData?.data || [];
      const isLoading = fetchingOfferData || fetchingCategories || fetchingProjects;
 
+     // Pre-populate form state when editing an existing offer
+     useEffect(() => {
+          if (!offer) return;
+
+          // Step 1: Classification
+          if (offer.categoryId) setCategoryId(offer.categoryId);
+          if (offer.type) setOfferType(offer.type);
+
+          // Step 2: Basic Info
+          if (offer.title) setTitle(offer.title);
+          if (offer.description) setDescription(offer.description);
+          if (offer.priority) setPriority(offer.priority);
+          if (offer.status) setStatus(offer.status);
+          if (offer.visibility) setVisibility(offer.visibility);
+          if (offer.contractType) setContractType(offer.contractType);
+
+          // Step 3: Work Details
+          if (offer.scopeOfWork) setScopeOfWork(offer.scopeOfWork);
+          if (offer.qualityStandards) setQualityStandards(offer.qualityStandards);
+          if (offer.technicalSpecifications) setTechnicalSpecifications(offer.technicalSpecifications);
+          if (offer.specificTasks?.length) setTasks(offer.specificTasks);
+          if (offer.safetyRequirements) setSafetyRequirements(offer.safetyRequirements);
+          if (offer.requiredSkills?.length) setSkills(offer.requiredSkills);
+          if (offer.requiredCertifications?.length) setRequiredCertifications(offer.requiredCertifications);
+          if (offer.deliverables?.length) setDeliverables(offer.deliverables);
+
+          // Step 4: Project Info
+          if (offer.project) {
+               setProjectOption("existing");
+               setProjectId(offer.project.id);
+               setNewProjectTitle(offer.project.title ?? "");
+               setNewProjectDescription(offer.project.description ?? "");
+               setClientName(offer.project.clientName ?? "");
+               setClientEmail(offer.project.clientEmail ?? "");
+               setClientPhone(offer.project.clientPhone ?? "");
+               if (offer.project.initiatedOn) {
+                    setInitiatedOn(new Date(offer.project.initiatedOn).toISOString().split("T")[0]);
+               }
+               // Project location → site location fallback
+               const loc = offer.project.location;
+               if (loc) {
+                    setCountry(loc.country ?? "");
+                    setCity(loc.city ?? "");
+                    setState(loc.state ?? "");
+                    setZipCode(loc.zipCode ?? "");
+                    setAddress(loc.address ?? "");
+               }
+          } else if (offer.siteLocation) {
+               setProjectOption("location");
+               setCountry(offer.siteLocation.country ?? "");
+               setCity(offer.siteLocation.city ?? "");
+               setState(offer.siteLocation.state ?? "");
+               setZipCode(offer.siteLocation.zipCode ?? "");
+               setAddress(offer.siteLocation.address ?? "");
+          }
+
+          // Step 5: Timeline
+          if (offer.timeline) {
+               const tl = offer.timeline;
+               if (tl.startDate) setStartDate(new Date(tl.startDate).toISOString().split("T")[0]);
+               if (tl.endDate) setEndDate(new Date(tl.endDate).toISOString().split("T")[0]);
+               if (tl.deadline) setDeadline(new Date(tl.deadline).toISOString().split("T")[0]);
+               if (tl.duration) setDuration(String(tl.duration));
+               if (tl.durationUnit) setDurationUnit(tl.durationUnit);
+          }
+
+          // Step 6: Pricing
+          if (offer.pricing) {
+               const pr = offer.pricing;
+               if (pr.budgetMin != null) setBudgetMin(String(pr.budgetMin));
+               if (pr.budgetMax != null) setBudgetMax(String(pr.budgetMax));
+               if (pr.currency) setCurrency(pr.currency);
+               if (pr.paymentTerms) setPaymentTerms(pr.paymentTerms);
+               if (pr.paymentMethods?.length) setPaymentMethods(pr.paymentMethods as EPaymentMethod[]);
+          }
+
+          // Step 7: Submission Info
+          if (offer.submissionInfo) {
+               const si = offer.submissionInfo;
+               if (si.proposalFormat) setProposalFormat(si.proposalFormat);
+               if (si.contactEmail) setContactEmail(si.contactEmail);
+               if (si.contactPhone) setContactPhone(si.contactPhone);
+               if (si.submissionGuidelines) setSubmissionNotes(si.submissionGuidelines);
+               setAutoClose(si.autoClose ? "Yes" : "No");
+          }
+
+          // Step 8: Documents
+          if (offer.documents?.length) {
+               setDocuments(offer.documents.map(d => ({
+                    id: d.id,
+                    type: d.type ?? undefined,
+                    url: d.url ?? undefined,
+                    description: d.description ?? undefined,
+                    fileType: d.fileType ?? undefined,
+                    fileSize: d.fileSize ?? undefined,
+                    accessLevel: d.accessLevel ?? undefined,
+               })));
+          }
+     // eslint-disable-next-line react-hooks/exhaustive-deps
+     }, [offerData]);
+
      const handleAddDocument = () => {
           const id = generateToken();
           setDocuments(prev => [...prev, {id}]);
@@ -136,7 +238,7 @@ export const OfferForm = ({onComplete, offerId, companyId}:{onComplete: () => vo
           setLoading(true);
           
           try {
-               if (!offer) {
+               if (!offerId) {
                     // Create new offer using state values
                     const offerData: any = {
                          title,
@@ -258,7 +360,7 @@ export const OfferForm = ({onComplete, offerId, companyId}:{onComplete: () => vo
                          ...(requiredCertifications.length > 0 && { requiredCertifications }),
                     };
 
-                    const response = await updateOffer(offer.id, updateData);
+                    const response = await updateOffer(offerId, updateData);
                     
                     if (!response) {
                          toast.error("Error updating offer!", { description: "Please try again later" });
@@ -363,14 +465,14 @@ export const OfferForm = ({onComplete, offerId, companyId}:{onComplete: () => vo
                                    <Grid2InputWrapper>
                                         <SelectInputGroup 
                                              name="category" 
-                                             label={`Category: ${categoryId ? offerCategories.find(c => c.id === categoryId)?.name : ""}`} 
+                                             label={`Category${categoryId ? `: ${offerCategories.find(c => c.id === categoryId)?.name ?? ""}` : ""}`}
                                              values={offerCategories.map(c => ({label:c.name, value:c.id}))} 
                                              required={!offer}
                                              action={(value) => setCategoryId(value)}
                                         />
                                         <SelectInputGroup 
                                              name="type" 
-                                             label={`Offer Type: ${offerType ? offerType.split("_").join(" ") : ""}`} 
+                                             label={`Offer Type${offerType ? `: ${offerType.split("_").join(" ")}` : ""}`}
                                              values={Object.values(OfferType).map(v => ({value:v, label: v.split("_").join(" ")}))} 
                                              required={!offer}
                                              action={(value) => setOfferType(value)}
@@ -405,28 +507,28 @@ export const OfferForm = ({onComplete, offerId, companyId}:{onComplete: () => vo
                                    <Grid2InputWrapper>
                                         <SelectInputGroup 
                                              name="priority" 
-                                             label="Priority" 
+                                             label={`Priority${priority ? `: ${priority}` : ""}`}
                                              values={Object.values(EOfferPriority).map(v => ({value:v, label: v}))} 
                                              required={!offer}
                                              action={(value) => setPriority(value)}
                                         />
                                         <SelectInputGroup 
                                              name="status" 
-                                             label="Status" 
+                                             label={`Status${status ? `: ${status}` : ""}`}
                                              values={Object.values(EOfferStatus).map(v => ({value:v, label: v}))} 
                                              required={!offer}
                                              action={(value) => setStatus(value)}
                                         />
                                         <SelectInputGroup 
                                              name="visibility" 
-                                             label="Visibility" 
+                                             label={`Visibility${visibility ? `: ${visibility}` : ""}`}
                                              values={Object.values(OfferVisibility).map(v => ({value:v, label: v}))} 
                                              required={!offer}
                                              action={(value) => setVisibility(value)}
                                         />
                                         <SelectInputGroup 
                                              name="contract-type" 
-                                             label="Contract Type" 
+                                             label={`Contract Type${contractType ? `: ${contractType.split("_").join(" ")}` : ""}`}
                                              values={Object.values(EOFferContractType).map(v => ({value:v, label: v.split("_").join(" ")}))} 
                                              required={!offer}
                                              action={(value) => setContractType(value)}
@@ -533,7 +635,7 @@ export const OfferForm = ({onComplete, offerId, companyId}:{onComplete: () => vo
                                    {projectOption === "existing" && (
                                         <SelectInputGroup 
                                              name="project" 
-                                             label="Select Project" 
+                                             label={`Select Project${projectId ? `: ${projects.find(p => p.id === projectId)?.title ?? ""}` : ""}`}
                                              values={projects.map(p => ({value:p.id, label: p.title}))} 
                                              required={false}
                                              action={(value) => setProjectId(value)}
@@ -698,7 +800,7 @@ export const OfferForm = ({onComplete, offerId, companyId}:{onComplete: () => vo
                                              />
                                              <SelectInputGroup 
                                                   name="duration-unit" 
-                                                  label="Duration Unit" 
+                                                  label={`Duration Unit${durationUnit ? `: ${durationUnit}` : ""}`}
                                                   values={Object.values(EDurationUnit).map(v => ({value:v, label: v}))} 
                                                   required={false}
                                                   action={(value) => setDurationUnit(value)}
@@ -778,7 +880,7 @@ export const OfferForm = ({onComplete, offerId, companyId}:{onComplete: () => vo
                                         />
                                         <SelectInputGroup 
                                              name="auto-close" 
-                                             label="Auto Close After Deadline" 
+                                             label={`Auto Close After Deadline${autoClose ? `: ${autoClose}` : ""}`}
                                              values={[{value:"Yes", label:"Yes"}, {value:"No", label:"No"}]} 
                                              required={false}
                                              action={(value) => setAutoClose(value)}
