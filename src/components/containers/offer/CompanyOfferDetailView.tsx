@@ -18,9 +18,10 @@ const PdfViewer = dynamic(() => import("@/components/ui/PdfViewer").then(mod => 
 
 interface CompanyOfferDetailViewProps {
      offer: TCompanyOfferDetail;
+     allowPublish?: boolean;
 }
 
-export const CompanyOfferDetailView = ({ offer }: CompanyOfferDetailViewProps) => {
+export const DashboardOfferDetailView = ({ offer, allowPublish=false }: CompanyOfferDetailViewProps ) => {
      const router = useRouter();
      const [deleting, setDeleting] = useState(false);
      const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
@@ -528,7 +529,7 @@ export const CompanyOfferDetailView = ({ offer }: CompanyOfferDetailViewProps) =
                                              {offer.status !== "PUBLISHED" && (
                                                   <button
                                                        onClick={() => handleStatusChange("PUBLISHED")}
-                                                       disabled={changingStatus}
+                                                       disabled={allowPublish ? changingStatus : true}
                                                        className="w-full px-3 py-2 bg-green-100 hover:bg-green-200 text-green-900 font-bold rounded-lg transition-all text-sm disabled:opacity-50"
                                                   >
                                                        Publish

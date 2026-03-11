@@ -9,7 +9,13 @@ export default async function OfferPage({ params }: { params: Promise<{ id: stri
      const offer = await fetchOfferById(id, SPublicOfferDetail);
 
      if (!offer || offer.status !== "PUBLISHED") {
-          notFound();
+          return (
+               <div className="min-h-4/12 py-2 bg-gray-50 flex items-center justify-center">
+                    <div className="text-center">
+                         <p className="text-gray-600 font-bold">Offer not found or not published</p>
+                    </div>
+               </div>
+          )
      }
 
      return <PublicOfferDetailView offer={offer} />;

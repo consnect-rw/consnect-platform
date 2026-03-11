@@ -162,6 +162,11 @@ export const SPublicOfferDetail = {
                }
           } 
      },
+     user: {
+          select: {
+               id:true, name:true, email:true, phone:true, image:true
+          }
+     },
      project: {
           select: {
                id: true,

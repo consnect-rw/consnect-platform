@@ -41,6 +41,8 @@ model User {
      sentMessages Message[] @relation("MessageSender")
      receivedMessages Message[] @relation("MessageReceiver")
      authLogs AuthLog[]
+     offers Offer[]
+     projects Project[]
 }
 
 model EmailVerificationToken {

@@ -26,6 +26,9 @@ model Project {
      companyId String?
      company Company? @relation(fields: [companyId], references: [id], onDelete: Cascade)
 
+     userId String?
+     user User? @relation(fields: [userId], references: [id], onDelete: SetNull)
+
      documents Document[]
      offers Offer[]
 }

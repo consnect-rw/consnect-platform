@@ -5,7 +5,8 @@ import Image from "@/components/ui/Image";
 import Link from "next/link";
 import { 
      Building2, Calendar, DollarSign, MapPin, Users, ArrowLeft, Heart,
-     FileText, CheckCircle, Clock, AlertCircle, Briefcase, Phone, Mail, Globe
+     FileText, CheckCircle, Clock, AlertCircle, Briefcase, Phone, Mail, Globe,
+     Banknote, Smartphone, Wallet, CreditCard
 } from "lucide-react";
 import { CompanyVerificationBadge } from "@/components/ui/badges/CompanyVerificationBadge";
 import { ConsnectBadge } from "@/components/ui/badges/ConsnectBadge";
@@ -109,15 +110,45 @@ export const PublicOfferDetailView = ({ offer }: PublicOfferDetailViewProps) => 
           const now = new Date();
           const daysLeft = Math.ceil((deadline.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
           
-          if (daysLeft < 0) return { text: "Expired", color: "text-red-600 bg-red-50" };
-          if (daysLeft === 0) return { text: "Expires Today", color: "text-orange-600 bg-orange-50" };
-          if (daysLeft === 1) return { text: "1 day left", color: "text-yellow-600 bg-yellow-50" };
-          if (daysLeft <= 7) return { text: `${daysLeft} days left`, color: "text-yellow-600 bg-yellow-50" };
-          return { text: `${daysLeft} days left`, color: "text-green-600 bg-green-50" };
+          if (daysLeft < 0) return { text: "Expired", color: "text-red-600 bg-red-50", hasExpired:true };
+          if (daysLeft === 0) return { text: "Expires Today", color: "text-orange-600 bg-orange-50", hasExpired:false };
+          if (daysLeft === 1) return { text: "1 day left", color: "text-yellow-600 bg-yellow-50", hasExpired:false };
+          if (daysLeft <= 7) return { text: `${daysLeft} days left`, color: "text-yellow-600 bg-yellow-50", hasExpired:false };
+          return { text: `${daysLeft} days left`, color: "text-green-600 bg-green-50", hasExpired:false };
      };
 
      const budget = formatBudget();
      const deadline = formatDeadline();
+
+     // Determine poster type
+     const postedByCompany = !!offer.company;
+     const postedByUser = !postedByCompany && !!offer.user;
+
+     // User initials avatar
+     const getUserInitials = (name: string) => {
+          return name
+               .split(" ")
+               .filter(Boolean)
+               .slice(0, 2)
+               .map((n) => n[0].toUpperCase())
+               .join("");
+     };
+
+     // Payment method display config
+     const getPaymentMethodConfig = (method: string) => {
+          switch (method) {
+               case "BANK_TRANSFER":
+                    return { label: "Bank Transfer", icon: Banknote, bg: "bg-blue-50", text: "text-blue-700", border: "border-blue-200" };
+               case "MOMO":
+                    return { label: "Mobile Money", icon: Smartphone, bg: "bg-green-50", text: "text-green-700", border: "border-green-200" };
+               case "CASH":
+                    return { label: "Cash", icon: Wallet, bg: "bg-amber-50", text: "text-amber-700", border: "border-amber-200" };
+               case "CHECK":
+                    return { label: "Cheque", icon: CreditCard, bg: "bg-purple-50", text: "text-purple-700", border: "border-purple-200" };
+               default:
+                    return { label: method.replace(/_/g, " "), icon: CreditCard, bg: "bg-gray-50", text: "text-gray-700", border: "border-gray-200" };
+          }
+     };
 
      return (
           <div className="min-h-screen bg-gray-50 py-8">
@@ -364,7 +395,7 @@ export const PublicOfferDetailView = ({ offer }: PublicOfferDetailViewProps) => 
                               <div className="bg-white rounded-2xl shadow-sm border-2 border-yellow-400 p-6">
                                    <button
                                         onClick={handleShowInterest}
-                                        disabled={showingInterest}
+                                        disabled={deadline?.hasExpired ? true : showingInterest}
                                         className="w-full px-6 py-4 bg-yellow-400 hover:bg-yellow-500 text-gray-900 font-black rounded-xl transition-all text-lg flex items-center justify-center gap-2 mb-4 disabled:opacity-50"
                                    >
                                         <Heart className="w-5 h-5" />
@@ -376,84 +407,150 @@ export const PublicOfferDetailView = ({ offer }: PublicOfferDetailViewProps) => 
                                    </p>
                               </div>
 
-                              {/* Company Info */}
+                              {/* Posted By */}
                               <div className="bg-white rounded-2xl shadow-sm border-2 border-gray-200 p-6">
                                    <h3 className="text-lg font-black text-gray-900 mb-4">Posted By</h3>
 
-                                   <div className="flex items-start gap-3 mb-4">
-                                        <div className="relative shrink-0">
-                                             <div className="w-16 h-16 bg-linear-to-br from-gray-100 to-gray-200 border-2 border-gray-200 rounded-xl overflow-hidden">
-                                                  {hasLogo ? (
-                                                       <Image
-                                                            src={offer.company!.logoUrl!}
-                                                            alt={`${offer.company?.name} logo`}
-                                                            className="object-cover w-full h-full"
-                                                       />
-                                                  ) : (
-                                                       <div className="w-full h-full flex items-center justify-center">
-                                                            <Building2 className="w-8 h-8 text-gray-400" />
+                                   {postedByCompany && (
+                                        <>
+                                             <div className="flex items-start gap-3 mb-4">
+                                                  <div className="relative shrink-0">
+                                                       <div className="w-16 h-16 bg-gray-100 border-2 border-gray-200 rounded-xl overflow-hidden">
+                                                            {hasLogo ? (
+                                                                 <Image
+                                                                      src={offer.company!.logoUrl!}
+                                                                      alt={`${offer.company?.name} logo`}
+                                                                      className="object-cover w-full h-full"
+                                                                 />
+                                                            ) : (
+                                                                 <div className="w-full h-full flex items-center justify-center bg-gray-100">
+                                                                      <Building2 className="w-8 h-8 text-gray-400" />
+                                                                 </div>
+                                                            )}
                                                        </div>
-                                                  )}
+                                                       {isVerified && (
+                                                            <div className="absolute -bottom-1 -right-1">
+                                                                 <CompanyVerificationBadge size="sm" showLabel={false} />
+                                                            </div>
+                                                       )}
+                                                  </div>
+
+                                                  <div className="flex-1 min-w-0">
+                                                       <Link
+                                                            href={`/company/${offer.company?.handle}`}
+                                                            className="text-lg font-black text-gray-900 hover:text-amber-600 transition-colors line-clamp-1 block"
+                                                       >
+                                                            {offer.company?.name}
+                                                       </Link>
+                                                       <p className="text-sm text-gray-500">@{offer.company?.handle}</p>
+                                                       {showConsnectBadge && (
+                                                            <div className="mt-2">
+                                                                 <ConsnectBadge level={badgeLevel} size="sm" showLabel={true} />
+                                                            </div>
+                                                       )}
+                                                  </div>
                                              </div>
-                                             {isVerified && (
-                                                  <div className="absolute -bottom-1 -right-1">
-                                                       <CompanyVerificationBadge size="sm" showLabel={false} />
+
+                                             {/* Contact Info */}
+                                             {offer.submissionInfo && (
+                                                  <div className="space-y-2.5 pt-4 border-t border-gray-100">
+                                                       {offer.submissionInfo.contactEmail && (
+                                                            <div className="flex items-center gap-2.5 text-sm">
+                                                                 <div className="w-7 h-7 bg-amber-50 rounded-lg flex items-center justify-center shrink-0">
+                                                                      <Mail className="w-3.5 h-3.5 text-amber-600" />
+                                                                 </div>
+                                                                 <a href={`mailto:${offer.submissionInfo.contactEmail}`} className="text-gray-700 hover:text-amber-600 font-medium truncate transition-colors">
+                                                                      {offer.submissionInfo.contactEmail}
+                                                                 </a>
+                                                            </div>
+                                                       )}
+                                                       {offer.submissionInfo.contactPhone && (
+                                                            <div className="flex items-center gap-2.5 text-sm">
+                                                                 <div className="w-7 h-7 bg-amber-50 rounded-lg flex items-center justify-center shrink-0">
+                                                                      <Phone className="w-3.5 h-3.5 text-amber-600" />
+                                                                 </div>
+                                                                 <a href={`tel:${offer.submissionInfo.contactPhone}`} className="text-gray-700 hover:text-amber-600 font-medium transition-colors">
+                                                                      {offer.submissionInfo.contactPhone}
+                                                                 </a>
+                                                            </div>
+                                                       )}
+                                                       {offer.company?.website && (
+                                                            <div className="flex items-center gap-2.5 text-sm">
+                                                                 <div className="w-7 h-7 bg-amber-50 rounded-lg flex items-center justify-center shrink-0">
+                                                                      <Globe className="w-3.5 h-3.5 text-amber-600" />
+                                                                 </div>
+                                                                 <a href={offer.company.website} target="_blank" rel="noopener noreferrer" className="text-gray-700 hover:text-amber-600 font-medium truncate transition-colors">
+                                                                      {offer.company.website.replace(/^https?:\/\/(www\.)?/, "")}
+                                                                 </a>
+                                                            </div>
+                                                       )}
                                                   </div>
                                              )}
-                                        </div>
 
-                                        <div className="flex-1 min-w-0">
                                              <Link
                                                   href={`/company/${offer.company?.handle}`}
-                                                  className="text-lg font-black text-gray-900 hover:text-yellow-600 transition-colors line-clamp-1 block"
+                                                  className="mt-4 w-full px-4 py-2.5 bg-gray-900 hover:bg-gray-800 text-white font-bold rounded-xl transition-all text-center block text-sm"
                                              >
-                                                  {offer.company?.name}
+                                                  View Company Profile
                                              </Link>
-                                             <p className="text-sm text-gray-500">@{offer.company?.handle}</p>
-                                             {showConsnectBadge && (
-                                                  <div className="mt-2">
-                                                       <ConsnectBadge level={badgeLevel} size="sm" showLabel={true} />
-                                                  </div>
-                                             )}
-                                        </div>
-                                   </div>
-
-                                   {/* Contact Info */}
-                                   {offer.submissionInfo && (
-                                        <div className="space-y-3 pt-4 border-t border-gray-100">
-                                             {offer.submissionInfo.contactEmail && (
-                                                  <div className="flex items-center gap-2 text-sm">
-                                                       <Mail className="w-4 h-4 text-gray-400" />
-                                                       <a href={`mailto:${offer.submissionInfo.contactEmail}`} className="text-gray-700 hover:text-yellow-600 font-medium truncate">
-                                                            {offer.submissionInfo.contactEmail}
-                                                       </a>
-                                                  </div>
-                                             )}
-                                             {offer.submissionInfo.contactPhone && (
-                                                  <div className="flex items-center gap-2 text-sm">
-                                                       <Phone className="w-4 h-4 text-gray-400" />
-                                                       <a href={`tel:${offer.submissionInfo.contactPhone}`} className="text-gray-700 hover:text-yellow-600 font-medium">
-                                                            {offer.submissionInfo.contactPhone}
-                                                       </a>
-                                                  </div>
-                                             )}
-                                             {offer.company?.website && (
-                                                  <div className="flex items-center gap-2 text-sm">
-                                                       <Globe className="w-4 h-4 text-gray-400" />
-                                                       <a href={offer.company.website} target="_blank" rel="noopener noreferrer" className="text-gray-700 hover:text-yellow-600 font-medium truncate">
-                                                            {offer.company.website.replace(/^https?:\/\/(www\.)?/, "")}
-                                                       </a>
-                                                  </div>
-                                             )}
-                                        </div>
+                                        </>
                                    )}
 
-                                   <Link
-                                        href={`/company/${offer.company?.handle}`}
-                                        className="mt-4 w-full px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-900 font-bold rounded-lg transition-all text-center block"
-                                   >
-                                        View Company Profile
-                                   </Link>
+                                   {postedByUser && offer.user && (
+                                        <>
+                                             <div className="flex items-center gap-3 mb-4">
+                                                  {/* Initials Avatar */}
+                                                  <div className="relative shrink-0">
+                                                       <div className="w-16 h-16 rounded-xl bg-amber-400 flex items-center justify-center shadow-md shadow-amber-100">
+                                                            <span className="text-gray-900 font-black text-xl leading-none select-none">
+                                                                 {getUserInitials(offer.user.name ?? "U")}
+                                                            </span>
+                                                       </div>
+                                                       {/* Individual badge */}
+                                                       <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-gray-900 rounded-full flex items-center justify-center border-2 border-white">
+                                                            <svg className="w-2.5 h-2.5 text-amber-400" fill="currentColor" viewBox="0 0 20 20">
+                                                                 <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
+                                                            </svg>
+                                                       </div>
+                                                  </div>
+
+                                                  <div className="flex-1 min-w-0">
+                                                       <p className="text-lg font-black text-gray-900 leading-tight line-clamp-1">
+                                                            {offer.user.name}
+                                                       </p>
+                                                       <span className="inline-block mt-1 px-2 py-0.5 bg-amber-100 text-amber-800 text-xs font-bold rounded-full">
+                                                            Individual
+                                                       </span>
+                                                  </div>
+                                             </div>
+
+                                             {/* User contact from submission info */}
+                                             {offer.submissionInfo && (
+                                                  <div className="space-y-2.5 pt-4 border-t border-gray-100">
+                                                       {offer.submissionInfo.contactEmail && (
+                                                            <div className="flex items-center gap-2.5 text-sm">
+                                                                 <div className="w-7 h-7 bg-amber-50 rounded-lg flex items-center justify-center shrink-0">
+                                                                      <Mail className="w-3.5 h-3.5 text-amber-600" />
+                                                                 </div>
+                                                                 <a href={`mailto:${offer.submissionInfo.contactEmail}`} className="text-gray-700 hover:text-amber-600 font-medium truncate transition-colors">
+                                                                      {offer.submissionInfo.contactEmail}
+                                                                 </a>
+                                                            </div>
+                                                       )}
+                                                       {offer.submissionInfo.contactPhone && (
+                                                            <div className="flex items-center gap-2.5 text-sm">
+                                                                 <div className="w-7 h-7 bg-amber-50 rounded-lg flex items-center justify-center shrink-0">
+                                                                      <Phone className="w-3.5 h-3.5 text-amber-600" />
+                                                                 </div>
+                                                                 <a href={`tel:${offer.submissionInfo.contactPhone}`} className="text-gray-700 hover:text-amber-600 font-medium transition-colors">
+                                                                      {offer.submissionInfo.contactPhone}
+                                                                 </a>
+                                                            </div>
+                                                       )}
+                                                  </div>
+                                             )}
+                                        </>
+                                   )}
                               </div>
 
                               {/* Timeline */}
@@ -489,24 +586,37 @@ export const PublicOfferDetailView = ({ offer }: PublicOfferDetailViewProps) => 
                               {/* Pricing Details */}
                               {offer.pricing && (offer.pricing.paymentTerms || offer.pricing.paymentMethods.length > 0) && (
                                    <div className="bg-white rounded-2xl shadow-sm border-2 border-gray-200 p-6">
-                                        <h3 className="text-lg font-black text-gray-900 mb-4">Payment Details</h3>
+                                        <h3 className="text-lg font-black text-gray-900 mb-4 flex items-center gap-2">
+                                             <DollarSign className="w-5 h-5 text-amber-500" />
+                                             Payment Details
+                                        </h3>
 
                                         {offer.pricing.paymentTerms && (
-                                             <div className="mb-4">
-                                                  <p className="text-sm text-gray-600 font-medium mb-1">Payment Terms</p>
-                                                  <p className="text-gray-900 leading-relaxed">{offer.pricing.paymentTerms}</p>
+                                             <div className="mb-4 p-3 bg-gray-50 rounded-xl">
+                                                  <p className="text-xs text-gray-500 font-semibold uppercase tracking-wide mb-1">Payment Terms</p>
+                                                  <p className="text-gray-800 text-sm leading-relaxed font-medium">{offer.pricing.paymentTerms}</p>
                                              </div>
                                         )}
 
                                         {offer.pricing.paymentMethods.length > 0 && (
                                              <div>
-                                                  <p className="text-sm text-gray-600 font-medium mb-2">Accepted Methods</p>
-                                                  <div className="flex flex-wrap gap-2">
-                                                       {offer.pricing.paymentMethods.map((method, idx) => (
-                                                            <span key={idx} className="px-2 py-1 bg-green-100 text-green-900 text-xs font-bold rounded">
-                                                                 {method.replace("_", " ")}
-                                                            </span>
-                                                       ))}
+                                                  <p className="text-xs text-gray-500 font-semibold uppercase tracking-wide mb-3">Accepted Methods</p>
+                                                  <div className="space-y-2">
+                                                       {offer.pricing.paymentMethods.map((method, idx) => {
+                                                            const config = getPaymentMethodConfig(method);
+                                                            const Icon = config.icon;
+                                                            return (
+                                                                 <div
+                                                                      key={idx}
+                                                                      className={`flex items-center gap-3 px-3 py-2.5 rounded-xl border ${config.bg} ${config.border}`}
+                                                                 >
+                                                                      <div className={`w-7 h-7 rounded-lg flex items-center justify-center ${config.text} bg-white/70`}>
+                                                                           <Icon className="w-4 h-4" />
+                                                                      </div>
+                                                                      <span className={`text-sm font-bold ${config.text}`}>{config.label}</span>
+                                                                 </div>
+                                                            );
+                                                       })}
                                                   </div>
                                              </div>
                                         )}
