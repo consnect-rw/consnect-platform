@@ -11,14 +11,19 @@ export default function OfferFormPage () {
      const searchParams = useSearchParams();
      const offerId = searchParams.get("offerId") || undefined;
      const {user} = useAuth();
-     if (!user?.company) {
-     return <CompanyRequiredNotice message="Please complete company profile to be able to view offers and send offer interests" />
-     }
+     // if (!user?.company) {
+     // return <CompanyRequiredNotice message="Please complete company profile to be able to view offers and send offer interests" />
+     // }
      const handleFormComplete = () => {
+          router.prefetch("/dashboard/offers");
           return router.push("/dashboard/offers");
      }
+     if(user?.company) {
+          return (
+               <OfferForm allowPublish={user.company.verification?.status === "VERIFIED"} companyId={user?.company?.id} onComplete={handleFormComplete} offerId={offerId} />
+          )
+     }
      return (
-          <OfferForm companyId={user.company.id} onComplete={handleFormComplete} offerId={offerId} />
-          
+          <OfferForm allowPublish={false} onComplete={handleFormComplete} offerId={offerId} userId={user?.id} />
      )
 }

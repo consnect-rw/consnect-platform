@@ -17,15 +17,21 @@ export default function OffersPage() {
   
   const { data, isLoading } = useQuery({
     queryKey: ["user-offers", user?.company?.id, page],
-    queryFn: () => fetchOffers(SCompanyOfferCard, {company: {id: user?.company?.id}}, perPage, (page-1) * perPage, { createdAt: 'desc' })
+    queryFn: () => fetchOffers(SCompanyOfferCard, {
+      OR: [
+        {company: {id: user?.company?.id}},
+        {userId: user?.id}
+      ]
+
+    }, perPage, (page-1) * perPage, { createdAt: 'desc' })
   });
   const offers = data?.data ?? [];
   const total = data?.pagination.total ?? 0;
   const hasCompany = user?.company ? true : false;
 
-  if (!hasCompany) {
-    return <CompanyRequiredNotice message='You need to add your company information before creating offers.' />
-  }
+  // if (!hasCompany) {
+  //   return <CompanyRequiredNotice message='You need to add your company information before creating offers.' />
+  // }
 
   return (
     <div className="min-h-screen bg-gray-50 p-4 sm:p-6 lg:p-8">

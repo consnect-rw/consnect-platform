@@ -34,11 +34,11 @@ const FORM_STEPS = [
      { id: 4, title: "Project Info", shortTitle: "Project" },
      { id: 5, title: "Timeline", shortTitle: "Time" },
      { id: 6, title: "Pricing", shortTitle: "Price" },
-     { id: 7, title: "Submission", shortTitle: "Submit" },
+     { id: 7, title: "Submission", shortTitle: "Submit Info" },
      { id: 8, title: "Documents", shortTitle: "Docs" },
 ];
 
-export const OfferForm = ({onComplete, offerId, companyId}:{onComplete: () => void, offerId?:string, companyId:string}) => {
+export const OfferForm = ({onComplete, offerId, companyId,userId, allowPublish=false}:{onComplete: () => void, offerId?:string, companyId?:string,userId?: string, allowPublish?: boolean}) => {
      const [currentStep, setCurrentStep] = useState(1);
      const [loading, setLoading] = useState(false);
      
@@ -92,7 +92,7 @@ export const OfferForm = ({onComplete, offerId, companyId}:{onComplete: () => vo
      const [currency, setCurrency] = useState("");
      const [paymentTerms, setPaymentTerms] = useState("");
      const [paymentMethods, setPaymentMethods] = useState<EPaymentMethod[]>([]);
-     
+
      // Step 7: Submission
      const [proposalFormat, setProposalFormat] = useState("");
      const [autoClose, setAutoClose] = useState("");
@@ -117,8 +117,13 @@ export const OfferForm = ({onComplete, offerId, companyId}:{onComplete: () => vo
           queryKey: ["offer-form-projects", companyId],
           queryFn:() => fetchProjects({id:true, title:true}, {
                AND: [
-                    {companyId: companyId},
-                    {phase: "EXECUTION"}]
+                    {
+                         OR: [
+                              {companyId: companyId},
+                              {userId: userId}]
+                    },
+                    {phase: "EXECUTION"}
+               ]
           }, 20)
      })
      
@@ -245,11 +250,12 @@ export const OfferForm = ({onComplete, offerId, companyId}:{onComplete: () => vo
                          description,
                          type: offerType as OfferType,
                          priority: priority as EOfferPriority,
-                         status: status as EOfferStatus,
+                         status: status ? status as EOfferStatus : "DRAFT",
                          visibility: visibility as OfferVisibility,
                          contractType: contractType as EOFferContractType,
                          category: { connect: { id: categoryId } },
-                         company: { connect: { id: companyId } },
+                         ...(companyId && { company: { connect: { id: companyId } } }),
+                         ...(userId && { user: { connect: { id: userId } } }),
                          ...(scopeOfWork && { scopeOfWork }),
                          ...(qualityStandards && { qualityStandards }),
                          ...(technicalSpecifications && { technicalSpecifications }),
@@ -274,6 +280,7 @@ export const OfferForm = ({onComplete, offerId, companyId}:{onComplete: () => vo
                                    clientPhone: clientPhone || "",
                                    initiatedOn: initiatedOn ? new Date(initiatedOn) : new Date(),
                                    companyId: companyId,
+                                   userId: userId
                               }
                          };
                     }
@@ -339,7 +346,7 @@ export const OfferForm = ({onComplete, offerId, companyId}:{onComplete: () => vo
 
                     toast.success("Offer created successfully");
                     queryClient.invalidateQueries();
-                    onComplete();
+                    return onComplete();
                } else {
                     // Update existing offer using state values
                     const updateData: any = {
@@ -369,7 +376,7 @@ export const OfferForm = ({onComplete, offerId, companyId}:{onComplete: () => vo
 
                     toast.success("Offer updated successfully");
                     queryClient.invalidateQueries();
-                    onComplete();
+                    return onComplete();
                }
           } catch (error) {
                console.error("Error submitting offer:", error);
@@ -512,13 +519,13 @@ export const OfferForm = ({onComplete, offerId, companyId}:{onComplete: () => vo
                                              required={!offer}
                                              action={(value) => setPriority(value)}
                                         />
-                                        <SelectInputGroup 
+                                        {allowPublish && <SelectInputGroup 
                                              name="status" 
                                              label={`Status${status ? `: ${status}` : ""}`}
                                              values={Object.values(EOfferStatus).map(v => ({value:v, label: v}))} 
                                              required={!offer}
                                              action={(value) => setStatus(value)}
-                                        />
+                                        />}
                                         <SelectInputGroup 
                                              name="visibility" 
                                              label={`Visibility${visibility ? `: ${visibility}` : ""}`}
@@ -858,7 +865,8 @@ export const OfferForm = ({onComplete, offerId, companyId}:{onComplete: () => vo
                                         type="select" 
                                         label="Payment Methods" 
                                         words={paymentMethods} 
-                                        onChange={words => setPaymentMethods(words as EPaymentMethod[])} 
+                                        options={Object.values(EPaymentMethod)}
+                                        onChange={word => setPaymentMethods(word as EPaymentMethod[])} 
                                    />
                               </div>
                          )}
@@ -985,8 +993,10 @@ export const OfferForm = ({onComplete, offerId, companyId}:{onComplete: () => vo
                                    Next
                                    <ChevronRight className="w-5 h-5" />
                               </button>
-                         ) : (
-                              <button
+                         ) : null}
+                         {
+                              currentStep === FORM_STEPS.length && (
+                                   <button
                                    type="submit"
                                    disabled={loading}
                                    className="flex items-center gap-2 px-8 py-3 rounded-lg font-bold text-white bg-yellow-500 hover:bg-yellow-600 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-lg hover:shadow-xl"
@@ -1003,7 +1013,8 @@ export const OfferForm = ({onComplete, offerId, companyId}:{onComplete: () => vo
                                         </>
                                    )}
                               </button>
-                         )}
+                              )
+                         }
                     </div>
                </form>
           </div>

@@ -77,8 +77,12 @@ model Offer {
      companyId String?
      company Company? @relation(fields: [companyId], references: [id])
 
+     userId String?
+     user User? @relation(fields: [userId], references: [id], onDelete: SetNull)
+
      projectId String?
      project Project? @relation(fields: [projectId], references: [id])
+
 
      interests OfferInterest[]
      documents OfferDocument[]

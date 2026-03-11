@@ -503,13 +503,13 @@ export const AdminOfferDetailView = ({ offer }: AdminOfferDetailViewProps) => {
                                              View Public Page
                                         </Link>
 
-                                        <Link
+                                        {offer.company && <Link
                                              href={`/company/${offer.company?.handle}`}
                                              className="w-full px-4 py-3 bg-purple-100 hover:bg-purple-200 text-purple-900 font-bold rounded-xl transition-all flex items-center justify-center gap-2"
                                         >
                                              <Building2 className="w-5 h-5" />
                                              View Company
-                                        </Link>
+                                        </Link>}
 
                                         <button
                                              onClick={() => setShowDeleteConfirm(true)}
