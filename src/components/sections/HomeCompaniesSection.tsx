@@ -14,7 +14,7 @@ export async function HomeCompaniesSection() {
   const { data: companies } = await fetchCompanys(
     SCompanyCard,
     { verification: { status: ECompanyStatus.VERIFIED } },
-    8
+    200
   );
 
   if (companies.length === 0) {
