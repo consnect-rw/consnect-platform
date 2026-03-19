@@ -55,8 +55,7 @@ export const CategoryForm = ({category, type, onComplete, parentId}:{category?: 
                await deleteSingleImage(image);
                setImage("");
                return toast.success("Image deleted successfully");
-          } catch (error) {
-               console.log(error);
+          } catch {
                return toast.error("Error deleting image!");
           }
      }

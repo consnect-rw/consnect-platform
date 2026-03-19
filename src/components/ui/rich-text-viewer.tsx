@@ -23,134 +23,132 @@ const RichTextView: React.FC<RichTextViewProps> = ({
 }) => {
   return (
     <div
-      className={`rich-text-view ${showBorder ? 'border border-gray-300 rounded-lg' : ''} bg-white ${className}`}
-      style={{
-        minHeight,
-        maxHeight,
-        overflow: maxHeight ? 'auto' : 'visible',
-      }}
+      className={`rich-text-view ${showBorder ? 'border-2 border-gray-200 rounded-xl' : ''} bg-white overflow-hidden ${className}`}
+      style={{ minHeight, maxHeight, overflow: maxHeight ? 'auto' : 'visible' }}
     >
       <div
-        className="prose prose-sm max-w-none p-4"
+        className="rtv-content prose prose-sm max-w-none p-5"
         dangerouslySetInnerHTML={{ __html: content }}
       />
 
       <style jsx>{`
-        .rich-text-view :global(h1) {
+        /* ── Headings ─────────────────────────────────────────────────── */
+        .rtv-content :global(h1) {
           font-size: 2em;
-          font-weight: bold;
-          margin-top: 0.5em;
-          margin-bottom: 0.5em;
-          color: #854d0e;
+          font-weight: 800;
+          margin: 0.7em 0 0.3em;
+          color: #111827;
+          letter-spacing: -0.02em;
+          line-height: 1.2;
         }
-
-        .rich-text-view :global(h2) {
+        .rtv-content :global(h2) {
           font-size: 1.5em;
-          font-weight: bold;
-          margin-top: 0.5em;
-          margin-bottom: 0.5em;
-          color: #a16207;
+          font-weight: 700;
+          margin: 0.6em 0 0.3em;
+          color: #1f2937;
+          line-height: 1.3;
+        }
+        .rtv-content :global(h3) {
+          font-size: 1.2em;
+          font-weight: 700;
+          margin: 0.5em 0 0.25em;
+          color: #374151;
+          line-height: 1.4;
         }
 
-        .rich-text-view :global(h3) {
-          font-size: 1.25em;
-          font-weight: bold;
-          margin-top: 0.5em;
-          margin-bottom: 0.5em;
-          color: #ca8a04;
-        }
-
-        .rich-text-view :global(p) {
+        /* ── Paragraphs ───────────────────────────────────────────────── */
+        .rtv-content :global(p) {
           margin: 0.5rem 0;
-          line-height: 1.6;
-          color: #475569;
+          line-height: 1.75;
+          color: #374151;
         }
 
-        .rich-text-view :global(strong) {
-          font-weight: 600;
-          color: #1e293b;
-        }
+        /* ── Inline formatting ────────────────────────────────────────── */
+        .rtv-content :global(strong) { font-weight: 700; color: #111827; }
+        .rtv-content :global(em)     { font-style: italic; }
+        .rtv-content :global(u)      { text-decoration: underline; text-underline-offset: 3px; }
+        .rtv-content :global(s)      { text-decoration: line-through; color: #9ca3af; }
 
-        .rich-text-view :global(em) {
-          font-style: italic;
-        }
-
-        .rich-text-view :global(u) {
-          text-decoration: underline;
-        }
-
-        .rich-text-view :global(s) {
-          text-decoration: line-through;
-        }
-
-        .rich-text-view :global(ul),
-        .rich-text-view :global(ol) {
+        /* ── Lists ────────────────────────────────────────────────────── */
+        .rtv-content :global(ul),
+        .rtv-content :global(ol) {
           padding-left: 1.5rem;
           margin: 0.5rem 0;
         }
-
-        .rich-text-view :global(li) {
-          margin: 0.25rem 0;
-          color: #475569;
+        .rtv-content :global(li) {
+          margin: 0.3rem 0;
+          color: #374151;
+          line-height: 1.7;
         }
+        .rtv-content :global(ul li::marker) { color: #f59e0b; font-size: 1.1em; }
+        .rtv-content :global(ol li::marker) { color: #d97706; font-weight: 700; }
 
-        .rich-text-view :global(code) {
-          background-color: #fef3c7;
-          padding: 0.2em 0.4em;
-          border-radius: 3px;
+        /* ── Code ─────────────────────────────────────────────────────── */
+        .rtv-content :global(code) {
+          background: #fef3c7;
+          padding: 0.15em 0.45em;
+          border-radius: 4px;
           font-family: 'Courier New', monospace;
-          font-size: 0.9em;
+          font-size: 0.88em;
           color: #92400e;
+          border: 1px solid #fde68a;
         }
-
-        .rich-text-view :global(pre) {
-          background-color: #374151;
-          color: #e2e8f0;
-          padding: 1rem;
-          border-radius: 0.5rem;
+        .rtv-content :global(pre) {
+          background: #111827;
+          color: #f9fafb;
+          padding: 1.25rem;
+          border-radius: 0.75rem;
           overflow-x: auto;
           margin: 1rem 0;
+          border: 1px solid #1f2937;
         }
-
-        .rich-text-view :global(pre code) {
+        .rtv-content :global(pre code) {
           background: none;
           padding: 0;
           color: inherit;
+          border: none;
         }
 
-        .rich-text-view :global(blockquote) {
+        /* ── Blockquote ───────────────────────────────────────────────── */
+        .rtv-content :global(blockquote) {
           border-left: 4px solid #fbbf24;
-          padding-left: 1rem;
-          margin-left: 0;
-          margin: 1rem 0;
+          padding: 0.875rem 1.25rem;
+          margin: 1.25rem 0;
+          background: #fffbeb;
+          border-radius: 0 0.625rem 0.625rem 0;
+          color: #78350f;
           font-style: italic;
-          color: #64748b;
-          background-color: #fef3c7;
-          padding: 1rem;
-          border-radius: 0.5rem;
         }
 
-        .rich-text-view :global(a) {
-          color: #ca8a04;
+        /* ── Links ────────────────────────────────────────────────────── */
+        .rtv-content :global(a) {
+          color: #d97706;
           text-decoration: underline;
-          transition: color 0.2s;
+          text-underline-offset: 3px;
+          transition: color 0.15s;
+        }
+        .rtv-content :global(a:hover) { color: #92400e; }
+
+        /* ── Images ───────────────────────────────────────────────────── */
+        .rtv-content :global(img) {
+          display: block;
+          max-width: 100%;
+          height: auto;
+          border-radius: 0.75rem;
+          margin: 1.5rem auto;
+          border: 2px solid #e5e7eb;
+          box-shadow: 0 4px 20px rgba(0, 0, 0, 0.07);
+          transition: box-shadow 0.2s, border-color 0.2s;
+        }
+        .rtv-content :global(img:hover) {
+          border-color: #fcd34d;
+          box-shadow: 0 6px 28px rgba(0, 0, 0, 0.12);
         }
 
-        .rich-text-view :global(a:hover) {
-          color: #a16207;
-        }
-
-        .rich-text-view :global([style*="text-align: center"]) {
-          text-align: center;
-        }
-
-        .rich-text-view :global([style*="text-align: right"]) {
-          text-align: right;
-        }
-
-        .rich-text-view :global([style*="text-align: left"]) {
-          text-align: left;
-        }
+        /* ── Text alignment ───────────────────────────────────────────── */
+        .rtv-content :global([style*="text-align: center"]) { text-align: center; }
+        .rtv-content :global([style*="text-align: right"])  { text-align: right;  }
+        .rtv-content :global([style*="text-align: left"])   { text-align: left;   }
       `}</style>
     </div>
   );

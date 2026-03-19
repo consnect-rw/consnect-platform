@@ -69,6 +69,7 @@ model Offer {
      timeline OfferTimeLine?
      pricing OfferPricing?
      submissionInfo OfferSubmissionInfo?
+     requiredDocuments String[] // List of required document types or descriptions
 
      // relations
      categoryId String
@@ -207,7 +208,21 @@ model OfferInterest {
      offerId String
      offer Offer @relation(fields: [offerId], references: [id])
 
+     attachments InterestAttachment[]
+
      @@unique([companyId, offerId])
+}
+
+model InterestAttachment {
+     id String @id @default(uuid())
+     url String
+     description String?
+     fileType String?
+
+     uploadedAt DateTime @default(now())
+
+     offerInterestId String
+     offerInterest OfferInterest @relation(fields: [offerInterestId], references: [id], onDelete: Cascade)
 }
 
 enum EOfferInvitationStatus {

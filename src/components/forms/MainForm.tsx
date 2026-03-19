@@ -20,8 +20,7 @@ export const MainForm = ({children, submitData, btnTitle, btnIcon, showSubmitBtn
                setLoading(true);
                const data = new FormData(event.currentTarget);
                return await submitData(data);
-          } catch (error) {
-               console.log(error);
+          } catch {
                return toast.error("Application Error", {description: "Some went wrong. Please contact support"});
           }finally {
                setLoading(false);

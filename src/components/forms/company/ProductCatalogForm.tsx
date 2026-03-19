@@ -61,8 +61,7 @@ export const ProductCatalogForm = ({catalog, companyId, onComplete}:{catalog?:TP
                await deleteSingleImage(image);
                toast.success("Success deleting cover image");
                return setImage("");
-          } catch (error) {
-               console.log(error);
+          } catch {
                return toast.error("Error deleting cover image")
           }
      }
@@ -73,8 +72,7 @@ export const ProductCatalogForm = ({catalog, companyId, onComplete}:{catalog?:TP
                await deleteSingleImage(fileUrl)
                toast.success("Success deleting product catalog file");
                return setImage("");
-          } catch (error) {
-               console.log(error);
+          } catch {
                return toast.error("Error deleting product catalog file");
           }
      };

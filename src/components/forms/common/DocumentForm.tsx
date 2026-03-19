@@ -91,8 +91,7 @@ export const DocumentInput  = ({doc, onUpload, onDelete}:{doc: {title: string, u
                     }
                }
                
-          } catch (error) {
-               console.log(error);
+          } catch {
                return toast.error("Error deleting document");
           }finally{
                setDeletingFile(false);

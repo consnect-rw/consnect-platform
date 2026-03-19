@@ -1,16 +1,17 @@
 "use client";
 
-import React, { useEffect } from 'react';
-import { useEditor, EditorContent } from '@tiptap/react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { useEditor, EditorContent, NodeViewWrapper, NodeViewContent, ReactNodeViewRenderer } from '@tiptap/react';
+import { Node, mergeAttributes } from '@tiptap/core';
 import StarterKit from '@tiptap/starter-kit';
 import Underline from '@tiptap/extension-underline';
 import TextAlign from '@tiptap/extension-text-align';
 import Link from '@tiptap/extension-link';
 import Placeholder from '@tiptap/extension-placeholder';
-import { 
-  Bold, 
-  Italic, 
-  Underline as UnderlineIconLucide, 
+import {
+  Bold,
+  Italic,
+  Underline as UnderlineIconLucide,
   Strikethrough,
   List,
   ListOrdered,
@@ -23,8 +24,283 @@ import {
   Link2,
   Undo,
   Redo,
-  Code
+  Code,
+  ImagePlus,
+  Loader2,
+  Trash2,
+  Maximize2,
+  Minimize2,
+  LayoutGrid,
+  Square,
+  Columns2,
+  Columns3,
+  MoveHorizontal,
 } from 'lucide-react';
+import { uploadSingleImage } from '@/util/s3Helpers';
+
+// ─── Image Size / Layout Types ────────────────────────────────────────────
+
+type ImageSize   = 'sm' | 'md' | 'lg' | 'full';
+type ImageLayout = 'single' | 'two-col' | 'three-col' | 'side-left' | 'side-right';
+
+const SIZE_WIDTHS: Record<ImageSize, string> = {
+  sm:   '35%',
+  md:   '60%',
+  lg:   '80%',
+  full: '100%',
+};
+
+const SIZE_LABELS: Record<ImageSize, string> = {
+  sm:   'Small',
+  md:   'Medium',
+  lg:   'Large',
+  full: 'Full',
+};
+
+// ─── Image Node View ──────────────────────────────────────────────────────
+
+interface ImageNodeViewProps {
+  node: { attrs: { src: string; alt?: string; size: ImageSize; layout: ImageLayout } };
+  updateAttributes: (attrs: Partial<{ size: ImageSize; layout: ImageLayout }>) => void;
+  deleteNode: () => void;
+  selected: boolean;
+  editor: any;
+  getPos: () => number;
+}
+
+const ImageNodeView = ({ node, updateAttributes, deleteNode, selected, editor, getPos }: ImageNodeViewProps) => {
+  const { src, alt, size, layout } = node.attrs;
+  const [showControls, setShowControls] = useState(false);
+
+  const handleDelete = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    deleteNode();
+  };
+
+  // After changing layout/size, move cursor to just after this node so it's
+  // deselected — prevents the next image insert from replacing this node.
+  const handleUpdateAttr = (e: React.MouseEvent, attrs: Partial<{ size: ImageSize; layout: ImageLayout }>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    updateAttributes(attrs);
+    // Move cursor past this node
+    try {
+      const pos = getPos();
+      editor.commands.setTextSelection(pos + 1);
+    } catch (_) {}
+  };
+
+  const sizeIcons: { key: ImageSize; icon: React.ReactNode; label: string }[] = [
+    { key: 'sm',   icon: <Minimize2   size={13} />, label: 'Small'  },
+    { key: 'md',   icon: <Square      size={13} />, label: 'Medium' },
+    { key: 'lg',   icon: <Maximize2   size={13} />, label: 'Large'  },
+    { key: 'full', icon: <MoveHorizontal size={13} />, label: 'Full' },
+  ];
+
+  const layoutIcons: { key: ImageLayout; icon: React.ReactNode; label: string }[] = [
+    { key: 'single',      icon: <Square    size={13} />, label: 'Single'     },
+    { key: 'two-col',     icon: <Columns2  size={13} />, label: '2 columns'  },
+    { key: 'three-col',   icon: <Columns3  size={13} />, label: '3 columns'  },
+    { key: 'side-left',   icon: <AlignLeft  size={13} />, label: 'Float left'  },
+    { key: 'side-right',  icon: <AlignRight size={13} />, label: 'Float right' },
+  ];
+
+  // Compute inner wrapper style — outer NodeViewWrapper div controls block/grid sizing via CSS.
+  const getWrapperStyle = (): React.CSSProperties => {
+    switch (layout) {
+      case 'side-left':  return { float: 'left',  width: SIZE_WIDTHS[size], marginRight: '12px', marginBottom: '8px' };
+      case 'side-right': return { float: 'right', width: SIZE_WIDTHS[size], marginLeft:  '12px', marginBottom: '8px' };
+      default:           return { width: '100%' };
+    }
+  };
+
+  const isGridLayout = layout === 'two-col' || layout === 'three-col';
+  void isGridLayout;
+
+  // The NodeViewWrapper must always be inline (span) because the node is inline: true.
+  // We use a data-layout attribute and handle actual block/grid display in CSS.
+  return (
+    <NodeViewWrapper
+      as="div"
+      data-layout={layout}
+      data-size={size}
+      className="editor-image-node"
+    >
+      <div
+        style={{ ...getWrapperStyle(), position: 'relative' }}
+        className={`editor-image-wrapper${selected ? ' editor-image-selected' : ''}`}
+        onMouseEnter={() => setShowControls(true)}
+        onMouseLeave={() => setShowControls(false)}
+      >
+        {/* The actual image */}
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src={src}
+          alt={alt ?? ''}
+          style={{ width: '100%', height: 'auto', display: 'block', borderRadius: '0.625rem' }}
+          draggable={false}
+        />
+
+        {/* Controls overlay — visible on hover or when selected */}
+        {(showControls || selected) && (
+          <span
+            contentEditable={false}
+            style={{
+              position: 'absolute', inset: 0, borderRadius: '0.625rem',
+              background: 'rgba(0,0,0,0.45)', display: 'flex', flexDirection: 'column',
+              alignItems: 'center', justifyContent: 'space-between',
+              padding: '8px', zIndex: 20, userSelect: 'none',
+            }}
+          >
+            {/* Top row: layout controls */}
+            <span style={{ display: 'flex', gap: '4px', alignItems: 'center', flexWrap: 'wrap', justifyContent: 'center' }}>
+              {layoutIcons.map(({ key, icon, label }) => (
+                <button
+                  key={key}
+                  type="button"
+                  title={label}
+                  onMouseDown={(e) => handleUpdateAttr(e, { layout: key })}
+                  style={{
+                    padding: '4px 6px',
+                    borderRadius: '5px',
+                    border: 'none',
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '3px',
+                    fontSize: '11px',
+                    fontWeight: 600,
+                    transition: 'background 0.15s',
+                    background: layout === key ? '#fbbf24' : 'rgba(255,255,255,0.18)',
+                    color: layout === key ? '#111827' : '#f9fafb',
+                  }}
+                >
+                  {icon}
+                  <span style={{ display: 'none' }}>{label}</span>
+                </button>
+              ))}
+            </span>
+
+            {/* Middle: size pills */}
+            <span style={{ display: 'flex', gap: '4px', alignItems: 'center' }}>
+              {sizeIcons.map(({ key, icon, label }) => (
+                <button
+                  key={key}
+                  type="button"
+                  title={label}
+                  onMouseDown={(e) => handleUpdateAttr(e, { size: key })}
+                  style={{
+                    padding: '3px 8px',
+                    borderRadius: '20px',
+                    border: 'none',
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '4px',
+                    fontSize: '11px',
+                    fontWeight: 700,
+                    transition: 'background 0.15s',
+                    background: size === key ? '#fbbf24' : 'rgba(255,255,255,0.18)',
+                    color: size === key ? '#111827' : '#f9fafb',
+                  }}
+                >
+                  {icon}
+                  {label}
+                </button>
+              ))}
+            </span>
+
+            {/* Bottom: delete */}
+            <span>
+              <button
+                type="button"
+                title="Remove image"
+                onMouseDown={handleDelete}
+                style={{
+                  padding: '5px 12px',
+                  borderRadius: '6px',
+                  border: 'none',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '5px',
+                  fontSize: '12px',
+                  fontWeight: 700,
+                  background: '#ef4444',
+                  color: '#fff',
+                }}
+              >
+                <Trash2 size={13} />
+                Remove
+              </button>
+            </span>
+          </span>
+        )}
+      </div>
+    </NodeViewWrapper>
+  );
+};
+
+// ─── Custom Image Extension ───────────────────────────────────────────────
+
+const EditorImage = Node.create({
+  name: 'editorImage',
+  group: 'block',
+  atom: true,
+  draggable: true,
+
+  addAttributes() {
+    return {
+      src:    { default: null },
+      alt:    { default: '' },
+      title:  { default: null },
+      size:   {
+        default: 'full' as ImageSize,
+        parseHTML: (el) => (el.getAttribute('data-size') as ImageSize) || 'full',
+        renderHTML: (attrs) => ({ 'data-size': attrs.size }),
+      },
+      layout: {
+        default: 'single' as ImageLayout,
+        parseHTML: (el) => (el.getAttribute('data-layout') as ImageLayout) || 'single',
+        renderHTML: (attrs) => ({ 'data-layout': attrs.layout }),
+      },
+    };
+  },
+
+  parseHTML() {
+    return [{ tag: 'img[src]' }];
+  },
+
+  renderHTML({ HTMLAttributes }) {
+    return ['img', mergeAttributes(HTMLAttributes)];
+  },
+
+  addNodeView() {
+    return ReactNodeViewRenderer(ImageNodeView as any);
+  },
+
+  addCommands() {
+    return {
+      setEditorImage: (attrs: { src: string; alt?: string }) => ({ state, commands }: any) => {
+        // If an editorImage atom node is currently selected, move cursor past it
+        // so the new image inserts after it rather than replacing it.
+        const { selection } = state;
+        const selNode = (selection as any).node;
+        if (selNode && selNode.type.name === 'editorImage') {
+          const endPos = (selection as any).from + selNode.nodeSize;
+          commands.setTextSelection(endPos);
+        }
+        return commands.insertContent({
+          type: this.name,
+          attrs: { ...attrs, size: 'full', layout: 'single' },
+        });
+      },
+    } as any;
+  },
+});
+
+// ─── Menu Button ─────────────────────────────────────────────────────────
 
 interface MenuButtonProps {
   onClick: () => void;
@@ -39,334 +315,469 @@ const MenuButton = ({ onClick, isActive, disabled, children, title }: MenuButton
     onClick={onClick}
     disabled={disabled}
     title={title}
-    type='button'
-    className={`p-2 rounded hover:bg-yellow-50 transition-colors ${
-      isActive ? 'bg-yellow-100 text-yellow-600' : 'text-gray-700'
-    } ${disabled ? 'opacity-50 cursor-not-allowed' : ''}`}
+    type="button"
+    className={`p-2 rounded-md transition-all duration-150 ${
+      isActive
+        ? 'bg-yellow-400 text-gray-900 shadow-sm'
+        : 'text-gray-600 hover:bg-yellow-50 hover:text-gray-900'
+    } ${disabled ? 'opacity-30 cursor-not-allowed pointer-events-none' : ''}`}
   >
     {children}
   </button>
 );
+
+// ─── Divider ─────────────────────────────────────────────────────────────────
+
+const ToolbarDivider = () => (
+  <div className="w-px h-6 bg-gray-200 self-center mx-0.5" />
+);
+
+// ─── Props ───────────────────────────────────────────────────────────────────
+
 interface RichTextEditorProps {
-  /** Initial HTML content to display in the editor */
   defaultValue?: string;
-  /** Callback function triggered on content change, receives HTML string */
   onChange?: (html: string) => void;
-  /** Placeholder text shown when editor is empty */
   placeholder?: string;
-  /** Whether the editor content is editable */
   editable?: boolean;
-  /** Minimum height of the editor */
   minHeight?: string;
-  /** Maximum height of the editor */
   maxHeight?: string;
+  /** S3 folder to upload images into */
+  imageFolder?: string;
 }
 
-export const RichTextEditor = ({ 
-  defaultValue = '', 
+// ─── Component ───────────────────────────────────────────────────────────────
+
+export const RichTextEditor = ({
+  defaultValue = '',
   onChange,
   placeholder = 'Start typing...',
   editable = true,
   minHeight = '200px',
-  maxHeight = '500px'
+  maxHeight = '500px',
+  imageFolder = 'editor-images',
 }: RichTextEditorProps) => {
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [uploadingImage, setUploadingImage] = useState(false);
+  const [dragOver, setDragOver] = useState(false);
+  // Tracks whether the last content change came from inside the editor (typing/deleting)
+  // vs from outside (parent loading saved data). Prevents the feedback loop:
+  //   edit → onChange → parent setState → new defaultValue → setContent → edit → …
+  const isInternalChange = useRef(false);
+
   const editor = useEditor({
     extensions: [
-      StarterKit.configure({
-        heading: {
-          levels: [1, 2, 3],
-        },
-      }),
+      StarterKit.configure({ heading: { levels: [1, 2, 3] } }),
       Underline,
-      TextAlign.configure({
-        types: ['heading', 'paragraph'],
-      }),
+      TextAlign.configure({ types: ['heading', 'paragraph'] }),
       Link.configure({
         openOnClick: false,
-        HTMLAttributes: {
-          class: 'text-yellow-600 underline hover:text-yellow-700',
-        },
+        HTMLAttributes: { class: 'text-yellow-600 underline hover:text-yellow-700' },
       }),
-      Placeholder.configure({
-        placeholder,
-      }),
+      Placeholder.configure({ placeholder }),
+      EditorImage,
     ],
     content: defaultValue,
     editable,
     onUpdate: ({ editor }) => {
-      const html = editor.getHTML();
-      onChange?.(html);
+      isInternalChange.current = true;
+      onChange?.(editor.getHTML());
     },
-    immediatelyRender: false
+    immediatelyRender: false,
   });
 
   useEffect(() => {
-    if (editor && defaultValue !== editor.getHTML()) {
-      editor.commands.setContent(defaultValue);
+    if (!editor) return;
+    if (isInternalChange.current) {
+      isInternalChange.current = false;
+      return;
+    }
+    const current = editor.getHTML();
+    if (defaultValue !== current) {
+      // Defer out of the React render cycle to avoid the flushSync-inside-lifecycle warning.
+      // setContent internally calls flushSync on the ProseMirror view; scheduling it as a
+      // microtask ensures React has finished its current render pass first.
+      queueMicrotask(() => {
+        editor.commands.setContent(defaultValue ?? '', { emitUpdate: false });
+      });
     }
   }, [defaultValue, editor]);
 
-  const setLink = () => {
-    const url = window.prompt('Enter URL:');
-    if (url) {
-      editor?.chain().focus().setLink({ href: url }).run();
-    }
+  // ── Image Upload ──────────────────────────────────────────────────────────
+
+  const insertImageFromFile = useCallback(
+    async (file: File) => {
+      if (!editor) return;
+      if (!file.type.startsWith('image/')) return;
+
+      setUploadingImage(true);
+      try {
+        const url = await uploadSingleImage(file, imageFolder);
+        if (url) {
+          // If an editorImage node is currently selected (atom node selection),
+          // move the cursor to just after it so we insert a new image, not replace.
+          const { selection } = editor.state;
+          const selNode = (selection as any).node;
+          if (selNode && selNode.type.name === 'editorImage') {
+            const endPos = (selection as any).from + selNode.nodeSize;
+            editor.commands.setTextSelection(endPos);
+          }
+          (editor.chain().focus() as any).setEditorImage({ src: url, alt: file.name }).run();
+        }
+      } finally {
+        setUploadingImage(false);
+      }
+    },
+    [editor, imageFolder],
+  );
+
+  const handleImageButtonClick = () => {
+    fileInputRef.current?.click();
   };
 
-  if (!editor) {
-    return null;
-  }
+  const handleFileInputChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) await insertImageFromFile(file);
+    // reset so same file can be picked again
+    e.target.value = '';
+  };
+
+  // ── Drag & Drop into editor area ─────────────────────────────────────────
+
+  const handleDrop = useCallback(
+    async (e: React.DragEvent<HTMLDivElement>) => {
+      e.preventDefault();
+      setDragOver(false);
+      const file = Array.from(e.dataTransfer.files).find((f) =>
+        f.type.startsWith('image/'),
+      );
+      if (file) await insertImageFromFile(file);
+    },
+    [insertImageFromFile],
+  );
+
+  // ── Paste images ─────────────────────────────────────────────────────────
+
+  useEffect(() => {
+    if (!editor) return;
+    const dom = editor.view.dom as HTMLElement;
+
+    const handlePaste = async (e: ClipboardEvent) => {
+      const items = Array.from(e.clipboardData?.items ?? []);
+      const imageItem = items.find((i) => i.type.startsWith('image/'));
+      if (!imageItem) return;
+      e.preventDefault();
+      const file = imageItem.getAsFile();
+      if (file) await insertImageFromFile(file);
+    };
+
+    dom.addEventListener('paste', handlePaste);
+    return () => dom.removeEventListener('paste', handlePaste);
+  }, [editor, insertImageFromFile]);
+
+  // ── Link ─────────────────────────────────────────────────────────────────
+
+  const setLink = () => {
+    const url = window.prompt('Enter URL:');
+    if (url) editor?.chain().focus().setLink({ href: url }).run();
+  };
+
+  if (!editor) return null;
 
   return (
-    <div className="w-full border border-gray-300 rounded-lg overflow-hidden bg-white shadow-sm">
-      {/* Toolbar */}
-      <div className="flex flex-wrap gap-1 p-2 border-b border-gray-200 bg-gradient-to-r from-yellow-50 to-gray-50">
-        {/* Text Formatting */}
-        <div className="flex gap-1 border-r border-gray-300 pr-2">
-          <MenuButton
-           disabled={!editor.can().undo()}
-            onClick={() => editor.chain().focus().toggleBold().run()}
-            isActive={editor.isActive('bold')}
-            title="Bold (Ctrl+B)"
-          >
-            <Bold size={18} />
-          </MenuButton>
-          <MenuButton
-            onClick={() => editor.chain().focus().toggleItalic().run()}
-            isActive={editor.isActive('italic')}
-            title="Italic (Ctrl+I)"
-          >
-            <Italic size={18} />
-          </MenuButton>
-          <MenuButton
-            onClick={() => editor.chain().focus().toggleUnderline().run()}
-            isActive={editor.isActive('underline')}
-            title="Underline (Ctrl+U)"
-          >
-            <UnderlineIconLucide size={18} />
-          </MenuButton>
-          <MenuButton
-            onClick={() => editor.chain().focus().toggleStrike().run()}
-            isActive={editor.isActive('strike')}
-            title="Strikethrough"
-          >
-            <Strikethrough size={18} />
-          </MenuButton>
-          <MenuButton
-            onClick={() => editor.chain().focus().toggleCode().run()}
-            isActive={editor.isActive('code')}
-            title="Inline Code"
-          >
-            <Code size={18} />
-          </MenuButton>
-        </div>
+    <div className="w-full rounded-xl overflow-hidden bg-white border-2 border-gray-200 shadow-sm focus-within:border-yellow-400 transition-colors duration-200">
 
-        {/* Headings */}
-        <div className="flex gap-1 border-r border-gray-300 pr-2">
-          <MenuButton
-            onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()}
-            isActive={editor.isActive('heading', { level: 1 })}
-            title="Heading 1"
-          >
-            <Heading1 size={18} />
-          </MenuButton>
-          <MenuButton
-               disabled={!editor.can().undo()}
-            onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}
-            isActive={editor.isActive('heading', { level: 2 })}
-            title="Heading 2"
-          >
-            <Heading2 size={18} />
-          </MenuButton>
-          <MenuButton
-               disabled={!editor.can().undo()}
-            onClick={() => editor.chain().focus().toggleHeading({ level: 3 }).run()}
-            isActive={editor.isActive('heading', { level: 3 })}
-            title="Heading 3"
-          >
-            <Heading3 size={18} />
-          </MenuButton>
-        </div>
-
-        {/* Lists */}
-        <div className="flex gap-1 border-r border-gray-300 pr-2">
-          <MenuButton
-            disabled={!editor.can().undo()}
-            onClick={() => editor.chain().focus().toggleBulletList().run()}
-            isActive={editor.isActive('bulletList')}
-            title="Bullet List"
-          >
-            <List size={18} />
-          </MenuButton>
-          <MenuButton
-               disabled={!editor.can().undo()}
-            onClick={() => editor.chain().focus().toggleOrderedList().run()}
-            isActive={editor.isActive('orderedList')}
-            title="Numbered List"
-          >
-            <ListOrdered size={18} />
-          </MenuButton>
-        </div>
-
-        {/* Alignment */}
-        <div className="flex gap-1 border-r border-gray-300 pr-2">
-          <MenuButton
-          disabled={!editor.can().undo()}
-            onClick={() => editor.chain().focus().setTextAlign('left').run()}
-            isActive={editor.isActive({ textAlign: 'left' })}
-            title="Align Left"
-          >
-            <AlignLeft size={18} />
-          </MenuButton>
-          <MenuButton
-          disabled={!editor.can().undo()}
-            onClick={() => editor.chain().focus().setTextAlign('center').run()}
-            isActive={editor.isActive({ textAlign: 'center' })}
-            title="Align Center"
-          >
-            <AlignCenter size={18} />
-          </MenuButton>
-          <MenuButton
-          disabled={!editor.can().undo()}
-            onClick={() => editor.chain().focus().setTextAlign('right').run()}
-            isActive={editor.isActive({ textAlign: 'right' })}
-            title="Align Right"
-          >
-            <AlignRight size={18} />
-          </MenuButton>
-        </div>
-
-        {/* Link */}
-        <div className="flex gap-1 border-r border-gray-300 pr-2">
-          <MenuButton
-               disabled={!editor.can().undo()}
-            onClick={setLink}
-            isActive={editor.isActive('link')}
-            title="Insert Link"
-          >
-            <Link2 size={18} />
-          </MenuButton>
-        </div>
-
-        {/* Undo/Redo */}
-        <div className="flex gap-1">
-          <MenuButton
-               isActive={true}
-            onClick={() => editor.chain().focus().undo().run()}
-            disabled={!editor.can().undo()}
-            title="Undo (Ctrl+Z)"
-          >
-            <Undo size={18} />
-          </MenuButton>
-          <MenuButton
-               isActive={true}
-            onClick={() => editor.chain().focus().redo().run()}
-            disabled={!editor.can().redo()}
-            title="Redo (Ctrl+Y)"
-          >
-            <Redo size={18} />
-          </MenuButton>
-        </div>
-      </div>
-
-      {/* Editor Content */}
-      <EditorContent 
-        editor={editor} 
-        className="prose prose-sm max-w-none"
-        style={{ 
-          minHeight,
-          maxHeight,
-          overflow: 'auto'
-        }}
+      {/* Hidden file input */}
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept="image/*"
+        className="hidden"
+        onChange={handleFileInputChange}
       />
 
+      {/* ── Toolbar ──────────────────────────────────────────────────────── */}
+      <div className="flex flex-wrap items-center gap-0.5 px-3 py-2 border-b-2 border-gray-100 bg-gray-50">
+
+        {/* Formatting */}
+        <MenuButton onClick={() => editor.chain().focus().toggleBold().run()} isActive={editor.isActive('bold')} title="Bold (Ctrl+B)">
+          <Bold size={16} />
+        </MenuButton>
+        <MenuButton onClick={() => editor.chain().focus().toggleItalic().run()} isActive={editor.isActive('italic')} title="Italic (Ctrl+I)">
+          <Italic size={16} />
+        </MenuButton>
+        <MenuButton onClick={() => editor.chain().focus().toggleUnderline().run()} isActive={editor.isActive('underline')} title="Underline (Ctrl+U)">
+          <UnderlineIconLucide size={16} />
+        </MenuButton>
+        <MenuButton onClick={() => editor.chain().focus().toggleStrike().run()} isActive={editor.isActive('strike')} title="Strikethrough">
+          <Strikethrough size={16} />
+        </MenuButton>
+        <MenuButton onClick={() => editor.chain().focus().toggleCode().run()} isActive={editor.isActive('code')} title="Inline Code">
+          <Code size={16} />
+        </MenuButton>
+
+        <ToolbarDivider />
+
+        {/* Headings */}
+        <MenuButton onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()} isActive={editor.isActive('heading', { level: 1 })} title="Heading 1">
+          <Heading1 size={16} />
+        </MenuButton>
+        <MenuButton onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()} isActive={editor.isActive('heading', { level: 2 })} title="Heading 2">
+          <Heading2 size={16} />
+        </MenuButton>
+        <MenuButton onClick={() => editor.chain().focus().toggleHeading({ level: 3 }).run()} isActive={editor.isActive('heading', { level: 3 })} title="Heading 3">
+          <Heading3 size={16} />
+        </MenuButton>
+
+        <ToolbarDivider />
+
+        {/* Lists */}
+        <MenuButton onClick={() => editor.chain().focus().toggleBulletList().run()} isActive={editor.isActive('bulletList')} title="Bullet List">
+          <List size={16} />
+        </MenuButton>
+        <MenuButton onClick={() => editor.chain().focus().toggleOrderedList().run()} isActive={editor.isActive('orderedList')} title="Numbered List">
+          <ListOrdered size={16} />
+        </MenuButton>
+
+        <ToolbarDivider />
+
+        {/* Alignment */}
+        <MenuButton onClick={() => editor.chain().focus().setTextAlign('left').run()} isActive={editor.isActive({ textAlign: 'left' })} title="Align Left">
+          <AlignLeft size={16} />
+        </MenuButton>
+        <MenuButton onClick={() => editor.chain().focus().setTextAlign('center').run()} isActive={editor.isActive({ textAlign: 'center' })} title="Align Center">
+          <AlignCenter size={16} />
+        </MenuButton>
+        <MenuButton onClick={() => editor.chain().focus().setTextAlign('right').run()} isActive={editor.isActive({ textAlign: 'right' })} title="Align Right">
+          <AlignRight size={16} />
+        </MenuButton>
+
+        <ToolbarDivider />
+
+        {/* Link */}
+        <MenuButton onClick={setLink} isActive={editor.isActive('link')} title="Insert Link">
+          <Link2 size={16} />
+        </MenuButton>
+
+        {/* Image Upload */}
+        <button
+          type="button"
+          title="Insert Image"
+          onClick={handleImageButtonClick}
+          disabled={uploadingImage}
+          className={`p-2 rounded-md transition-all duration-150 flex items-center gap-1.5 text-sm font-semibold
+            ${uploadingImage
+              ? 'bg-yellow-100 text-yellow-600 cursor-not-allowed'
+              : 'bg-yellow-400 text-gray-900 hover:bg-yellow-500 shadow-sm'
+            }`}
+        >
+          {uploadingImage ? (
+            <>
+              <Loader2 size={16} className="animate-spin" />
+              <span className="hidden sm:inline">Uploading…</span>
+            </>
+          ) : (
+            <>
+              <ImagePlus size={16} />
+              <span className="hidden sm:inline">Image</span>
+            </>
+          )}
+        </button>
+
+        {/* Spacer */}
+        <div className="flex-1" />
+
+        {/* Undo / Redo */}
+        <MenuButton onClick={() => editor.chain().focus().undo().run()} disabled={!editor.can().undo()} title="Undo (Ctrl+Z)">
+          <Undo size={16} />
+        </MenuButton>
+        <MenuButton onClick={() => editor.chain().focus().redo().run()} disabled={!editor.can().redo()} title="Redo (Ctrl+Y)">
+          <Redo size={16} />
+        </MenuButton>
+      </div>
+
+      {/* ── Editor Content Area ───────────────────────────────────────────── */}
+      <div
+        className={`relative transition-colors duration-150 ${dragOver ? 'bg-yellow-50' : 'bg-white'}`}
+        onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
+        onDragLeave={() => setDragOver(false)}
+        onDrop={handleDrop}
+      >
+        {/* Drag overlay */}
+        {dragOver && (
+          <div className="absolute inset-0 z-10 flex flex-col items-center justify-center border-2 border-dashed border-yellow-400 rounded-b-xl bg-yellow-50/90 pointer-events-none">
+            <ImagePlus size={36} className="text-yellow-500 mb-2" />
+            <p className="text-yellow-700 font-bold text-sm">Drop image to insert</p>
+          </div>
+        )}
+
+        {/* Uploading overlay */}
+        {uploadingImage && (
+          <div className="absolute inset-0 z-10 flex flex-col items-center justify-center bg-white/80 pointer-events-none">
+            <Loader2 size={32} className="text-yellow-500 animate-spin mb-2" />
+            <p className="text-gray-600 font-semibold text-sm">Uploading image…</p>
+          </div>
+        )}
+
+        <EditorContent
+          editor={editor}
+          className="editor-content"
+          style={{ minHeight, maxHeight, overflow: 'auto' }}
+        />
+      </div>
+
+      {/* ── Hint bar ─────────────────────────────────────────────────────── */}
+      {editable && (
+        <div className="flex items-center gap-2 px-3 py-1.5 bg-gray-50 border-t border-gray-100 text-[11px] text-gray-400 font-medium">
+          <ImagePlus size={11} />
+          <span>Drag & drop or paste an image anywhere in the editor</span>
+        </div>
+      )}
+
+      {/* ── Styles ───────────────────────────────────────────────────────── */}
       <style jsx global>{`
-        .ProseMirror {
-          padding: 1rem;
+
+        /* ── ProseMirror base ─────────────────────────────────────────────── */
+        .editor-content .ProseMirror {
+          padding: 1rem 1.25rem;
           outline: none;
           min-height: ${minHeight};
-          max-height: ${maxHeight};
+          font-family: inherit;
+          font-size: 0.9375rem;
+          line-height: 1.7;
+          color: #374151;
         }
 
-        .ProseMirror p.is-editor-empty:first-child::before {
+        .editor-content .ProseMirror p.is-editor-empty:first-child::before {
           content: attr(data-placeholder);
           float: left;
-          color: #adb5bd;
+          color: #9ca3af;
           pointer-events: none;
           height: 0;
-        }
-
-        .ProseMirror h1 {
-          font-size: 2em;
-          font-weight: bold;
-          margin-top: 0.5em;
-          margin-bottom: 0.5em;
-          color: #854d0e;
-        }
-
-        .ProseMirror h2 {
-          font-size: 1.5em;
-          font-weight: bold;
-          margin-top: 0.5em;
-          margin-bottom: 0.5em;
-          color: #a16207;
-        }
-
-        .ProseMirror h3 {
-          font-size: 1.25em;
-          font-weight: bold;
-          margin-top: 0.5em;
-          margin-bottom: 0.5em;
-          color: #ca8a04;
-        }
-
-        .ProseMirror ul,
-        .ProseMirror ol {
-          padding-left: 1.5rem;
-          margin: 0.5rem 0;
-        }
-
-        .ProseMirror li {
-          margin: 0.25rem 0;
-        }
-
-        .ProseMirror code {
-          background-color: #fef3c7;
-          padding: 0.2em 0.4em;
-          border-radius: 3px;
-          font-family: monospace;
-          font-size: 0.9em;
-        }
-
-        .ProseMirror pre {
-          background-color: #374151;
-          color: #e2e8f0;
-          padding: 1rem;
-          border-radius: 0.5rem;
-          overflow-x: auto;
-        }
-
-        .ProseMirror pre code {
-          background: none;
-          padding: 0;
-          color: inherit;
-        }
-
-        .ProseMirror blockquote {
-          border-left: 4px solid #fbbf24;
-          padding-left: 1rem;
-          margin-left: 0;
           font-style: italic;
-          color: #4b5563;
         }
 
-        .ProseMirror a {
-          color: #ca8a04;
-          text-decoration: underline;
+        /* Headings */
+        .editor-content .ProseMirror h1 { font-size: 2em; font-weight: 800; margin: 0.75em 0 0.3em; color: #111827; line-height: 1.2; }
+        .editor-content .ProseMirror h2 { font-size: 1.5em; font-weight: 700; margin: 0.75em 0 0.3em; color: #1f2937; line-height: 1.3; }
+        .editor-content .ProseMirror h3 { font-size: 1.2em; font-weight: 700; margin: 0.75em 0 0.3em; color: #374151; line-height: 1.4; }
+
+        /* Paragraph */
+        .editor-content .ProseMirror p { margin: 0.5em 0; line-height: 1.7; color: #374151; }
+
+        /* Lists */
+        .editor-content .ProseMirror ul,
+        .editor-content .ProseMirror ol { padding-left: 1.5rem; margin: 0.5rem 0; }
+        .editor-content .ProseMirror li { margin: 0.25rem 0; color: #374151; }
+        .editor-content .ProseMirror ul li::marker { color: #f59e0b; }
+
+        /* Code */
+        .editor-content .ProseMirror code {
+          background: #fef3c7; padding: 0.15em 0.4em;
+          border-radius: 4px; font-family: monospace;
+          font-size: 0.88em; color: #92400e;
+        }
+        .editor-content .ProseMirror pre {
+          background: #111827; color: #f9fafb;
+          padding: 1rem; border-radius: 0.625rem;
+          overflow-x: auto; margin: 1rem 0;
+        }
+        .editor-content .ProseMirror pre code { background: none; padding: 0; color: inherit; }
+
+        /* Blockquote */
+        .editor-content .ProseMirror blockquote {
+          border-left: 4px solid #fbbf24; padding: 0.75rem 1rem;
+          margin: 1rem 0; background: #fffbeb;
+          border-radius: 0 0.5rem 0.5rem 0; color: #78350f; font-style: italic;
         }
 
-        .ProseMirror a:hover {
-          color: #a16207;
+        /* Links */
+        .editor-content .ProseMirror a { color: #d97706; text-decoration: underline; }
+        .editor-content .ProseMirror a:hover { color: #92400e; }
+
+        /* Horizontal rule */
+        .editor-content .ProseMirror hr { border: none; border-top: 2px solid #e5e7eb; margin: 1.5rem 0; }
+
+        /* ── Image node ───────────────────────────────────────────────────── */
+
+        /*
+         * The NodeViewWrapper div (.editor-image-node) is the block-level container.
+         * Its width is controlled by the data-size attribute.
+         * data-layout controls how it sits relative to siblings.
+         */
+
+        /* Default: single, centred */
+        .editor-content .ProseMirror .editor-image-node {
+          display: block;
+          margin: 1rem auto;
+          max-width: 100%;
+          width: 100%;
+        }
+
+        /* Size variants — applied via inline style on the inner wrapper for
+           'single' layout. For grid/float the outer node controls the width. */
+        .editor-content .ProseMirror .editor-image-node[data-size="sm"]   { width: 35%;  }
+        .editor-content .ProseMirror .editor-image-node[data-size="md"]   { width: 60%;  }
+        .editor-content .ProseMirror .editor-image-node[data-size="lg"]   { width: 80%;  }
+        .editor-content .ProseMirror .editor-image-node[data-size="full"] { width: 100%; }
+
+        /* Grid layouts */
+        .editor-content .ProseMirror .editor-image-node[data-layout="two-col"] {
+          display: inline-block;
+          width: calc(50% - 6px) !important;
+          margin: 4px 3px;
+          vertical-align: top;
+        }
+        .editor-content .ProseMirror .editor-image-node[data-layout="three-col"] {
+          display: inline-block;
+          width: calc(33.33% - 6px) !important;
+          margin: 4px 3px;
+          vertical-align: top;
+        }
+
+        /* Float layouts */
+        .editor-content .ProseMirror .editor-image-node[data-layout="side-left"] {
+          float: left;
+          margin: 4px 14px 8px 0;
+        }
+        .editor-content .ProseMirror .editor-image-node[data-layout="side-right"] {
+          float: right;
+          margin: 4px 0 8px 14px;
+        }
+
+        /* Inner wrapper */
+        .editor-content .ProseMirror .editor-image-wrapper {
+          position: relative;
+          display: block;
+          width: 100%;
+          border-radius: 0.75rem;
+          border: 2px solid transparent;
+          box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+          overflow: hidden;
+          transition: border-color 0.2s, box-shadow 0.2s;
+          cursor: default;
+          line-height: 0; /* collapse whitespace under image */
+          background: #f3f4f6;
+        }
+        .editor-content .ProseMirror .editor-image-wrapper:hover,
+        .editor-content .ProseMirror .editor-image-wrapper.editor-image-selected {
+          border-color: #fbbf24;
+          box-shadow: 0 0 0 3px #fde68a, 0 4px 20px rgba(0,0,0,0.12);
+        }
+
+        /* Kill ProseMirror's default blue selection outline on our atom node */
+        .editor-content .ProseMirror .editor-image-node.ProseMirror-selectednode > .editor-image-wrapper {
+          border-color: #fbbf24;
+          box-shadow: 0 0 0 3px #fde68a, 0 4px 20px rgba(0,0,0,0.12);
+          outline: none;
+        }
+        .editor-content .ProseMirror .editor-image-node.ProseMirror-selectednode {
+          outline: none !important;
+        }
+
+        /* Clearfix after float images */
+        .editor-content .ProseMirror p:has(.editor-image-node[data-layout="side-left"]),
+        .editor-content .ProseMirror p:has(.editor-image-node[data-layout="side-right"]) {
+          overflow: hidden;
         }
       `}</style>
     </div>

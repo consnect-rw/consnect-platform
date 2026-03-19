@@ -55,8 +55,7 @@ export const FounderForm = ({founder, companyId, onComplete}:{founder?: TFounder
                }else {
                     return toast.warning("No Image selected");
                }
-          } catch (error) {
-               console.log(error);
+          } catch {
                return toast.error("Error deleting image");
           }
      }

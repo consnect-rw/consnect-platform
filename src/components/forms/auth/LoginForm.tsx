@@ -40,8 +40,7 @@ export const LoginForm = ({onComplete}:{onComplete: (user: TSessionUser) => void
                     return router.push(`/auth/verify-email`);
                }
                return onComplete(user);
-          } catch (error) {
-               console.log(error);
+          } catch {
                return toast.error("Application error. Please try again!");
           }finally{
                setLoading(false);
