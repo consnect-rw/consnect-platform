@@ -8,7 +8,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 
 export default function CompaniesPage () {
-     const perPage = 20;
+     const perPage = 200;
      const [page,setPage] = useState(1);
      const {data:companiesData} = useQuery({
           queryKey: ["companies"],
