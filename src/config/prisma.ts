@@ -11,7 +11,8 @@ const pool = new Pool({
 });
 
 // Create the Prisma adapter
-const adapter = new PrismaPg(pool);
+// Cast the pool to unknown/any to work around duplicate @types/pg type incompatibilities
+const adapter = new PrismaPg(pool as unknown as any);
 
 // Reuse Prisma client in dev (prevents too many connections)
 const globalForPrisma = globalThis as unknown as { prisma: PrismaClient };

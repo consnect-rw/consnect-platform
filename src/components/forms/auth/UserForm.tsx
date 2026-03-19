@@ -85,8 +85,7 @@ export const UserForm = ({userId, role,onComplete}:IUserFormProps) => {
                     toast.success("User deleted successfully");
                     return onComplete();
                }
-          } catch (error) {
-               console.error(error);
+          } catch {
                toast.error("Error deleting user");
           } finally {
                setIsDeleting(false);

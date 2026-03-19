@@ -14,7 +14,6 @@ import { EContactPersonLevel, EDocumentModelType, EDocumentType } from "@prisma/
 import { DocumentInput } from "../common/DocumentForm";
 
 export const ContactPersonForm = ({person, companyId, onComplete}:{person?: TContactPerson, companyId:string, onComplete: () => void}) => {
-     console.log(person);
      const certificates = person?.certificates ? person.certificates : [];
      const [certificate, setCertificate] = useState<{title: string, url:string}>({title: certificates[0]?.title ?? "IER Engineer Certificate", url: certificates[0]?.docUrl ?? ""});
      const submitData = async(data: FormData) => {

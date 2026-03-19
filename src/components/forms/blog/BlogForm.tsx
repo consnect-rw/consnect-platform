@@ -72,26 +72,28 @@ export default function BlogForm({onComplete}:{onComplete:() => void}) {
                     });
 
                     if(!newBlog) return toast.error("Error saving the blog.", {description: "Please try again later"});
-                    queryClient.invalidateQueries();
                     toast.success("Blog saved successfully");
                     resetForm();
-                    return onComplete();
+                    onComplete();
+                    queryClient.invalidateQueries();
+                    return
                }
                const updatedBlog = await updateBlog(blogId, {
                     ...(categoryId && categoryId !== blog?.category.id ? {category: {connect:{id:categoryId}}} : {}),
-                    ...(title ? {title}:{}),
-                    ...(description ? {description}:{}),
-                    ...(detailedDescription ? {description}:{}),
-                    ...(tags.length === 0 ? {tags}:{}),
-                    ...(featuredImageUrl && featuredImageUrl !== blog?.featuredImageUrl ? {featuredImageUrl} :{}),
+                    ...(title ? {title} : {}),
+                    ...(description ? {description} : {}),
+                    ...(detailedDescription ? {detailedDescription} : {}),
+                    ...(tags.length > 0 ? {tags} : {}),
+                    ...(featuredImageUrl && featuredImageUrl !== blog?.featuredImageUrl ? {featuredImageUrl} : {}),
                     status
                })
 
                if(!updatedBlog) return toast.error("Error updating the blog.", {description: "Please try again later"});
-                    queryClient.invalidateQueries();
-                    toast.success("Blog updated successfully");
-                    resetForm();
-                    return onComplete();
+               toast.success("Blog updated successfully");
+               resetForm();
+               onComplete();
+               queryClient.invalidateQueries();
+               return 
 
           } catch (error) {
                
@@ -130,6 +132,14 @@ export default function BlogForm({onComplete}:{onComplete:() => void}) {
                setDetailedDescription(blog.detailedDescription);
                setFeaturedImageUrl(blog.featuredImageUrl);
                setCategoryId(blog.category.id)
+          } else {
+               // No blog loaded (create mode) — ensure all fields are blank.
+               setTitle("");
+               setTags([]);
+               setDescription("");
+               setDetailedDescription("");
+               setFeaturedImageUrl("");
+               setCategoryId("");
           }
      }, [blog]);
 
@@ -143,7 +153,7 @@ export default function BlogForm({onComplete}:{onComplete:() => void}) {
                </div>
                <form className="w-full flex flex-col items-start gap-8">
                     <SelectInputGroup action={setCategoryId} name="category" label="Category" values={categories.map(c => ({label: c.name, value:c.id}))} />
-                    <TextInputGroup name="title" label="Title *" placeholder="Enter the title of the blog post" action={ res => setTitle(res as string)}  />
+                    <TextInputGroup defaultValue={title} name="title" label="Title *" placeholder="Enter the title of the blog post" action={ res => setTitle(res as string)}  />
                     <TextAreaInputGroup defaultValue={description ?? ""} name="description" label="Summary: " maxWords={100} placeholder="Enter a brief summary of the blog post" action={res => setDescription(res as string)} />
                     <div className="w-full flex flex-col items-start gap-3">
                          <label className="font-medium text-gray-700">Featured Image: </label>

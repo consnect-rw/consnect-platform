@@ -57,8 +57,7 @@ export const AuthLogoutBtn = ({name, className, variant, size, icon}:{name?:stri
                await createAuthLog(user?.id ?? "", "LOGOUT", true);
                toast.success("You have been logged out!");
                return router.push("/auth/login");
-          } catch (error) {
-               console.log(error);
+          } catch {
                return 
           }finally{
                setLoading(false);

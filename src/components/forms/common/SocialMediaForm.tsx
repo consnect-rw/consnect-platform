@@ -124,7 +124,6 @@ export default function SocialMediaForm({ companyId, onComplete, socialMedia }:I
 
      useEffect(() => {
           if(socialMedia) {
-               console.log(socialMedia)
                setMedia({
                     facebook: socialMedia.facebook ?? undefined,
                     twitter: socialMedia.twitter ?? undefined,
