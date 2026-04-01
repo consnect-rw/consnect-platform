@@ -1,5 +1,15 @@
 import { Prisma } from "@prisma/client";
 
+// Lean attachment select used inside the interest form
+export const SInterestAttachment = {
+     id: true,
+     url: true,
+     description: true,
+     fileType: true,
+     uploadedAt: true,
+} satisfies Prisma.InterestAttachmentSelect;
+export type TInterestAttachment = Prisma.InterestAttachmentGetPayload<{ select: typeof SInterestAttachment }>;
+
 export const SOfferInterest = { 
      id: true,
 
@@ -16,6 +26,7 @@ export const SReceivedOfferInterest = {
      respondedAt: true,
      createdAt: true,
      updatedAt: true,
+     attachments: { select: { id: true, url: true, description: true, fileType: true, uploadedAt: true } },
      company: {
           select: {
                id: true,
@@ -27,6 +38,7 @@ export const SReceivedOfferInterest = {
                foundedYear: true,
                companySize: true,
                slogan: true,
+               userId: true,
                location: {
                     select: { country: true, city: true, state: true }
                },
@@ -35,7 +47,11 @@ export const SReceivedOfferInterest = {
                },
                specializations: {
                     select: { name: true, category: { select: { name: true } } }
-               }
+               },
+               services: {
+                    select: { name: true },
+                    take: 10,
+               },
           }
      },
      offer: {
@@ -45,7 +61,17 @@ export const SReceivedOfferInterest = {
                status: true,
                executionStatus: true,
                type: true,
+               contractType: true,
+               description: true,
+               requiredSkills: true,
+               requiredCertifications: true,
+               requiredDocuments: true,
+               scopeOfWork: true,
                category: { select: { id: true, name: true } },
+               timeline: { select: { startDate: true, endDate: true, deadline: true } },
+               pricing: { select: { budgetMin: true, budgetMax: true, currency: true } },
+               siteLocation: { select: { country: true, city: true } },
+               company: { select: { id: true, name: true, userId: true } },
           }
      },
 } satisfies Prisma.OfferInterestSelect;

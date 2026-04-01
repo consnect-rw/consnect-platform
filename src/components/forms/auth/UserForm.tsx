@@ -6,7 +6,7 @@ import {  IUserCreate } from "@/types/auth/user";
 import { toast } from "sonner";
 import { MainForm, MainFormLoader } from "../MainForm";
 import { PasswordInputGroup, SelectInputGroup, TextInputGroup } from "../InputGroups";
-import { Loader2, Send, Trash2, X } from "lucide-react";
+import { Check, Loader2, ScrollText, Send, ShieldCheck, Trash2, X } from "lucide-react";
 import { createUser, deleteUser, fetchUserById, updateUser } from "@/server/auth/user";
 import { EAdminRole, EUserRole } from "@prisma/client";
 import { EntityButton } from "@/components/ui/custom-buttons";
@@ -15,6 +15,8 @@ import { Dialog, DialogPanel } from "@headlessui/react";
 import { useQuery } from "@tanstack/react-query";
 import { MailSettings } from "@/emails/MailSettings";
 import { sendEmail } from "@/server/email/email";
+import { TermsOfUseView } from "@/components/containers/legal/TermsOfUseView";
+import { PrivacyPolicyView } from "@/components/containers/legal/PrivacyPolicyView";
 
 interface IUserFormProps {
      userId?: string
@@ -28,6 +30,12 @@ export const UserForm = ({userId, role,onComplete}:IUserFormProps) => {
           queryFn: () => userId ? fetchUserById(userId, {email:true, name:true, role:true, adminRole:true, active:true, phone:true, image:true,}) : undefined
      });
      const [deleting,setIsDeleting] = useState(false);
+     const [termsAccepted, setTermsAccepted] = useState(false);
+     const [privacyAccepted, setPrivacyAccepted] = useState(false);
+     const [showTerms, setShowTerms] = useState(false);
+     const [showPrivacy, setShowPrivacy] = useState(false);
+
+     const isNonAdminNewUser = !userId && role !== "ADMIN";
 
      const submitForm = async(data: FormData) => {
           const name = data.get("name") as string;
@@ -38,6 +46,9 @@ export const UserForm = ({userId, role,onComplete}:IUserFormProps) => {
           const password = data.get("password") as string;
           const confirmPassword = data.get("confirm-password") as string;
 
+          if(isNonAdminNewUser && (!termsAccepted || !privacyAccepted)) {
+               return toast.warning("Please accept the Terms of Use and Privacy Policy to continue");
+          }
           
           if(!userId) {
                if(!name || !phone || ! email || ! password) return ("Please fill all fields");
@@ -104,7 +115,103 @@ export const UserForm = ({userId, role,onComplete}:IUserFormProps) => {
                     <PasswordInputGroup type="password" name="password" label={userId ? "Old Password" :"Password"} placeholder="**********"  required={user ? false : true}/>
                     {userId ? <PasswordInputGroup type="new-password" name="new-password" label={"New Password"} placeholder="**********" required={user ? false : true} /> : null}
                     <PasswordInputGroup type="password" name="confirm-password" label="Confirm Password" placeholder="**********" required={user ? false : true} />
+
+                    {/* Terms & Privacy acceptance — only for new non-admin users */}
+                    {isNonAdminNewUser && (
+                         <div className="w-full space-y-3 pt-2">
+                              <div className="bg-amber-50/70 border border-amber-200 rounded-xl p-4 space-y-3">
+                                   <p className="text-sm font-semibold text-gray-900 flex items-center gap-2">
+                                        <ShieldCheck className="w-4 h-4 text-amber-600" />
+                                        Before you continue
+                                   </p>
+
+                                   {/* Terms of Use */}
+                                   <label className="flex items-start gap-3 group cursor-pointer">
+                                        <div className="relative mt-0.5">
+                                             <input
+                                                  type="checkbox"
+                                                  checked={termsAccepted}
+                                                  onChange={(e) => setTermsAccepted(e.target.checked)}
+                                                  className="sr-only peer"
+                                             />
+                                             <div className="w-5 h-5 rounded-md border-2 border-gray-300 peer-checked:border-amber-500 peer-checked:bg-amber-500 transition-all flex items-center justify-center group-hover:border-amber-400">
+                                                  {termsAccepted && <Check className="w-3.5 h-3.5 text-white" />}
+                                             </div>
+                                        </div>
+                                        <span className="text-sm text-gray-700 leading-snug">
+                                             I have read and agree to the{" "}
+                                             <button
+                                                  type="button"
+                                                  onClick={(e) => { e.preventDefault(); setShowTerms(true); }}
+                                                  className="inline-flex items-center gap-1 font-semibold text-amber-600 hover:text-amber-700 underline underline-offset-2 decoration-dotted decoration-amber-400 cursor-pointer"
+                                             >
+                                                  <ScrollText className="w-3.5 h-3.5" />
+                                                  Terms of Use
+                                             </button>
+                                        </span>
+                                   </label>
+
+                                   {/* Privacy Policy */}
+                                   <label className="flex items-start gap-3 group cursor-pointer">
+                                        <div className="relative mt-0.5">
+                                             <input
+                                                  type="checkbox"
+                                                  checked={privacyAccepted}
+                                                  onChange={(e) => setPrivacyAccepted(e.target.checked)}
+                                                  className="sr-only peer"
+                                             />
+                                             <div className="w-5 h-5 rounded-md border-2 border-gray-300 peer-checked:border-gray-900 peer-checked:bg-gray-900 transition-all flex items-center justify-center group-hover:border-gray-500">
+                                                  {privacyAccepted && <Check className="w-3.5 h-3.5 text-white" />}
+                                             </div>
+                                        </div>
+                                        <span className="text-sm text-gray-700 leading-snug">
+                                             I have read and understand the{" "}
+                                             <button
+                                                  type="button"
+                                                  onClick={(e) => { e.preventDefault(); setShowPrivacy(true); }}
+                                                  className="inline-flex items-center gap-1 font-semibold text-amber-600 hover:text-amber-700 underline underline-offset-2 decoration-dotted decoration-amber-400 cursor-pointer"
+                                             >
+                                                  <ShieldCheck className="w-3.5 h-3.5" />
+                                                  Privacy Policy
+                                             </button>
+                                        </span>
+                                   </label>
+
+                                   {/* Acceptance progress indicator */}
+                                   {(termsAccepted || privacyAccepted) && (
+                                        <div className="flex items-center gap-2 pt-1">
+                                             <div className="flex-1 h-1.5 bg-gray-200 rounded-full overflow-hidden">
+                                                  <div
+                                                       className={`h-full rounded-full transition-all duration-500 ${
+                                                            termsAccepted && privacyAccepted
+                                                                 ? "w-full bg-green-500"
+                                                                 : "w-1/2 bg-amber-500"
+                                                       }`}
+                                                  />
+                                             </div>
+                                             <span className="text-xs text-gray-500">
+                                                  {termsAccepted && privacyAccepted ? "All accepted" : "1 of 2"}
+                                             </span>
+                                        </div>
+                                   )}
+                              </div>
+                         </div>
+                    )}
                </MainForm>
+
+               {/* Terms & Privacy Dialogs */}
+               <TermsOfUseView
+                    open={showTerms}
+                    onClose={() => setShowTerms(false)}
+                    onAccept={() => setTermsAccepted(true)}
+                    showAcceptBtn
+               />
+               <PrivacyPolicyView
+                    open={showPrivacy}
+                    onClose={() => setShowPrivacy(false)}
+                    onAccept={() => setPrivacyAccepted(true)}
+                    showAcceptBtn
+               />
                {userId && <button disabled={deleting} type="button" onClick={handleDelete} className="w-full bg-red-200 py-1.5 rounded-lg justify-center cursor-pointer flex items-center gap-1 text-red-600 hover:text-red-800">{deleting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Trash2 className="w-4 h-4" />} Delete </button>}
           </div>
           

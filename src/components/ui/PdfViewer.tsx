@@ -130,6 +130,7 @@ export const PdfViewer = ({
 
         <div className="flex items-center gap-2 shrink-0">
           <button
+            type="button"
             onClick={handleDownload}
             className="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-900 font-bold rounded-lg transition-all flex items-center gap-2"
             title="Download PDF"
@@ -139,6 +140,7 @@ export const PdfViewer = ({
           </button>
           {onClose && (
             <button
+              type="button"
               onClick={onClose}
               className="w-10 h-10 bg-gray-100 hover:bg-gray-200 rounded-lg flex items-center justify-center transition-colors"
               title="Close"
@@ -153,7 +155,8 @@ export const PdfViewer = ({
       <div className="bg-white border-b-2 border-gray-200 px-6 py-3 flex items-center justify-between gap-4 shrink-0">
         {/* Page Navigation */}
         <div className="flex items-center gap-2">
-          <button
+          <button 
+            type="button"
             onClick={goToPrevPage}
             disabled={pageNumber <= 1}
             className="w-9 h-9 bg-gray-100 hover:bg-gray-200 disabled:bg-gray-50 disabled:cursor-not-allowed rounded-lg flex items-center justify-center transition-all"
@@ -166,7 +169,8 @@ export const PdfViewer = ({
               Page {pageNumber} of {numPages || "..."}
             </span>
           </div>
-          <button
+          <button 
+            type="button"
             onClick={goToNextPage}
             disabled={pageNumber >= numPages}
             className="w-9 h-9 bg-gray-100 hover:bg-gray-200 disabled:bg-gray-50 disabled:cursor-not-allowed rounded-lg flex items-center justify-center transition-all"
@@ -179,6 +183,7 @@ export const PdfViewer = ({
         {/* Zoom Controls */}
         <div className="flex items-center gap-2">
           <button
+            type="button"
             onClick={zoomOut}
             disabled={scale <= 0.5}
             className="w-9 h-9 bg-gray-100 hover:bg-gray-200 disabled:bg-gray-50 disabled:cursor-not-allowed rounded-lg flex items-center justify-center transition-all"
@@ -192,6 +197,7 @@ export const PdfViewer = ({
             </span>
           </div>
           <button
+            type="button"
             onClick={zoomIn}
             disabled={scale >= 2.5}
             className="w-9 h-9 bg-gray-100 hover:bg-gray-200 disabled:bg-gray-50 disabled:cursor-not-allowed rounded-lg flex items-center justify-center transition-all"
@@ -254,6 +260,7 @@ export const PdfViewer = ({
                 </div>
                 <div className="flex gap-3">
                   <button
+                    type="button"
                     onClick={handleDownload}
                     className="px-6 py-3 bg-yellow-400 text-gray-900 font-bold rounded-lg hover:bg-yellow-300 transition-all flex items-center gap-2"
                   >

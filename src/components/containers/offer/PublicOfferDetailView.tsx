@@ -15,6 +15,7 @@ import { createOfferInterest } from "@/server/offer/offer-interest";
 import { toast } from "sonner";
 import { useAuth } from "@/hooks/useAuth";
 import dynamic from "next/dynamic";
+import { OfferInterestButton } from "@/components/forms/offer/OfferInterestForm";
 
 const PdfViewer = dynamic(() => import("@/components/ui/PdfViewer").then(mod => ({ default: mod.PdfViewer })), { ssr: false });
 
@@ -393,16 +394,18 @@ export const PublicOfferDetailView = ({ offer }: PublicOfferDetailViewProps) => 
                          <div className="space-y-6">
                               {/* Action Card */}
                               <div className="bg-white rounded-2xl shadow-sm border-2 border-yellow-400 p-6">
-                                   <button
+                                   {/* <button
                                         onClick={handleShowInterest}
                                         disabled={deadline?.hasExpired ? true : showingInterest}
                                         className="w-full px-6 py-4 bg-yellow-400 hover:bg-yellow-500 text-gray-900 font-black rounded-xl transition-all text-lg flex items-center justify-center gap-2 mb-4 disabled:opacity-50"
                                    >
                                         <Heart className="w-5 h-5" />
                                         {showingInterest ? "Submitting..." : "Show Interest"}
-                                   </button>
+                                   </button> */}
 
-                                   <p className="text-sm text-gray-600 text-center">
+                                   <OfferInterestButton size="lg" offerId={offer.id}  />
+
+                                   <p className="text-sm text-gray-600 text-center pt-2">
                                         Submit your interest to connect with the company
                                    </p>
                               </div>

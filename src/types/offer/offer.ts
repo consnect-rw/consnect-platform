@@ -590,3 +590,37 @@ export const SOfferEdit = {
      },
 } satisfies Prisma.OfferSelect;
 export type TOfferEdit = Prisma.OfferGetPayload<{select: typeof SOfferEdit}>;
+
+// ─── Interest Form — lean select with everything an applicant needs ─────────
+// Fetches only fields relevant to filling out and submitting an interest.
+export const SOfferInterestForm = {
+     id: true,
+     title: true,
+     description: true,
+     type: true,
+     contractType: true,
+     requiredCertifications: true,
+     requiredDocuments: true,
+     submissionInfo: {
+          select: {
+               proposalFormat: true,
+               submissionGuidelines: true,
+               contactEmail: true,
+               contactPhone: true,
+               expiresAt: true,
+          }
+     },
+     pricing: {
+          select: { budgetMin: true, budgetMax: true, currency: true }
+     },
+     timeline: {
+          select: { deadline: true, startDate: true, endDate: true }
+     },
+     company: {
+          select: { id: true, name: true, logoUrl: true }
+     },
+     interests:{
+          select:{ id: true, companyId: true, status: true }
+     }
+} satisfies Prisma.OfferSelect;
+export type TOfferInterestForm = Prisma.OfferGetPayload<{select: typeof SOfferInterestForm}>;
