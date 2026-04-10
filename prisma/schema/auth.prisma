@@ -43,6 +43,7 @@ model User {
      authLogs AuthLog[]
      offers Offer[]
      projects Project[]
+     passwordResetTokens PasswordResetToken[]
 }
 
 model EmailVerificationToken {
@@ -95,4 +96,13 @@ model AuthLog {
      action EAuthAction
      success Boolean
 
+}
+
+model PasswordResetToken {
+     id String @id @default(uuid())
+     token String @unique
+     expiresAt DateTime
+     createdAt DateTime @default(now())
+     userId String
+     user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }

@@ -36,7 +36,7 @@ export const WelcomeEmail = ({ name, loginInfo }: WelcomeEmailProps) => {
             <strong>Login Password:</strong> {loginInfo.password}
           </Text>
           <Text style={noteStyle}>
-            ⚠️ For security reasons, please keep this information secure!
+            For security reasons, please keep this information secure and change your password after first login.
           </Text>
         </Section>
       )}
@@ -51,10 +51,10 @@ export const WelcomeEmail = ({ name, loginInfo }: WelcomeEmailProps) => {
           ✓ <strong>Verify Your Account</strong> - Get verified to unlock premium features
         </Text>
         <Text style={listItemStyle}>
-          ✓ <strong>Explore Opportunities</strong> - Browse projects, tenders, and job listings
+          ✓ <strong>Explore Opportunities</strong> - Browse projects, tenders, and offers
         </Text>
         <Text style={listItemStyle}>
-          ✓ <strong>Connect & Network</strong> - Build relationships with industry professionals
+          ✓ <strong>Connect &amp; Network</strong> - Build relationships with industry professionals
         </Text>
       </Section>
 

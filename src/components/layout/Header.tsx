@@ -2,14 +2,17 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { CgMenuRightAlt } from "react-icons/cg";
-import { X, ChevronRight, LayoutDashboard, Settings, MessageSquare, FileText, Tag, Users, Building2, ShieldCheck, BarChart3, LogOut, ChevronDown, Headphones, Newspaper } from "lucide-react";
+import { X, ChevronRight, LayoutDashboard, Settings, MessageSquare, FileText, Tag, Users, Building2, ShieldCheck, BarChart3, LogOut, ChevronDown, Headphones, Newspaper, ArrowRight } from "lucide-react";
 import { Button } from "../ui/button";
 import { NavLinks } from "@/lib/data/nav-links";
 import { useAuth } from "@/hooks/useAuth";
 import { EUserRole } from "@prisma/client";
 import { logoutUser } from "@/util/auth";
+import { useQuery } from "@tanstack/react-query";
+import { fetchCategorys } from "@/server/common/category";
+import { INavLink } from "@/types/common/nav-link";
 
 // ─── Quick links per role ───────────────────────────────────────────────────
 const userQuickLinks = [
@@ -29,6 +32,36 @@ const adminQuickLinks = [
   { label: "Support", href: "/admin/support", icon: Headphones },
   { label: "Settings", href: "/admin/settings", icon: Settings },
 ];
+
+// ─── Category fetch hook for mega menus ─────────────────────────────────────
+function useMegaCategories() {
+  const { data: tenderData } = useQuery({
+    queryKey: ["header-categories", "TENDER"],
+    queryFn: () => fetchCategorys({ id: true, name: true }, { type: "TENDER" }, 20),
+    staleTime: 5 * 60 * 1000,
+  });
+  const { data: serviceData } = useQuery({
+    queryKey: ["header-categories", "SERVICE"],
+    queryFn: () => fetchCategorys({ id: true, name: true }, { type: "SERVICE" }, 20),
+    staleTime: 5 * 60 * 1000,
+  });
+  const tenderCategories: TMegaCategory[] = tenderData?.data ?? [];
+  const serviceCategories: TMegaCategory[] = serviceData?.data ?? [];
+  return { tenderCategories, serviceCategories };
+}
+
+type TMegaCategory = { id: string; name: string };
+
+/** Returns categories & link config for a given megaKey */
+function getMegaData(megaKey: "offers" | "tenders" | "companies", tender: TMegaCategory[], service: TMegaCategory[]) {
+  if (megaKey === "offers") {
+    return { categories: tender, basePath: "/offer?category=", viewAllHref: "/offer", viewAllLabel: "View All Offers" };
+  }
+  if (megaKey === "tenders") {
+    return { categories: tender, basePath: "/tender?category=", viewAllHref: "/tender", viewAllLabel: "View All Tenders" };
+  }
+  return { categories: service, basePath: "/companies?category=", viewAllHref: "/companies", viewAllLabel: "View All Companies" };
+}
 
 export default function Header() {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -53,9 +86,11 @@ export default function Header() {
 
 export const MobileView = ({ isScrolled, user }: { isScrolled: boolean; user: import("@/types/auth/user").TSessionUser | null | undefined }) => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [expandedMegaKey, setExpandedMegaKey] = useState<string | null>(null);
   const isAdmin = user?.role === EUserRole.ADMIN;
   const quickLinks = isAdmin ? adminQuickLinks : userQuickLinks;
-  const close = () => setIsMobileMenuOpen(false);
+  const close = () => { setIsMobileMenuOpen(false); setExpandedMegaKey(null); };
+  const { tenderCategories, serviceCategories } = useMegaCategories();
 
   // Prevent body scroll when menu is open
   useEffect(() => {
@@ -137,15 +172,15 @@ export const MobileView = ({ isScrolled, user }: { isScrolled: boolean; user: im
             {/* Navigation Links */}
             <nav className="p-6 space-y-2">
               {NavLinks.map((link, index) => (
-                <Link
+                <MobileNavItem
                   key={`mobile-nav-link-${index}`}
-                  href={link.href ?? "/"}
-                  onClick={close}
-                  className="group flex items-center justify-between px-4 py-4 text-gray-900 hover:bg-yellow-50 rounded-lg font-bold text-lg transition-all hover:translate-x-1 transform"
-                >
-                  <span>{link.name}</span>
-                  <ChevronRight className="w-5 h-5 text-gray-400 group-hover:text-yellow-500 transition-colors" />
-                </Link>
+                  link={link}
+                  isExpanded={expandedMegaKey === link.megaKey}
+                  onToggle={() => setExpandedMegaKey(expandedMegaKey === link.megaKey ? null : (link.megaKey ?? null))}
+                  tenderCategories={tenderCategories}
+                  serviceCategories={serviceCategories}
+                  close={close}
+                />
               ))}
             </nav>
 
@@ -215,9 +250,26 @@ export const MobileView = ({ isScrolled, user }: { isScrolled: boolean; user: im
 
 export const DesktopView = ({ isScrolled, user }: { isScrolled: boolean; user: import("@/types/auth/user").TSessionUser | null | undefined }) => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [activeMegaKey, setActiveMegaKey] = useState<string | null>(null);
+  const megaTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const isAdmin = user?.role === EUserRole.ADMIN;
   const quickLinks = isAdmin ? adminQuickLinks : userQuickLinks;
+  const { tenderCategories, serviceCategories } = useMegaCategories();
+
+  const openMega = useCallback((key: string) => {
+    if (megaTimeoutRef.current) clearTimeout(megaTimeoutRef.current);
+    setActiveMegaKey(key);
+  }, []);
+
+  const closeMega = useCallback(() => {
+    megaTimeoutRef.current = setTimeout(() => setActiveMegaKey(null), 150);
+  }, []);
+
+  // Clean up timeout on unmount
+  useEffect(() => {
+    return () => { if (megaTimeoutRef.current) clearTimeout(megaTimeoutRef.current); };
+  }, []);
 
   // Close dropdown on outside click
   useEffect(() => {
@@ -247,15 +299,45 @@ export const DesktopView = ({ isScrolled, user }: { isScrolled: boolean; user: i
             {/* Navigation */}
             <nav className="flex items-center gap-8">
               {NavLinks.map((link, index) => (
-                <Link
-                  prefetch
-                  className="relative group text-gray-900 text-sm font-bold hover:text-yellow-600 transition-colors"
-                  href={link.href ?? "/"}
+                <div
                   key={`desktop-header-nav-link-${index}`}
+                  className="relative"
+                  onMouseEnter={link.megaKey ? () => openMega(link.megaKey!) : undefined}
+                  onMouseLeave={link.megaKey ? closeMega : undefined}
                 >
-                  <span>{link.name}</span>
-                  <span className="absolute left-0 -bottom-1 w-0 h-0.5 bg-yellow-500 group-hover:w-full transition-all duration-300"></span>
-                </Link>
+                  {link.megaKey ? (
+                    <button
+                      type="button"
+                      onClick={() => setActiveMegaKey(activeMegaKey === link.megaKey ? null : link.megaKey!)}
+                      className="relative group text-gray-900 text-sm font-bold hover:text-yellow-600 transition-colors flex items-center gap-1 cursor-pointer"
+                    >
+                      <span>{link.name}</span>
+                      <ChevronDown size={13} className={`text-gray-400 group-hover:text-yellow-500 transition-transform duration-200 ${activeMegaKey === link.megaKey ? "rotate-180" : ""}`} />
+                      <span className="absolute left-0 -bottom-1 w-0 h-0.5 bg-yellow-500 group-hover:w-full transition-all duration-300"></span>
+                    </button>
+                  ) : (
+                    <Link
+                      prefetch
+                      className="relative group text-gray-900 text-sm font-bold hover:text-yellow-600 transition-colors flex items-center gap-1"
+                      href={link.href ?? "/"}
+                    >
+                      <span>{link.name}</span>
+                      <span className="absolute left-0 -bottom-1 w-0 h-0.5 bg-yellow-500 group-hover:w-full transition-all duration-300"></span>
+                    </Link>
+                  )}
+
+                  {/* Mega Dropdown */}
+                  {link.megaKey && activeMegaKey === link.megaKey && (
+                    <MegaDropdown
+                      megaKey={link.megaKey}
+                      tenderCategories={tenderCategories}
+                      serviceCategories={serviceCategories}
+                      onMouseEnter={() => openMega(link.megaKey!)}
+                      onMouseLeave={closeMega}
+                      onLinkClick={() => setActiveMegaKey(null)}
+                    />
+                  )}
+                </div>
               ))}
             </nav>
 
@@ -365,6 +447,152 @@ const LogoLink = () => {
         />
       </div>
     </Link>
+  );
+};
+
+// ─── Mega Dropdown (Desktop) ────────────────────────────────────────────────
+const MegaDropdown = ({
+  megaKey,
+  tenderCategories,
+  serviceCategories,
+  onMouseEnter,
+  onMouseLeave,
+  onLinkClick,
+}: {
+  megaKey: "offers" | "tenders" | "companies";
+  tenderCategories: TMegaCategory[];
+  serviceCategories: TMegaCategory[];
+  onMouseEnter: () => void;
+  onMouseLeave: () => void;
+  onLinkClick: () => void;
+}) => {
+  const { categories, basePath, viewAllHref, viewAllLabel } = getMegaData(megaKey, tenderCategories, serviceCategories);
+
+  return (
+    <div
+      className="fixed left-1/2 -translate-x-1/2 top-16 pt-3 z-50 w-full max-w-5xl px-6"
+      onMouseEnter={onMouseEnter}
+      onMouseLeave={onMouseLeave}
+    >
+      <div className="w-full bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden animate-fade-in">
+        {/* Header */}
+        <div className="px-6 py-3.5 bg-gray-50 border-b border-gray-100 flex items-center justify-between">
+          <p className="text-xs font-bold text-gray-400 uppercase tracking-wider">Browse Categories</p>
+          <Link
+            href={viewAllHref}
+            onClick={onLinkClick}
+            className="flex items-center gap-1.5 text-xs font-bold text-gray-500 hover:text-yellow-600 transition-colors"
+          >
+            {viewAllLabel}
+            <ArrowRight size={13} />
+          </Link>
+        </div>
+
+        {/* Category Grid */}
+        <div className="p-5 grid grid-cols-3 gap-1.5 max-h-80 overflow-y-auto">
+          {categories.length > 0 ? categories.map((cat) => (
+            <Link
+              key={cat.id}
+              href={`${basePath}${cat.id}`}
+              onClick={onLinkClick}
+              className="group flex items-center gap-2.5 px-3 py-2.5 rounded-lg hover:bg-yellow-50 transition-all"
+            >
+              <span className="w-8 h-8 rounded-md bg-gray-900 group-hover:bg-yellow-500 flex items-center justify-center text-white group-hover:text-gray-900 text-xs font-bold shrink-0 transition-colors">
+                {cat.name.charAt(0).toUpperCase()}
+              </span>
+              <span className="text-sm font-semibold text-gray-700 group-hover:text-gray-900 truncate transition-colors">
+                {cat.name}
+              </span>
+            </Link>
+          )) : (
+            <p className="col-span-3 text-sm text-gray-400 text-center py-6">No categories yet</p>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// ─── Mobile Nav Item (with accordion for mega links) ────────────────────────
+const MobileNavItem = ({
+  link,
+  isExpanded,
+  onToggle,
+  tenderCategories,
+  serviceCategories,
+  close,
+}: {
+  link: INavLink;
+  isExpanded: boolean;
+  onToggle: () => void;
+  tenderCategories: TMegaCategory[];
+  serviceCategories: TMegaCategory[];
+  close: () => void;
+}) => {
+  if (!link.megaKey) {
+    return (
+      <Link
+        href={link.href ?? "/"}
+        onClick={close}
+        className="group flex items-center justify-between px-4 py-4 text-gray-900 hover:bg-yellow-50 rounded-lg font-bold text-lg transition-all hover:translate-x-1 transform"
+      >
+        <span>{link.name}</span>
+        <ChevronRight className="w-5 h-5 text-gray-400 group-hover:text-yellow-500 transition-colors" />
+      </Link>
+    );
+  }
+
+  const { categories, basePath, viewAllHref, viewAllLabel } = getMegaData(link.megaKey, tenderCategories, serviceCategories);
+
+  return (
+    <div>
+      {/* Toggle row */}
+      <button
+        onClick={onToggle}
+        className="w-full group flex items-center justify-between px-4 py-4 text-gray-900 hover:bg-yellow-50 rounded-lg font-bold text-lg transition-all"
+      >
+        <span>{link.name}</span>
+        <ChevronDown className={`w-5 h-5 text-gray-400 group-hover:text-yellow-500 transition-transform duration-200 ${isExpanded ? "rotate-180" : ""}`} />
+      </button>
+
+      {/* Accordion content */}
+      {isExpanded && (
+        <div className="ml-4 mb-2 space-y-0.5 animate-fade-in">
+          {/* View all link */}
+          <Link
+            href={viewAllHref}
+            onClick={close}
+            className="flex items-center gap-2 px-4 py-2.5 rounded-lg hover:bg-yellow-50 transition-all"
+          >
+            <span className="w-7 h-7 rounded-md bg-yellow-500 flex items-center justify-center shrink-0">
+              <ArrowRight size={14} className="text-gray-900" />
+            </span>
+            <span className="text-sm font-bold text-gray-900">{viewAllLabel}</span>
+          </Link>
+
+          {/* Category links */}
+          {categories.map((cat) => (
+            <Link
+              key={cat.id}
+              href={`${basePath}${cat.id}`}
+              onClick={close}
+              className="group flex items-center gap-2.5 px-4 py-2.5 rounded-lg hover:bg-yellow-50 transition-all"
+            >
+              <span className="w-7 h-7 rounded-md bg-gray-100 group-hover:bg-gray-900 flex items-center justify-center text-gray-600 group-hover:text-white text-xs font-bold shrink-0 transition-colors">
+                {cat.name.charAt(0).toUpperCase()}
+              </span>
+              <span className="text-sm font-semibold text-gray-600 group-hover:text-gray-900 truncate transition-colors">
+                {cat.name}
+              </span>
+            </Link>
+          ))}
+
+          {categories.length === 0 && (
+            <p className="px-4 py-3 text-sm text-gray-400">No categories yet</p>
+          )}
+        </div>
+      )}
+    </div>
   );
 };
 
