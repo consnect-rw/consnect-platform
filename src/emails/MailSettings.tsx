@@ -21,7 +21,7 @@ export const MailSettings = {
 
     passwordReset: {
       subject: "Password Reset Request - Consnect Rwanda",
-      render: (props: { name: string; otp: string }) =>
+      render: (props: { name: string; resetLink: string }) =>
         renderEmail(<PasswordResetTemplate {...props} />),
     },
   },

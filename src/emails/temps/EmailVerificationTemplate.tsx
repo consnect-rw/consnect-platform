@@ -24,7 +24,7 @@ export const EmailVerificationTemplate = ({ name, verificationLink }: EmailVerif
 
       <Section style={highlightBox}>
         <Text style={highlightTextStyle}>
-          🔒 Email verification helps us maintain a trusted community of construction 
+          Email verification helps us maintain a trusted community of construction 
           professionals and protects your account from unauthorized access.
         </Text>
       </Section>
@@ -47,10 +47,10 @@ export const EmailVerificationTemplate = ({ name, verificationLink }: EmailVerif
       </Text>
 
       <Section style={warningBox}>
-        <Text style={warningTitleStyle}>⏰ Important:</Text>
+        <Text style={warningTitleStyle}>Important:</Text>
         <Text style={warningTextStyle}>
           This verification link will expire in <strong>24 hours</strong>. 
-          If you didn't create an account with Consnect, please ignore this email.
+          If you didn&apos;t create an account with Consnect, please ignore this email.
         </Text>
       </Section>
 

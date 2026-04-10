@@ -1,6 +1,7 @@
 enum EConversationType {
      SUPPORT 
      CHAT
+     OFFER_ROOM
 }
 
 model Conversation {
@@ -8,6 +9,9 @@ model Conversation {
      type EConversationType
      participants String[]
      createdAt DateTime @default(now())
+
+     offerId String?
+     offer Offer? @relation(fields: [offerId], references: [id])
 
      messages Message[]
 }
@@ -20,7 +24,7 @@ enum EMessageStatus {
 
 model Message {
      id String @id @default(uuid())
-     message String 
+     message String
      files String[]
      status EMessageStatus @default(SENT)
      createdAt DateTime @default(now())

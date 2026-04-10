@@ -64,3 +64,19 @@ export const SAdminCompanyCategory = {
      }
 } satisfies Prisma.CategorySelect;
 export type TAdminCompanyCategory = Prisma.CategoryGetPayload<{select: typeof SAdminCompanyCategory}>
+
+// ─── Public category card (with counts) ─────────────────────────────────────
+export const SPublicCategoryCard = {
+     id: true,
+     name: true,
+     type: true,
+     description: true,
+     _count: {
+          select: {
+               offers: true,
+               specializations: true,
+          },
+     },
+} satisfies Prisma.CategorySelect;
+
+export type TPublicCategoryCard = Prisma.CategoryGetPayload<{ select: typeof SPublicCategoryCard }>;

@@ -35,3 +35,25 @@ export const SProductCatalog = {
      id:true, name:true, description:true, image:true, fileUrl:true
 } satisfies Prisma.ProductCatalogSelect;
 export type TProductCatalog = Prisma.ProductCatalogGetPayload<{select: typeof SProductCatalog}>
+
+export const SProductCatalogCard = {
+     id: true,
+     name: true,
+     description: true,
+     image: true,
+     fileUrl: true,
+     createdAt: true,
+     company: {
+          select: {
+               id: true,
+               name: true,
+               handle: true,
+               logoUrl: true,
+               verification: {
+                    select: { status: true, isGoldVerified: true, isSilverVerified: true, isBronzeVerified: true }
+               },
+               location: { select: { country: true, city: true } },
+          }
+     },
+} satisfies Prisma.ProductCatalogSelect;
+export type TProductCatalogCard = Prisma.ProductCatalogGetPayload<{select: typeof SProductCatalogCard}>

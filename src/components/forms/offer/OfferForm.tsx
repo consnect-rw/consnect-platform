@@ -62,6 +62,7 @@ export const OfferForm = ({onComplete, offerId, companyId,userId, allowPublish=f
      const [safetyRequirements, setSafetyRequirements] = useState("");
      const [skills, setSkills] = useState<string[]>([]);
      const [requiredCertifications, setRequiredCertifications] = useState<string[]>([]);
+     const [requiredAttachments, setRequiredAttachments] = useState<string[]>([]);
      const [deliverables, setDeliverables] = useState<string[]>([]);
      
      // Step 4: Project Information
@@ -252,6 +253,7 @@ export const OfferForm = ({onComplete, offerId, companyId,userId, allowPublish=f
                          priority: priority as EOfferPriority,
                          status: status ? status as EOfferStatus : "DRAFT",
                          visibility: visibility as OfferVisibility,
+                         requiredDocuments: requiredAttachments,
                          contractType: contractType as EOFferContractType,
                          category: { connect: { id: categoryId } },
                          ...(companyId && { company: { connect: { id: companyId } } }),
@@ -345,8 +347,8 @@ export const OfferForm = ({onComplete, offerId, companyId,userId, allowPublish=f
                     }
 
                     toast.success("Offer created successfully");
-                    queryClient.invalidateQueries();
-                    return onComplete();
+                    onComplete();
+                    return queryClient.invalidateQueries();
                } else {
                     // Update existing offer using state values
                     const updateData: any = {
@@ -365,6 +367,7 @@ export const OfferForm = ({onComplete, offerId, companyId,userId, allowPublish=f
                          ...(skills.length > 0 && { requiredSkills: skills }),
                          ...(deliverables.length > 0 && { deliverables }),
                          ...(requiredCertifications.length > 0 && { requiredCertifications }),
+                         ...(requiredAttachments.length > 0 && { requiredAttachments }),
                     };
 
                     const response = await updateOffer(offerId, updateData);
@@ -375,8 +378,8 @@ export const OfferForm = ({onComplete, offerId, companyId,userId, allowPublish=f
                     }
 
                     toast.success("Offer updated successfully");
-                    queryClient.invalidateQueries();
-                    return onComplete();
+                    onComplete();
+                    return queryClient.invalidateQueries();
                }
           } catch (error) {
                console.error("Error submitting offer:", error);
@@ -912,6 +915,7 @@ export const OfferForm = ({onComplete, offerId, companyId,userId, allowPublish=f
                                              action={(value) => setContactPhone(value as string)}
                                         />
                                    </Grid2InputWrapper>
+                                   <WordsInput name="required-attachments" words={requiredAttachments} onChange={setRequiredAttachments} type="text" label="Required Attachments" />
                                    <TextAreaInputGroup 
                                         name="submission-notes" 
                                         label="Submission Guidelines" 
