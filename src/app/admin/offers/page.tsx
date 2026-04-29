@@ -59,10 +59,10 @@ export default function AdminOffersPage() {
                               </div>
                               <div>
                                    <h1 className="text-3xl sm:text-4xl font-black text-gray-900">
-                                        Manage Offers
+                                        Manage Work Packages
                                    </h1>
                                    <p className="text-gray-600">
-                                        Monitor and manage all offers on the platform
+                                        Monitor and manage all work packages on the platform
                                    </p>
                               </div>
                          </div>

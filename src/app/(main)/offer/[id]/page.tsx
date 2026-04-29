@@ -12,7 +12,7 @@ export default async function OfferPage({ params }: { params: Promise<{ id: stri
           return (
                <div className="min-h-4/12 py-2 bg-gray-50 flex items-center justify-center">
                     <div className="text-center">
-                         <p className="text-gray-600 font-bold">Offer not found or not published</p>
+                         <p className="text-gray-600 font-bold">Work Package not found or not published</p>
                     </div>
                </div>
           )

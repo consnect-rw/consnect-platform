@@ -108,7 +108,7 @@ export default function OffersPage() {
                               <Briefcase className="w-8 h-8 text-gray-900" />
                          </div>
                          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black text-gray-900 mb-4">
-                              Construction Offers
+                              Construction Work Packages
                          </h1>
                          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
                               Browse opportunities from verified companies. Find projects, partnerships, and contract work.
@@ -128,7 +128,7 @@ export default function OffersPage() {
                     {!isLoading && (
                          <div className="mb-6">
                               <p className="text-sm font-bold text-gray-600">
-                                   Showing {offers.length} of {total} offers
+                                   Showing {offers.length} of {total} work packages
                                    {filters.search && ` for "${filters.search}"`}
                               </p>
                          </div>
@@ -138,7 +138,7 @@ export default function OffersPage() {
                     <PublicOffersContainer
                          offers={offers}
                          isLoading={isLoading}
-                         emptyMessage="No offers match your filters. Try adjusting your search criteria."
+                         emptyMessage="No work packages match your filters. Try adjusting your search criteria."
                     />
 
                     {/* Pagination */}

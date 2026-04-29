@@ -6,6 +6,7 @@ import { Toaster } from "sonner";
 import { ThemeProvider } from "next-themes";
 import { ViewProvider } from "@/context/ViewContext";
 import { GoogleAnalytics } from '@next/third-parties/google'
+import { BannersProvider } from "@/context/BannerContext";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -39,7 +40,9 @@ export default async function RootLayout({
           
               <QueryProvider>
                   <ViewProvider>
+                    <BannersProvider>
                     {children}
+                    </BannersProvider>
                   </ViewProvider>
             </QueryProvider>
             <Toaster

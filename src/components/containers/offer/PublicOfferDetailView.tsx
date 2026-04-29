@@ -160,7 +160,7 @@ export const PublicOfferDetailView = ({ offer }: PublicOfferDetailViewProps) => 
                          className="inline-flex items-center gap-2 text-gray-600 hover:text-gray-900 font-bold mb-6 transition-colors"
                     >
                          <ArrowLeft className="w-5 h-5" />
-                         Back to Offers
+                         Back to work packages
                     </Link>
 
                     {/* Main Content Grid */}

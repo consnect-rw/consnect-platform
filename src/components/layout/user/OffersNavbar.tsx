@@ -7,10 +7,10 @@ import { usePathname } from 'next/navigation';
 
 // Better icons that match the context
 const OfferLinks = [
-  { name: "My Offers", href: "/dashboard/offers", icon: FileText },
-  { name: "New Offer", href: "/dashboard/offers/form", icon: Plus },
+  { name: "My Work Packages", href: "/dashboard/offers", icon: FileText },
+  { name: "New Work Package", href: "/dashboard/offers/form", icon: Plus },
   { name: "Received Interests", href: "/dashboard/offers/received", icon: Plus },
-  { name: "Browse Offers", href: "/dashboard/offers/posted", icon: Globe },
+  { name: "Browse Work Packages", href: "/dashboard/offers/posted", icon: Globe },
   { name: "Sent Interests", href: "/dashboard/offers/offer-interests", icon: Send },
 ];
 

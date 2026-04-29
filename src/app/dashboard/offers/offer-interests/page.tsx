@@ -27,7 +27,7 @@ export default function OfferInterestsPage() {
 
      if (!user?.company) {
           return (
-               <CompanyRequiredNotice message="Please complete your company profile to track your offer interests." />
+               <CompanyRequiredNotice message="Please complete your company profile to track your work package interests." />
           );
      }
 
@@ -76,7 +76,7 @@ export default function OfferInterestsPage() {
                                    <div>
                                         <h1 className="text-2xl sm:text-3xl font-black text-gray-900">My Interests</h1>
                                         <p className="text-gray-600 mt-1 text-sm">
-                                             Track the status of your submitted interests on construction offers.
+                                             Track the status of your submitted interests on construction work packages.
                                         </p>
                                    </div>
                               </div>
@@ -156,7 +156,7 @@ export default function OfferInterestsPage() {
                               <p className="text-gray-500 text-sm max-w-sm mx-auto">
                                    {statusFilter
                                         ? "Try clearing the filter to see all your interests."
-                                        : "Browse construction offers and submit your interest to see them here."}
+                                        : "Browse construction work packages and submit your interest to see them here."}
                               </p>
                          </div>
                     ) : (

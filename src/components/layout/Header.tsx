@@ -17,7 +17,7 @@ import { INavLink } from "@/types/common/nav-link";
 // ─── Quick links per role ───────────────────────────────────────────────────
 const userQuickLinks = [
   { label: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
-  { label: "Offers", href: "/dashboard/offers", icon: Tag },
+  { label: "Work Packages", href: "/dashboard/offers", icon: Tag },
   { label: "Tenders", href: "/dashboard/tenders", icon: FileText },
   { label: "Messages", href: "/dashboard/messages", icon: MessageSquare },
   { label: "Settings", href: "/dashboard/settings", icon: Settings },
@@ -27,10 +27,10 @@ const adminQuickLinks = [
   { label: "Overview", href: "/admin", icon: BarChart3 },
   { label: "Users", href: "/admin/users", icon: Users },
   { label: "Companies", href: "/admin/companies", icon: Building2 },
-  { label: "Offers", href: "/admin/offers", icon: Tag },
+  { label: "Work Packages", href: "/admin/offers", icon: Tag },
   { label: "Blogs", href: "/admin/blogs", icon: Newspaper },
   { label: "Support", href: "/admin/support", icon: Headphones },
-  { label: "Settings", href: "/admin/settings", icon: Settings },
+  { label: "Banners", href: "/admin/banners", icon: Settings },
 ];
 
 // ─── Category fetch hook for mega menus ─────────────────────────────────────
@@ -55,7 +55,7 @@ type TMegaCategory = { id: string; name: string };
 /** Returns categories & link config for a given megaKey */
 function getMegaData(megaKey: "offers" | "tenders" | "companies", tender: TMegaCategory[], service: TMegaCategory[]) {
   if (megaKey === "offers") {
-    return { categories: tender, basePath: "/offer?category=", viewAllHref: "/offer", viewAllLabel: "View All Offers" };
+    return { categories: tender, basePath: "/offer?category=", viewAllHref: "/offer", viewAllLabel: "View Work Packages" };
   }
   if (megaKey === "tenders") {
     return { categories: tender, basePath: "/tender?category=", viewAllHref: "/tender", viewAllLabel: "View All Tenders" };
@@ -107,7 +107,7 @@ export const MobileView = ({ isScrolled, user }: { isScrolled: boolean; user: im
   return (
     <>
       <header
-        className={`fixed top-0 left-0 right-0 z-50 lg:hidden transition-all duration-300 ${
+        className={`sticky top-0 left-0 right-0 z-50 lg:hidden transition-all duration-300 ${
           isScrolled
             ? "bg-white shadow-lg border-b-2 border-gray-200"
             : "bg-white/95 backdrop-blur-sm"
@@ -241,9 +241,6 @@ export const MobileView = ({ isScrolled, user }: { isScrolled: boolean; user: im
           </div>
         </div>
       )}
-
-      {/* Spacer to prevent content jump */}
-      <div className="h-16 lg:hidden" />
     </>
   );
 };
@@ -285,12 +282,13 @@ export const DesktopView = ({ isScrolled, user }: { isScrolled: boolean; user: i
   return (
     <>
       <header
-        className={`hidden lg:block fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
+        className={`hidden lg:block sticky top-0 left-0 right-0 z-50 transition-all duration-300 ${
           isScrolled
             ? "bg-white shadow-lg border-b-2 border-gray-200"
             : "bg-white/95 backdrop-blur-sm"
         }`}
       >
+
         <div className="w-full max-w-7xl mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
             {/* Logo */}
@@ -426,9 +424,6 @@ export const DesktopView = ({ isScrolled, user }: { isScrolled: boolean; user: i
           </div>
         </div>
       </header>
-
-      {/* Spacer to prevent content jump */}
-      <div className="hidden lg:block h-20" />
     </>
   );
 };

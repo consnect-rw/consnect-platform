@@ -157,7 +157,7 @@ export default function Footer() {
                 <FooterLink name="Register Company" href="/auth/register" />
                 <FooterLink name="Post a Tender" href="/tender" />
                 <FooterLink name="Create Offer" href="/offer" />
-                <FooterLink name="Pricing" href="/#" />
+                <FooterLink name="Advertise Here" href="/advertise" />
               </div>
             </div>
 

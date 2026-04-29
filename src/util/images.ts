@@ -1,5 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-export const getCroppedImg = async (imageSrc: string, croppedAreaPixels: any) => {
+
+/** Formats that support animation or lossless color — should skip canvas cropping */
+export const ANIMATED_FORMATS = ["image/gif", "image/webp", "image/apng"];
+
+/** Crop a static image using canvas, preserving the original MIME type (jpeg/png/etc.) */
+export const getCroppedImg = async (imageSrc: string, croppedAreaPixels: any, mimeType = "image/jpeg") => {
      return new Promise<string>((resolve, reject) => {
          const image = new Image();
          image.crossOrigin = "anonymous"; // Avoid CORS issues if using remote images
@@ -29,15 +34,16 @@ export const getCroppedImg = async (imageSrc: string, croppedAreaPixels: any) =>
                  croppedAreaPixels.height
              );
  
+             // Use original mime type so PNG stays PNG, JPEG stays JPEG, etc.
              canvas.toBlob((blob) => {
                  if (!blob) {
                      reject(new Error("Canvas is empty"));
                      return;
                  }
                  resolve(URL.createObjectURL(blob));
-             }, "image/jpeg");
+             }, mimeType);
          };
- 
+
          image.onerror = (error) => reject(error);
      });
  };
