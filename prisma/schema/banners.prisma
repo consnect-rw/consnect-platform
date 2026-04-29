@@ -1,0 +1,70 @@
+
+enum EBannerLocation {
+     HOME
+     COMPANY
+     OFFER
+     TENDER
+     BLOG
+     ALL
+     OTHER
+}
+
+enum EBannerOrientation {
+     HORIZONTAL
+     VERTICAL
+     SQUARE
+}
+
+enum EBannerPagePosition {
+     TOP
+     MIDDLE
+     BOTTOM
+     SIDEBAR
+     OTHER
+}
+
+model BannerPlan {
+     id  String @id @default(uuid())
+     name String 
+     description String?
+     benefits String[]
+     price Float
+     currency String
+     orientation EBannerOrientation
+     location EBannerLocation
+     pagePosition EBannerPagePosition @default(MIDDLE)
+     width Int
+     height Int
+     duration Int
+     durationUnit String // e.g., "days", "weeks", "months"
+     isActive Boolean @default(true)
+
+     banners Banner[]
+}
+
+enum EBannerOwnerType {
+     USER
+     COMPANY
+     SYSTEM
+}
+
+model Banner {
+     id String @id @default(uuid())
+     title String
+     destinationUrl String
+     imageUrl String
+     createdAt DateTime @default(now())
+     updatedAt DateTime @updatedAt
+     expireAt DateTime?
+
+
+     planId String
+     plan BannerPlan @relation(fields: [planId], references: [id])
+
+     userId String?
+     user User? @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+     companyId String?
+     company Company? @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+}

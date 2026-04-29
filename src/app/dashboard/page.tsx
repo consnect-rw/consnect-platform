@@ -63,7 +63,7 @@ function Header({ user }: { user: TSessionUser }) {
       </div>
       
       <p className="text-gray-600 font-medium mt-6 text-base sm:text-lg max-w-3xl relative z-10">
-        Welcome to your Consnect Dashboard. Manage tenders, post offers, update your company profile, and connect with the best partners in construction.
+        Welcome to your Consnect Dashboard. Manage tenders, post work packages, update your company profile, and connect with the best partners in construction.
       </p>
     </div>
   );
@@ -182,7 +182,7 @@ function StatCard({ label, value, trend }: {
   // Map labels to icons
   const getIcon = () => {
     switch (label) {
-      case "Active Offers":
+      case "Active Work Packages":
         return Tag;
       case "Projects":
         return Building2;
@@ -254,7 +254,7 @@ function RecentActivity() {
         </div>
         <h3 className="text-base font-semibold text-gray-900 mb-1">No Activity Yet</h3>
         <p className="text-sm text-gray-600">
-          Your activity will appear here once you start posting offers, completing projects, or receiving messages.
+          Your activity will appear here once you start posting work packages, completing projects, or receiving messages.
         </p>
       </div>
     );

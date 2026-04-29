@@ -44,6 +44,7 @@ model User {
      offers Offer[]
      projects Project[]
      passwordResetTokens PasswordResetToken[]
+     banners Banner[]
 }
 
 model EmailVerificationToken {
@@ -95,7 +96,6 @@ model AuthLog {
      //context
      action EAuthAction
      success Boolean
-
 }
 
 model PasswordResetToken {

@@ -15,7 +15,7 @@ export default async function OfferDetailPage(
           return (
                <div className="min-h-screen bg-gray-50 flex items-center justify-center">
                     <div className="text-center">
-                         <p className="text-gray-600 font-bold">Offer not found or access denied</p>
+                         <p className="text-gray-600 font-bold">Work Package not found or access denied</p>
                     </div>
                </div>
           )

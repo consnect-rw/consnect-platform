@@ -342,11 +342,11 @@ export const OfferForm = ({onComplete, offerId, companyId,userId, allowPublish=f
                     const response = await createOffer(offerData);
                     
                     if (!response) {
-                         toast.error("Error creating offer!", { description: "Please try again later" });
+                         toast.error("Error creating work package!", { description: "Please try again later" });
                          return;
                     }
 
-                    toast.success("Offer created successfully");
+                    toast.success("Work Package created successfully");
                     onComplete();
                     return queryClient.invalidateQueries();
                } else {
@@ -373,16 +373,16 @@ export const OfferForm = ({onComplete, offerId, companyId,userId, allowPublish=f
                     const response = await updateOffer(offerId, updateData);
                     
                     if (!response) {
-                         toast.error("Error updating offer!", { description: "Please try again later" });
+                         toast.error("Error updating work package!", { description: "Please try again later" });
                          return;
                     }
 
-                    toast.success("Offer updated successfully");
+                    toast.success("Work Package updated successfully");
                     onComplete();
                     return queryClient.invalidateQueries();
                }
           } catch (error) {
-               console.error("Error submitting offer:", error);
+               console.error("Error submitting work package:", error);
                toast.error("An error occurred", { description: "Please try again" });
           } finally {
                setLoading(false);
@@ -931,7 +931,7 @@ export const OfferForm = ({onComplete, offerId, companyId,userId, allowPublish=f
                          {currentStep === 8 && (
                               <div className="space-y-6 animate-in fade-in duration-300">
                                    <div className="border-l-4 border-yellow-400 pl-4 mb-6">
-                                        <h3 className="text-xl font-black text-gray-900">Offer Documents</h3>
+                                        <h3 className="text-xl font-black text-gray-900">Documents</h3>
                                         <p className="text-sm text-gray-600 mt-1">Attach relevant documents (optional)</p>
                                    </div>
                                    
@@ -1013,7 +1013,7 @@ export const OfferForm = ({onComplete, offerId, companyId,userId, allowPublish=f
                                    ) : (
                                         <>
                                              <Check className="w-5 h-5" />
-                                             Save Offer
+                                             Save Work Package
                                         </>
                                    )}
                               </button>

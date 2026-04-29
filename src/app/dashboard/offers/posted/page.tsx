@@ -27,7 +27,7 @@ export default function PostedOffersPage() {
      });
 
      if (!user?.company) {
-          return <CompanyRequiredNotice message="Please complete company profile to be able to view offers and send offer interests" />;
+          return <CompanyRequiredNotice message="Please complete company profile to be able to view work packages and send offer interests" />;
      }
 
      // Fetch categories for filter
@@ -116,7 +116,7 @@ export default function PostedOffersPage() {
                               <Briefcase className="w-7 h-7 text-gray-900" />
                          </div>
                          <h1 className="text-3xl sm:text-4xl font-black text-gray-900 mb-2">
-                              Explore Offers
+                              Explore Work Packages
                          </h1>
                          <p className="text-lg text-gray-600">
                               Discover opportunities from other companies. Find projects and partnerships.
@@ -136,7 +136,7 @@ export default function PostedOffersPage() {
                     {!isLoading && (
                          <div className="mb-6">
                               <p className="text-sm font-bold text-gray-600">
-                                   Showing {offers.length} of {total} offers
+                                   Showing {offers.length} of {total} work packages
                                    {filters.search && ` for "${filters.search}"`}
                               </p>
                          </div>
@@ -146,7 +146,7 @@ export default function PostedOffersPage() {
                     <PublicOffersContainer
                          offers={offers}
                          isLoading={isLoading}
-                         emptyMessage="No offers match your filters. Try adjusting your search criteria."
+                         emptyMessage="No work packages match your filters. Try adjusting your search criteria."
                     />
 
                     {/* Pagination */}

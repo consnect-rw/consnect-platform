@@ -29,11 +29,11 @@ export default async function HomeOffersSection() {
                               <div className="flex items-center gap-3 mb-3">
                                    <div className="w-1 h-8 bg-yellow-400"></div>
                                    <h2 className="text-3xl lg:text-4xl md:text-5xl font-black text-gray-900 tracking-tight">
-                                        Latest Offer Opportunities
+                                        Latest Work Packages
                                    </h2>
                               </div>
                               <p className="text-gray-600 text-base lg:text-lg font-medium ml-5">
-                                   Discover construction offers from verified companies. Find your next project or partnership.
+                                   Discover construction work packages from verified companies. Find your next project or partnership.
                               </p>
                          </div>
 
@@ -42,7 +42,7 @@ export default async function HomeOffersSection() {
                               className="hidden rounded-lg md:flex items-center gap-2 px-6 py-3 bg-gray-900 hover:bg-gray-800 text-white font-bold transition-colors group"
                          >
                               <Briefcase className="w-5 h-5" />
-                              <span>View All Offers</span>
+                              <span>View All Work Packages</span>
                               <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
                          </Link>
                     </div>
@@ -61,7 +61,7 @@ export default async function HomeOffersSection() {
                               className="flex items-center gap-2 px-8 py-4 bg-gray-900 hover:bg-gray-800 text-white font-bold transition-colors w-full sm:w-auto justify-center rounded-lg"
                          >
                               <Briefcase className="w-5 h-5" />
-                              <span>View All Offers</span>
+                              <span>View All Work Packages</span>
                               <ArrowRight className="w-5 h-5" />
                          </Link>
                     </div>

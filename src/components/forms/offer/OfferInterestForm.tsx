@@ -341,7 +341,7 @@ export const OfferInterestForm = ({ offerId, existingInterestId, onComplete }: O
                     }
                });
                if (!interest) return toast.error("Failed to submit interest. Please try again.");
-               toast.success("Interest submitted. The offer owner will review your application.");
+               toast.success("Interest submitted. The work package owner will review your application.");
                onComplete?.();
                queryClient.invalidateQueries();
           } catch {
@@ -400,7 +400,7 @@ export const OfferInterestForm = ({ offerId, existingInterestId, onComplete }: O
           return (
                <div className="flex flex-col items-center justify-center py-20 gap-3">
                     <Loader2 className="w-8 h-8 text-amber-500 animate-spin" />
-                    <p className="text-gray-500 text-sm font-medium">Loading offer details…</p>
+                    <p className="text-gray-500 text-sm font-medium">Loading work package details…</p>
                </div>
           );
      }
@@ -408,7 +408,7 @@ export const OfferInterestForm = ({ offerId, existingInterestId, onComplete }: O
           return (
                <div className="flex flex-col items-center justify-center py-20 gap-3">
                     <AlertCircle className="w-8 h-8 text-red-400" />
-                    <p className="text-gray-600 text-sm">Offer not found.</p>
+                    <p className="text-gray-600 text-sm">Work Package not found.</p>
                </div>
           );
      }
@@ -434,8 +434,8 @@ export const OfferInterestForm = ({ offerId, existingInterestId, onComplete }: O
                     </div>
                     <div className="p-8 flex flex-col items-center text-center gap-3">
                          <Building2 className="w-10 h-10 text-gray-300" />
-                         <p className="text-gray-800 font-bold text-base">This is your own offer</p>
-                         <p className="text-gray-500 text-sm max-w-xs">You cannot submit interest on an offer posted by your company.</p>
+                         <p className="text-gray-800 font-bold text-base">This is your own Work Package</p>
+                         <p className="text-gray-500 text-sm max-w-xs">You cannot submit interest on an work package posted by your company.</p>
                     </div>
                </div>
           );
@@ -470,7 +470,7 @@ export const OfferInterestForm = ({ offerId, existingInterestId, onComplete }: O
                          <CheckCircle2 className="w-10 h-10 text-green-500" />
                          <div>
                               <p className="text-gray-800 font-bold text-base mb-1">Interest already submitted</p>
-                              <p className="text-gray-500 text-sm">Your application for this offer is currently:</p>
+                              <p className="text-gray-500 text-sm">Your application for this work package is currently:</p>
                          </div>
                          <span className={`px-4 py-2 rounded-xl border text-sm font-bold ${s.color}`}>{s.label}</span>
                          <a
@@ -657,7 +657,7 @@ export const OfferInterestForm = ({ offerId, existingInterestId, onComplete }: O
                                              ))}
                                         </div>
                                    ) : (
-                                        <p className="text-gray-400 text-xs italic">No required documents specified for this offer.</p>
+                                        <p className="text-gray-400 text-xs italic">No required documents specified for this work package.</p>
                                    )
                               )}
 

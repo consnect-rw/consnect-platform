@@ -42,10 +42,10 @@ export default function OffersPage() {
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
             <div>
               <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-2">
-                Manage Offers
+                Manage Work Packages
               </h1>
               <p className="text-gray-600 text-base">
-                Create, update and review your construction offers
+                Create, update and review your construction work packages
               </p>
             </div>
             <Link
@@ -63,7 +63,7 @@ export default function OffersPage() {
           <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-16 flex items-center justify-center">
             <div className="text-center">
               <Loader2 className="w-12 h-12 text-yellow-500 animate-spin mx-auto mb-4" />
-              <p className="text-gray-600 font-medium">Loading your offers...</p>
+              <p className="text-gray-600 font-medium">Loading your work packages...</p>
             </div>
           </div>
         ) : (
@@ -71,7 +71,7 @@ export default function OffersPage() {
             <CompanyOffersContainer
               offers={offers}
               isLoading={false}
-              emptyMessage="You haven't created any offers yet. Start by creating your first offer."
+              emptyMessage="You haven't created any work packages yet. Start by creating your first work package."
               showCreateButton={true}
             />
 

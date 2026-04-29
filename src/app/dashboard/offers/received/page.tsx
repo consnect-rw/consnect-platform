@@ -30,7 +30,7 @@ export default function ReceivedInterestsPage() {
 
   if (!user?.company) {
     return (
-      <CompanyRequiredNotice message="Please complete your company profile to review interests received on your offers." />
+      <CompanyRequiredNotice message="Please complete your company profile to review interests received on your work packages." />
     );
   }
 
@@ -79,7 +79,7 @@ export default function ReceivedInterestsPage() {
             </div>
             <div>
               <h1 className="text-xl sm:text-2xl font-black text-gray-900">Received Interests</h1>
-              <p className="text-xs text-gray-500">Review companies interested in your offers</p>
+              <p className="text-xs text-gray-500">Review companies interested in your work packages</p>
             </div>
           </div>
           {!isLoading && (
@@ -124,7 +124,7 @@ export default function ReceivedInterestsPage() {
             <p className="text-gray-500 text-xs max-w-xs mx-auto">
               {statusFilter
                 ? "Try changing the filter to see other interests."
-                : "Once companies show interest in your published offers, they will appear here."}
+                : "Once companies show interest in your published work packages, they will appear here."}
             </p>
           </div>
         ) : (

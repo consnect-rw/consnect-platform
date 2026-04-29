@@ -15,6 +15,8 @@ import {
   Logs,
   ChartAreaIcon,
   MessageCircle,
+  Clapperboard,
+  Megaphone,
 } from "lucide-react";
 import { FaBlog } from "react-icons/fa6";
 import { EAdminRole } from "@prisma/client";
@@ -35,4 +37,5 @@ export const AdminNavLinks: {
   { name: "Support", href: "/admin/support", icon: MessageSquare, roles: [EAdminRole.SUPER_ADMIN, EAdminRole.ADMIN, EAdminRole.CUSTOMER_SUPPORT] },
   { name: "Chat", href: "/admin/chat", icon: MessageCircle, roles: [EAdminRole.SUPER_ADMIN, EAdminRole.ADMIN, EAdminRole.MODERATOR, EAdminRole.CONTENT_MANAGER, EAdminRole.CUSTOMER_SUPPORT] },
   { name: "Stats", href: "/admin/monitoring", icon: ChartAreaIcon, roles: [EAdminRole.SUPER_ADMIN, EAdminRole.ADMIN] },
+  { name: "Banners", href: "/admin/banners", icon: Megaphone, roles: [EAdminRole.SUPER_ADMIN, EAdminRole.ADMIN] },
 ];

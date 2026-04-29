@@ -42,6 +42,7 @@ model Company {
      documents Document[]
      verification CompanyVerification?
      partnerInterests String[] @default([])
+     banners Banner[]
 
      userId String @unique
      user User @relation(fields: [userId], references: [id], onDelete: Cascade)

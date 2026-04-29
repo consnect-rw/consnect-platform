@@ -31,11 +31,11 @@ export const PasswordInputGroup = ({label, placeholder,name, required=true, acti
      )
 }
 
-export const SelectInputGroup = ({label, name, required=true,values, action}:{label: string, name:string, required?: boolean, values: Array<{label:string, value:string}>, action?: (res:string) => unknown}) => {
+export const SelectInputGroup = ({label, name, required=true, values, action, defaultValue}:{label: string, name:string, required?: boolean, values: Array<{label:string, value:string}>, action?: (res:string) => unknown, defaultValue?: string}) => {
      return (
           <div className="w-full flex flex-col items-start gap-1">
                <label className="text-base font-medium text-gray-800" htmlFor={name}>{label}</label>
-               <Select onValueChange={v => action ? action(v) : () => {} } required={required} name={name}>
+               <Select onValueChange={v => action ? action(v) : () => {} } required={required} name={name} defaultValue={defaultValue}>
                     <SelectTrigger className="w-full">
                          <SelectValue placeholder={`Select ${name}`} />
                     </SelectTrigger>
@@ -43,7 +43,6 @@ export const SelectInputGroup = ({label, name, required=true,values, action}:{la
                          <SelectGroup>
                               <SelectLabel>{name}</SelectLabel>
                               {values.map((v, index) => <SelectItem key={`${name}-value-${index}`} value={v.value}>{v.label}</SelectItem>)}
-                              
                          </SelectGroup>
                     </SelectContent>
                </Select>
