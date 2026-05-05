@@ -30,11 +30,6 @@ export async function updateNotification (id:string, data:Prisma.NotificationUpd
 export async function deleteNotification (id:string) {
      try {
           const res = await prisma.notification.delete({where: {id}});
-          
-          const Notification = await prisma.notification.findUnique({where:{id}});
-
-          if (!Notification) throw new Error("Notification not found");
-
           if(res) revalidatePages();
            
           return res;

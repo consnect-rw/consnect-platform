@@ -29,11 +29,10 @@ export async function updateBanner (id:string, data:Prisma.BannerUpdateInput) {
 
 export async function deleteBanner (id:string) {
      try {
-          const res = await prisma.banner.delete({where: {id}});
-          
           const Banner = await prisma.banner.findUnique({where:{id}});
 
           if (!Banner) throw new Error("Banner not found");
+          const res = await prisma.banner.delete({where: {id}});
 
           if(res) revalidatePages();
            

@@ -30,10 +30,6 @@ export async function updateComment (id:string, data:Prisma.CommentUpdateInput) 
 export async function deleteComment (id:string) {
      try {
           const res = await prisma.comment.delete({where: {id}});
-          
-          const Comment = await prisma.comment.findUnique({where:{id}});
-
-          if (!Comment) throw new Error("Comment not found");
 
           if(res) revalidatePages();
            

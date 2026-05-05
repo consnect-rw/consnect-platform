@@ -30,10 +30,6 @@ export async function updateMessage (id:string, data:Prisma.MessageUpdateInput) 
 export async function deleteMessage (id:string) {
      try {
           const res = await prisma.message.delete({where: {id}});
-          
-          const Message = await prisma.message.findUnique({where:{id}});
-
-          if (!Message) throw new Error("Message not found");
 
           if(res) revalidatePages();
            

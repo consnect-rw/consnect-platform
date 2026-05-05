@@ -30,10 +30,6 @@ export async function updateReminder (id:string, data:Prisma.ReminderUpdateInput
 export async function deleteReminder (id:string) {
      try {
           const res = await prisma.reminder.delete({where: {id}});
-          
-          const Reminder = await prisma.reminder.findUnique({where:{id}});
-
-          if (!Reminder) throw new Error("Reminder not found");
 
           if(res) revalidatePages();
            

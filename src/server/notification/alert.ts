@@ -30,11 +30,6 @@ export async function updateAlert (id:string, data:Prisma.AlertUpdateInput) {
 export async function deleteAlert (id:string) {
      try {
           const res = await prisma.alert.delete({where: {id}});
-          
-          const Alert = await prisma.alert.findUnique({where:{id}});
-
-          if (!Alert) throw new Error("Alert not found");
-
           if(res) revalidatePages();
            
           return res;
