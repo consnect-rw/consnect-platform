@@ -30,10 +30,6 @@ export async function updateSubscription (id:string, data:Prisma.SubscriptionUpd
 export async function deleteSubscription (id:string) {
      try {
           const res = await prisma.subscription.delete({where: {id}});
-          
-          const Subscription = await prisma.subscription.findUnique({where:{id}});
-
-          if (!Subscription) throw new Error("Subscription not found");
 
           if(res) revalidatePages();
            

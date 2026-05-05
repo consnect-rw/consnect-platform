@@ -31,7 +31,6 @@ export async function deleteCompany (id:string) {
      try {
           const res = await prisma.company.delete({where: {id}});
           if(res) revalidatePages();
-           
           return res;
      } catch (error) {
           console.log("Error deleting Company with id: ", id, error);

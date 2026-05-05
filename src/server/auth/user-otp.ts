@@ -30,11 +30,6 @@ export async function updateUserOTP (id:string, data:Prisma.UserOTPUpdateInput) 
 export async function deleteUserOTP (id:string) {
      try {
           const res = await prisma.userOTP.delete({where: {id}});
-          
-          const UserOTP = await prisma.userOTP.findUnique({where:{id}});
-
-          if (!UserOTP) throw new Error("UserOTP not found");
-
           if(res) revalidatePages();
            
           return res;

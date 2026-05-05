@@ -29,12 +29,8 @@ export async function updateBlog (id:string, data:Prisma.BlogUpdateInput) {
 
 export async function deleteBlog (id:string) {
      try {
-          const res = await prisma.blog.delete({where: {id}});
           
-          const Blog = await prisma.blog.findUnique({where:{id}});
-
-          if (!Blog) throw new Error("Blog not found");
-
+          const res = await prisma.blog.delete({where: {id}});
           if(res) revalidatePages();
            
           return res;

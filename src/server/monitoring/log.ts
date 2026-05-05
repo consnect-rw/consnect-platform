@@ -30,10 +30,6 @@ export async function updateLog (id:string, data:Prisma.LogUpdateInput) {
 export async function deleteLog (id:string) {
      try {
           const res = await prisma.log.delete({where: {id}});
-          
-          const Log = await prisma.log.findUnique({where:{id}});
-
-          if (!Log) throw new Error("Log not found");
 
           if(res) revalidatePages();
            
