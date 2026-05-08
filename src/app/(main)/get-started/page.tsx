@@ -1,6 +1,21 @@
 import React from "react";
 import Link from "next/link";
 import { GettingStartedGuide } from "@/lib/data/get-started";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Get Started with Consnect | Step-by-Step Guide",
+  description:
+    "New to Consnect? Follow our step-by-step guide to set up your construction company profile, post tenders, and start finding business opportunities in Rwanda.",
+  keywords: ["get started Consnect", "how to register Consnect", "construction company profile Rwanda", "Consnect guide"],
+  alternates: { canonical: "https://consnect.rw/get-started" },
+  openGraph: {
+    title: "Get Started with Consnect",
+    description: "Step-by-step guide to getting started on Rwanda's leading construction platform.",
+    url: "https://consnect.rw/get-started",
+    type: "website",
+  },
+};
 
 export default function GetStartedPage() {
   const {

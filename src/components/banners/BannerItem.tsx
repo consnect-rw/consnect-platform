@@ -59,8 +59,15 @@ export const BannerItem = ({ banner, className = "", objectFit = "cover" }: Bann
         </div>
       )}
 
-      {/* Subtle bottom gradient for branding */}
-      <div className="absolute bottom-0 inset-x-0 h-8 bg-linear-to-t from-black/20 to-transparent pointer-events-none rounded-b-2xl" />
+      {/* Bottom gradient scrim */}
+      <div className="absolute bottom-0 inset-x-0 h-16 bg-linear-to-t from-black/70 to-transparent pointer-events-none rounded-b-2xl" />
+
+      {/* Floating title */}
+      <div className="absolute bottom-0 inset-x-0 px-3 py-2 z-20 pointer-events-none">
+        <p className="text-xs font-bold text-yellow-400 drop-shadow-sm leading-tight line-clamp-1 group-hover:line-clamp-none group-hover:whitespace-normal transition-all duration-300">
+          {banner.title}
+        </p>
+      </div>
     </BannerLink>
   );
 };

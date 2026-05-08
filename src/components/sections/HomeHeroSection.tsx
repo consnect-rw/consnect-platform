@@ -127,20 +127,20 @@ const HomeHeroSection = () => {
         {/* Feature Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto">
           {/* Card 1 */}
-          <div className="group bg-white border-2 border-gray-200 hover:border-yellow-400 rounded-2xl p-6 transition-all hover:-translate-y-2 hover:shadow-xl">
+          <Link href={"/dashboard"} className="group bg-white border-2 border-gray-200 hover:border-yellow-400 rounded-2xl p-6 transition-all hover:-translate-y-2 hover:shadow-xl">
             <div className="w-12 h-12 bg-linear-to-br from-yellow-400 to-yellow-500 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
               <FileText className="w-6 h-6 text-gray-900" strokeWidth={2.5} />
             </div>
             <h3 className="text-xl font-black text-gray-900 mb-2">
-              Post Tenders & Offers
+              Post Tenders & Work Packages
             </h3>
             <p className="text-gray-600 leading-relaxed font-medium">
               Reach qualified contractors and suppliers with your construction projects
             </p>
-          </div>
+          </Link>
 
           {/* Card 2 */}
-          <div className="group bg-white border-2 border-gray-200 hover:border-yellow-400 rounded-2xl p-6 transition-all hover:-translate-y-2 hover:shadow-xl">
+          <Link href={"/auth/register"} className="group bg-white border-2 border-gray-200 hover:border-yellow-400 rounded-2xl p-6 transition-all hover:-translate-y-2 hover:shadow-xl">
             <div className="w-12 h-12 bg-linear-to-br from-yellow-400 to-yellow-500 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
               <Building2 className="w-6 h-6 text-gray-900" strokeWidth={2.5} />
             </div>
@@ -150,10 +150,10 @@ const HomeHeroSection = () => {
             <p className="text-gray-600 leading-relaxed font-medium">
               Build professional profiles that highlight your expertise and projects
             </p>
-          </div>
+          </Link>
 
           {/* Card 3 */}
-          <div className="group bg-white border-2 border-gray-200 hover:border-yellow-400 rounded-2xl p-6 transition-all hover:-translate-y-2 hover:shadow-xl">
+          <Link href={"/companies"} className="group bg-white border-2 border-gray-200 hover:border-yellow-400 rounded-2xl p-6 transition-all hover:-translate-y-2 hover:shadow-xl">
             <div className="w-12 h-12 bg-linear-to-br from-yellow-400 to-yellow-500 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
               <Users className="w-6 h-6 text-gray-900" strokeWidth={2.5} />
             </div>
@@ -163,7 +163,7 @@ const HomeHeroSection = () => {
             <p className="text-gray-600 leading-relaxed font-medium">
               Connect with industry professionals and grow your business network
             </p>
-          </div>
+          </Link>
         </div>
 
         {/* Stats Bar */}
