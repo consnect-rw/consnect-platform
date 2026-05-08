@@ -35,6 +35,52 @@ import { ReviewForm } from "@/components/forms/company/ReviewForm";
 import { ServiceCard } from "@/components/cards/ServiceCard";
 import { ProjectCard } from "@/components/cards/ProjectCard";
 import { CatalogCard } from "@/components/cards/CatalogCard";
+import type { Metadata } from "next";
+import { JsonLd, buildCompanySchema, buildBreadcrumbSchema } from "@/components/seo/JsonLd";
+
+type Props = { params: Promise<{ handle: string }> };
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { handle: rawHandle } = await params;
+  const handle = decodeURIComponent(rawHandle);
+  const company = await fetchCompanyByHandle(handle, SCompanyPage);
+
+  if (!company) {
+    return { title: "Company Not Found | Consnect", description: "This company does not exist on Consnect." };
+  }
+
+  const overviewDesc = company.descriptions?.find((d) => d.title === "Overview")?.description;
+  const description = overviewDesc ?? company.slogan ?? `${company.name} is a verified construction company on Consnect Rwanda.`;
+  const title = `${company.name} | Verified Construction Company`;
+  const url = `https://consnect.rw/company/${encodeURIComponent(company.handle)}`;
+  const image = company.logoUrl;
+
+  return {
+    title,
+    description: description.slice(0, 160),
+    keywords: [
+      company.name,
+      "construction company Rwanda",
+      company.location?.city ?? "Rwanda",
+      ...(company.specializations?.map((s) => s.name) ?? []),
+    ],
+    alternates: { canonical: url },
+    openGraph: {
+      title,
+      description: description.slice(0, 200),
+      url,
+      type: "profile",
+      siteName: "Consnect",
+      ...(image && { images: [{ url: image, width: 400, height: 400, alt: company.name }] }),
+    },
+    twitter: {
+      card: "summary",
+      title,
+      description: description.slice(0, 160),
+      ...(image && { images: [image] }),
+    },
+  };
+}
 
 export default async function CompanyPage({
   params,
@@ -66,8 +112,17 @@ export default async function CompanyPage({
   const visionDesc = company.descriptions.find((d) => d.title === "Vision");
   const detailedDesc = company.descriptions.find((d) => d.title === "Detailed");
 
+  const companySchema = buildCompanySchema(company);
+  const breadcrumb = buildBreadcrumbSchema([
+    { name: "Home", url: "https://consnect.rw" },
+    { name: "Companies", url: "https://consnect.rw/companies" },
+    { name: company.name, url: `https://consnect.rw/company/${encodeURIComponent(company.handle)}` },
+  ]);
+
   return (
     <div className="bg-white min-h-screen">
+      <JsonLd data={companySchema} />
+      <JsonLd data={breadcrumb} />
       {/* ================= HERO SECTION ================= */}
       <section className="relative bg-linear-to-br from-black via-gray-950 to-black text-white border-b-4 border-yellow-400 overflow-hidden">
         {/* Decorative Background Elements */}

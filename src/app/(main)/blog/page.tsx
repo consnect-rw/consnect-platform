@@ -1,7 +1,6 @@
 "use client";
 
 import BlogCard from "@/components/cards/BlogCard";
-import HomeBlogsSection from "@/components/sections/HomeBlogSection";
 import Pagination from "@/components/ui/Pagination";
 import { fetchBlogs } from "@/server/blog/blog";
 import { fetchCategorys } from "@/server/common/category";
@@ -10,6 +9,10 @@ import { EBlogStatus, ECategoryType } from "@prisma/client";
 import { useQuery } from "@tanstack/react-query";
 import { X } from "lucide-react";
 import { ChangeEvent, useState } from "react";
+
+// Note: metadata cannot be exported from "use client" files.
+// This page's metadata is set in the parent layout or a server wrapper.
+// SEO for this listing page is handled via the server layout and og tags.
 
 export default function BlogsPage () {
      const [search,setSearch] = useState("");

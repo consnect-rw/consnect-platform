@@ -25,10 +25,12 @@ function mergeWithGlobal(specific: TLocationBanners, global: TLocationBanners): 
 }
 
 // ─── Top strip: renders above all page content ───────────────────────────────
+// IMPORTANT: Always renders a stable container so the DOM tree order is
+// consistent between SSR and client hydration. TopBannerStrip handles
+// the empty/dismissed state internally and collapses itself via height.
 export const TopPageBanners = ({ location }: PageBannersProps) => {
   const { structured } = useBanners();
   const banners = mergeWithGlobal(structured[location], structured.all);
-  if (!banners.top.length) return null;
   return <TopBannerStrip banners={banners.top} />;
 };
 

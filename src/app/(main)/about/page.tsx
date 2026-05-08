@@ -2,6 +2,36 @@ import React from 'react';
 import { Building2, Target, Eye, Heart, Lightbulb, Users, Handshake, Shield, TrendingUp, FileText, Briefcase, Package, FolderOpen, BarChart, MapPin, Sparkles } from 'lucide-react';
 import { AboutInfo } from '@/lib/data/about-info';
 import Link from 'next/link';
+import type { Metadata } from 'next';
+import { JsonLd, buildBreadcrumbSchema, buildOrganizationSchema } from '@/components/seo/JsonLd';
+
+export const metadata: Metadata = {
+  title: "About Consnect | Rwanda's #1 Construction Platform",
+  description:
+    "Learn about Consnect — the digital platform transforming Rwanda's construction industry. Our mission is to connect companies, streamline tenders, and drive growth across the sector.",
+  keywords: [
+    "about Consnect",
+    "Consnect Rwanda",
+    "construction platform Rwanda",
+    "digital construction Rwanda",
+    "Consnect company",
+    "construction technology Rwanda",
+  ],
+  alternates: { canonical: "https://consnect.rw/about" },
+  openGraph: {
+    title: "About Consnect | Rwanda's #1 Construction Platform",
+    description: "Discover how Consnect is transforming Rwanda's construction industry through digital innovation.",
+    url: "https://consnect.rw/about",
+    type: "website",
+    images: [{ url: "https://consnect.rw/og/default.png", width: 1200, height: 630, alt: "About Consnect" }],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "About Consnect | Rwanda's #1 Construction Platform",
+    description: "Discover how Consnect is transforming Rwanda's construction industry through digital innovation.",
+    images: ["https://consnect.rw/og/default.png"],
+  },
+};
 
 
 
@@ -24,10 +54,16 @@ const featureIcons: Record<string, React.ElementType> = {
 };
 
 export default function AboutPage() {
+  const breadcrumb = buildBreadcrumbSchema([
+    { name: "Home", url: "https://consnect.rw" },
+    { name: "About", url: "https://consnect.rw/about" },
+  ]);
   return (
     <div className="min-h-screen bg-gray-50">
+      <JsonLd data={buildOrganizationSchema()} />
+      <JsonLd data={breadcrumb} />
       {/* Hero Section */}
-      <div className="bg-gradient-to-br from-yellow-600 via-amber-600 to-yellow-500 relative overflow-hidden">
+      <div className="bg-linear-to-br from-yellow-600 via-amber-600 to-yellow-500 relative overflow-hidden">
         <div className="absolute inset-0 opacity-10">
           <div className="absolute top-0 right-0 w-96 h-96 bg-gray-900 rounded-full -translate-y-1/2 translate-x-1/2"></div>
           <div className="absolute bottom-0 left-0 w-96 h-96 bg-gray-900 rounded-full translate-y-1/2 -translate-x-1/2"></div>
@@ -56,18 +92,18 @@ export default function AboutPage() {
               <Sparkles className="w-4 h-4 text-yellow-600" />
               <span className="text-sm font-semibold text-yellow-800">Who We Are</span>
             </div>
-            <h2 className="text-base font-bold text-gray-900 mb-6">
+            <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-6">
               {AboutInfo.overview.shortDescription}
             </h2>
             <p className="text-gray-600 text-lg leading-relaxed">
               {AboutInfo.overview.longDescription}
             </p>
           </div>
-          <div className="bg-gradient-to-br from-yellow-600 to-amber-500 rounded-3xl p-8 sm:p-12 shadow-2xl">
+          <div className="bg-linear-to-br from-yellow-600 to-amber-500 rounded-3xl p-8 sm:p-12 shadow-2xl">
             <div className="space-y-6">
               <div className="bg-white/20 backdrop-blur-sm rounded-2xl p-6">
                 <div className="flex items-start gap-4">
-                  <div className="w-12 h-12 bg-gray-900 rounded-xl flex items-center justify-center flex-shrink-0">
+                  <div className="w-12 h-12 bg-gray-900 rounded-xl flex items-center justify-center shrink-0">
                     <MapPin className="w-6 h-6 text-yellow-600" />
                   </div>
                   <div>
@@ -184,7 +220,7 @@ export default function AboutPage() {
           {AboutInfo.platformFeatures.map((feature, index) => {
             const IconComponent = featureIcons[feature.title] || Package;
             return (
-              <div key={index} className="bg-gradient-to-br from-yellow-50 to-amber-50 rounded-2xl p-6 border-2 border-yellow-200 hover:shadow-xl transition-all">
+              <div key={index} className="bg-linear-to-br from-yellow-50 to-amber-50 rounded-2xl p-6 border-2 border-yellow-200 hover:shadow-xl transition-all">
                 <div className="w-14 h-14 bg-yellow-600 rounded-xl flex items-center justify-center mb-4">
                   <IconComponent className="w-7 h-7 text-gray-900" />
                 </div>
@@ -209,7 +245,7 @@ export default function AboutPage() {
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 max-w-5xl mx-auto">
             {AboutInfo.targetAudience.map((audience, index) => (
               <div key={index} className="bg-gray-50 rounded-xl p-5 border-2 border-gray-200 flex items-center gap-3 hover:border-yellow-600 transition-all">
-                <div className="w-3 h-3 bg-yellow-600 rounded-full flex-shrink-0"></div>
+                <div className="w-3 h-3 bg-yellow-600 rounded-full shrink-0"></div>
                 <span className="text-gray-900 font-medium">{audience}</span>
               </div>
             ))}
@@ -218,7 +254,7 @@ export default function AboutPage() {
       </div>
 
       {/* Commitment CTA */}
-      <div className="bg-gradient-to-br from-yellow-600 via-amber-500 to-yellow-600 py-16 lg:py-20">
+      <div className="bg-linear-to-br from-yellow-600 via-amber-500 to-yellow-600 py-16 lg:py-20">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <Shield className="w-16 h-16 text-gray-900 mx-auto mb-6" />
           <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-6">Our Commitment</h2>

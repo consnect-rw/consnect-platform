@@ -2,7 +2,7 @@ import { INavLink } from "@/types/common/nav-link";
 
 export const NavLinks: INavLink[] = [
      {name:"Work Packages", href:"/offer", megaKey: "offers" },
-     {name:"Tenders", href:"/tender", megaKey: "tenders" },
+     // {name:"Tenders", href:"/tender", megaKey: "tenders" },
      { name:"Companies", href:"/companies", megaKey: "companies" },
      { name:"Updates", href:"/blog", },
      { name:"Contact Us", href:"/contact", },
