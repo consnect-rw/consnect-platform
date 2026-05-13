@@ -4,6 +4,7 @@ import { fetchCompanys } from "@/server/company/company";
 import { SCompanyCard } from "@/types/company/company";
 import type { Metadata } from "next";
 import { JsonLd, buildItemListSchema, buildBreadcrumbSchema } from "@/components/seo/JsonLd";
+import { CompaniesContainer } from "@/components/containers/main/CompaniesContainer";
 
 export const metadata: Metadata = {
   title: "Verified Construction Companies in Rwanda | Consnect",
@@ -82,22 +83,7 @@ export default async function CompaniesPage({
           </p>
         </header>
 
-        {companies.length === 0 ? (
-          <p className="text-gray-500 text-center py-12">No companies found.</p>
-        ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
-            {companies.map((company) => (
-              <CompanyCard key={company.id} company={company} />
-            ))}
-          </div>
-        )}
-
-        <Pagination
-          itemsPerPage={PER_PAGE}
-          currentPage={page}
-          onPageChange={() => {}}
-          totalItems={total}
-        />
+        <CompaniesContainer />
       </main>
     </>
   );
