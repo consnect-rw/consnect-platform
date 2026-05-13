@@ -98,7 +98,7 @@ export default async function RootLayout({
         <link rel="icon" href="/favicon.ico" sizes="any" />
         <link rel="apple-touch-icon" href="/logo/consnect.png" />
       </head>
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased h-screen m-0 p-0`}>
+      <body className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen m-0 p-0`}>
         <ThemeProvider
           attribute="class"
           defaultTheme="light"
