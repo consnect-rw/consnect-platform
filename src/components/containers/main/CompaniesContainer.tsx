@@ -87,10 +87,6 @@ export const CompaniesContainer = () => {
             </button>
           )}
         </div>
-        {/* <div className="hidden sm:flex items-center gap-1.5 px-3 py-2 bg-gray-900 rounded-xl text-xs font-bold text-yellow-400 whitespace-nowrap">
-          <Building2 className="w-3.5 h-3.5" />
-          {isFetching ? "…" : total} {total === 1 ? "company" : "companies"}
-        </div> */}
       </div>
 
       {/* Grid */}

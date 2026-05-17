@@ -454,42 +454,6 @@ export const PublicOfferDetailView = ({ offer }: PublicOfferDetailViewProps) => 
                                                   </div>
                                              </div>
 
-                                             {/* Contact Info */}
-                                             {offer.submissionInfo && (
-                                                  <div className="space-y-2.5 pt-4 border-t border-gray-100">
-                                                       {offer.submissionInfo.contactEmail && (
-                                                            <div className="flex items-center gap-2.5 text-sm">
-                                                                 <div className="w-7 h-7 bg-amber-50 rounded-lg flex items-center justify-center shrink-0">
-                                                                      <Mail className="w-3.5 h-3.5 text-amber-600" />
-                                                                 </div>
-                                                                 <a href={`mailto:${offer.submissionInfo.contactEmail}`} className="text-gray-700 hover:text-amber-600 font-medium truncate transition-colors">
-                                                                      {offer.submissionInfo.contactEmail}
-                                                                 </a>
-                                                            </div>
-                                                       )}
-                                                       {offer.submissionInfo.contactPhone && (
-                                                            <div className="flex items-center gap-2.5 text-sm">
-                                                                 <div className="w-7 h-7 bg-amber-50 rounded-lg flex items-center justify-center shrink-0">
-                                                                      <Phone className="w-3.5 h-3.5 text-amber-600" />
-                                                                 </div>
-                                                                 <a href={`tel:${offer.submissionInfo.contactPhone}`} className="text-gray-700 hover:text-amber-600 font-medium transition-colors">
-                                                                      {offer.submissionInfo.contactPhone}
-                                                                 </a>
-                                                            </div>
-                                                       )}
-                                                       {offer.company?.website && (
-                                                            <div className="flex items-center gap-2.5 text-sm">
-                                                                 <div className="w-7 h-7 bg-amber-50 rounded-lg flex items-center justify-center shrink-0">
-                                                                      <Globe className="w-3.5 h-3.5 text-amber-600" />
-                                                                 </div>
-                                                                 <a href={offer.company.website} target="_blank" rel="noopener noreferrer" className="text-gray-700 hover:text-amber-600 font-medium truncate transition-colors">
-                                                                      {offer.company.website.replace(/^https?:\/\/(www\.)?/, "")}
-                                                                 </a>
-                                                            </div>
-                                                       )}
-                                                  </div>
-                                             )}
-
                                              <Link
                                                   href={`/company/${offer.company?.handle}`}
                                                   className="mt-4 w-full px-4 py-2.5 bg-gray-900 hover:bg-gray-800 text-white font-bold rounded-xl transition-all text-center block text-sm"
@@ -526,32 +490,6 @@ export const PublicOfferDetailView = ({ offer }: PublicOfferDetailViewProps) => 
                                                        </span>
                                                   </div>
                                              </div>
-
-                                             {/* User contact from submission info */}
-                                             {offer.submissionInfo && (
-                                                  <div className="space-y-2.5 pt-4 border-t border-gray-100">
-                                                       {offer.submissionInfo.contactEmail && (
-                                                            <div className="flex items-center gap-2.5 text-sm">
-                                                                 <div className="w-7 h-7 bg-amber-50 rounded-lg flex items-center justify-center shrink-0">
-                                                                      <Mail className="w-3.5 h-3.5 text-amber-600" />
-                                                                 </div>
-                                                                 <a href={`mailto:${offer.submissionInfo.contactEmail}`} className="text-gray-700 hover:text-amber-600 font-medium truncate transition-colors">
-                                                                      {offer.submissionInfo.contactEmail}
-                                                                 </a>
-                                                            </div>
-                                                       )}
-                                                       {offer.submissionInfo.contactPhone && (
-                                                            <div className="flex items-center gap-2.5 text-sm">
-                                                                 <div className="w-7 h-7 bg-amber-50 rounded-lg flex items-center justify-center shrink-0">
-                                                                      <Phone className="w-3.5 h-3.5 text-amber-600" />
-                                                                 </div>
-                                                                 <a href={`tel:${offer.submissionInfo.contactPhone}`} className="text-gray-700 hover:text-amber-600 font-medium transition-colors">
-                                                                      {offer.submissionInfo.contactPhone}
-                                                                 </a>
-                                                            </div>
-                                                       )}
-                                                  </div>
-                                             )}
                                         </>
                                    )}
                               </div>
