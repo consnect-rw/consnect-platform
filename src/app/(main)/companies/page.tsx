@@ -1,5 +1,3 @@
-import { CompanyCard } from "@/components/cards/CompanyCard";
-import Pagination from "@/components/ui/Pagination";
 import { fetchCompanys } from "@/server/company/company";
 import { SCompanyCard } from "@/types/company/company";
 import type { Metadata } from "next";
@@ -34,7 +32,7 @@ export const metadata: Metadata = {
   },
 };
 
-const PER_PAGE = 200;
+const PER_PAGE = 40;
 
 export default async function CompaniesPage({
   searchParams,
@@ -79,7 +77,7 @@ export default async function CompaniesPage({
             Trusted and verified construction companies
           </h1>
           <p className="text-gray-200 font-medium text-lg">
-            Partner with {total} companies registered on the platform!
+            Partner with verified companies registered on the platform!
           </p>
         </header>
 
