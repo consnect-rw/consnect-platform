@@ -452,17 +452,6 @@ export default async function CompanyPage({
                       </a>
                     </li>
                   )}
-                  {person.contactPhone && (
-                    <li className="flex items-center gap-2">
-                      <Phone className="w-4 h-4 text-gray-400 shrink-0" />
-                      <a
-                        href={`tel:${person.contactPhone}`}
-                        className="hover:text-yellow-600 transition-colors"
-                      >
-                        {person.contactPhone}
-                      </a>
-                    </li>
-                  )}
                 </ul>
               </div>
             ))}
@@ -540,7 +529,7 @@ export default async function CompanyPage({
                     </a>
                   </div>
                 )}
-                {company.phone && (
+                {/* {company.phone && (
                   <div className="group">
                     <div className="flex items-center gap-2 mb-1">
                       <Phone className="w-4 h-4 text-yellow-400" />
@@ -553,7 +542,7 @@ export default async function CompanyPage({
                       {company.phone}
                     </a>
                   </div>
-                )}
+                )} */}
                 {company.website && (
                   <div className="group">
                     <div className="flex items-center gap-2 mb-1">
