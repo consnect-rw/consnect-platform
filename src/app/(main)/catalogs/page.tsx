@@ -127,14 +127,6 @@ export default function CatalogsPage() {
 							))}
 						</select>
 					</div>
-
-					{/* Count */}
-					{!isLoading && (
-						<p className="text-sm text-gray-500 sm:ml-auto shrink-0">
-							<span className="font-black text-gray-900">{total}</span>{" "}
-							catalog{total !== 1 ? "s" : ""}
-						</p>
-					)}
 				</div>
 
 				{/* Content */}
