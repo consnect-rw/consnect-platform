@@ -42,7 +42,7 @@ export const PublicOfferCard = ({ offer }: PublicOfferCardProps) => {
           try {
                const result = await createOfferInterest({
                     status: "PENDING",
-                    message: `${user.company.name} is interested in this offer`,
+                    message: `${user.company.name} is interested in this work package. Please review our profile and let us know if you would like to connect.`,
                     company: { connect: { id: user.company.id } },
                     offer: { connect: { id: offer.id } }
                });
