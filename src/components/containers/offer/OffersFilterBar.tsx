@@ -51,7 +51,7 @@ export const OffersFilterBar = ({ filters, onFilterChange, categories }: OffersF
                               <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
                               <input
                                    type="text"
-                                   placeholder="Search offers by title, description..."
+                                   placeholder="Search work packages by title, description..."
                                    value={filters.search}
                                    onChange={(e) => handleChange("search", e.target.value)}
                                    className="w-full pl-12 pr-4 py-3 border-2 border-gray-200 rounded-xl focus:border-yellow-400 focus:outline-none text-gray-900 font-medium"
@@ -114,7 +114,7 @@ export const OffersFilterBar = ({ filters, onFilterChange, categories }: OffersF
                               {/* Type Filter */}
                               <div>
                                    <label htmlFor="type-filter" className="block text-sm font-bold text-gray-700 mb-2">
-                                        Offer Type
+                                        Work Package Type
                                    </label>
                                    <select
                                         id="type-filter"

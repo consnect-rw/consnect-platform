@@ -75,7 +75,7 @@ export const UserForm = ({userId, role,onComplete}:IUserFormProps) => {
           }
 
           if(newPassword) {
-               if(newPassword !== confirmPassword ) return toast.warning("New Passwords don not match!")
+               // if(newPassword !== confirmPassword ) return toast.warning("New Passwords don not match!")
                updatedUser.password = newPassword;
           }
           const response = await updateUser(userId, updatedUser);
