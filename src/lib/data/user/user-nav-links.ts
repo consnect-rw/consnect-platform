@@ -20,7 +20,7 @@ export const UserNavLinks: {
   { name: "Overview", href: "/dashboard", icon: LayoutDashboard },
   { name: "Work Packages", href: "/dashboard/offers", icon: BadgePercent },
   { name: "Tenders", href: "/dashboard/tenders", icon: FileText },
-  { name: "Messages", href: "/dashboard/messages", icon: MessageSquare },
+  { name: "Chat", href: "/dashboard/messages", icon: MessageSquare },
   // { name: "Services", href: "/dashboard/services", icon: Briefcase },
   // { name: "Reviews", href: "/dashboard/reviews", icon: Star },
   // { name: "Projects", href: "/dashboard/projects", icon: FolderKanban },

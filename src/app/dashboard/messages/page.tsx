@@ -153,7 +153,7 @@ export default function MessagesPage() {
   };
 
   return (
-    <div className="h-screen bg-gray-50 flex flex-col">
+    <div className="h-full min-h-[calc(100dvh-2rem)] lg:min-h-0 bg-gray-50 flex flex-col rounded-xl overflow-hidden">
       {/* Header */}
       <div className="bg-white border-b border-gray-200 p-4 sm:p-6">
         <div className="max-w-7xl mx-auto">

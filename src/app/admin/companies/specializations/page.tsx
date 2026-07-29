@@ -126,7 +126,7 @@ export default function CompanySpecializationsPage() {
               style={{ animationDelay: `${categoryIndex * 50}ms` }}
             >
               {/* Category Header */}
-              <div className="bg-linear-to-r from-gray-600 to-gray-700">
+              <div className="bg-linear-to-r from-gray-700 to-gray-800">
                 <div className="flex items-center gap-3 p-4">
                   <button
                     onClick={() => toggleCategory(category.id)}
