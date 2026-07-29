@@ -111,7 +111,7 @@ export default function ActivityPage() {
 
   if (!user?.company) {
     return (
-      <div className="w-full min-h-screen bg-gray-50 p-4 sm:p-6 lg:p-8">
+      <div className="w-full bg-gray-50 p-4 sm:p-6 lg:p-8">
         <div className="max-w-5xl mx-auto">
           <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-12 text-center">
             <div className="inline-flex items-center justify-center w-16 h-16 bg-gray-100 rounded-full mb-4">
@@ -134,7 +134,7 @@ export default function ActivityPage() {
   }
 
   return (
-    <div className="w-full min-h-screen bg-gray-50 p-4 sm:p-6 lg:p-8">
+    <div className="w-full bg-gray-50 p-4 sm:p-6 lg:p-8">
       <div className="max-w-5xl mx-auto space-y-6">
         {/* Header */}
         <div>

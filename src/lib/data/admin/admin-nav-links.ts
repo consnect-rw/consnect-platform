@@ -5,17 +5,10 @@ import {
   BadgePercent,
   FileText,
   MessageSquare,
-  Briefcase,
-  Star,
-  FolderKanban,
   Building2,
   Users,
-  ListCheck,
-  Cog,
-  Logs,
   ChartAreaIcon,
   MessageCircle,
-  Clapperboard,
   Megaphone,
 } from "lucide-react";
 import { FaBlog } from "react-icons/fa6";
@@ -28,7 +21,7 @@ export const AdminNavLinks: {
   roles: EAdminRole[]
 }[] = [
   { name: "Overview", href: "/admin", icon: LayoutDashboard, roles: [EAdminRole.SUPER_ADMIN, EAdminRole.ADMIN, EAdminRole.MODERATOR, EAdminRole.CONTENT_MANAGER, EAdminRole.CUSTOMER_SUPPORT] },
-  { name: "Offers", href: "/admin/offers", icon: BadgePercent, roles: [EAdminRole.SUPER_ADMIN, EAdminRole.ADMIN, EAdminRole.MODERATOR] },
+  { name: "Work Packages", href: "/admin/offers", icon: BadgePercent, roles: [EAdminRole.SUPER_ADMIN, EAdminRole.ADMIN, EAdminRole.MODERATOR] },
   { name: "Tenders", href: "/admin/tenders", icon: FileText, roles: [EAdminRole.SUPER_ADMIN, EAdminRole.ADMIN, EAdminRole.MODERATOR] },
   { name: "Companies", href: "/admin/companies", icon: Building2, roles: [EAdminRole.SUPER_ADMIN, EAdminRole.ADMIN, EAdminRole.MODERATOR] },
   { name: "Users", href: "/admin/users", icon: Users, roles: [EAdminRole.SUPER_ADMIN, EAdminRole.ADMIN] },

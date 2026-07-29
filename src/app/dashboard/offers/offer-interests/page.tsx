@@ -64,7 +64,7 @@ export default function OfferInterestsPage() {
      const acceptedCount = interests.filter((i) => i.status === "ACCEPTED").length;
 
      return (
-          <div className="min-h-screen bg-gray-50 p-4 sm:p-6 lg:p-8">
+          <div className="w-full bg-gray-50 p-4 sm:p-6 lg:p-8">
                <div className="max-w-4xl mx-auto space-y-6">
                     {/* Page Header */}
                     <div className="bg-white rounded-2xl border-2 border-gray-200 p-6 sm:p-8">
