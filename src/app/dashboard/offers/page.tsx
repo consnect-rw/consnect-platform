@@ -53,7 +53,7 @@ export default function OffersPage() {
               className="inline-flex items-center gap-2 px-6 py-3 bg-yellow-400 hover:bg-yellow-500 text-gray-900 font-semibold rounded-xl transition-all hover:shadow-md hover:-translate-y-0.5"
             >
               <Plus className="w-5 h-5" />
-              New Offer
+              New Work Package
             </Link>
           </div>
         </div>
