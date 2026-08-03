@@ -29,9 +29,9 @@ export default function HomePage() {
       <HomeHeroSection />
       <MiddlePageBanners location="home" index={0} totalSlots={4} />
       <HomeCatalogsSection />
-      <HomeCompaniesSection />
-      <MiddlePageBanners location="home" index={1} totalSlots={4} />
       <HomeOffersSection />
+      <MiddlePageBanners location="home" index={1} totalSlots={4} />
+      <HomeCompaniesSection />
       <MiddlePageBanners location="home" index={2} totalSlots={4} />
       <HomeBlogsSection />
       <MiddlePageBanners location="home" index={3} totalSlots={4} />

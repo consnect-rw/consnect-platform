@@ -14,6 +14,7 @@ import { IOfferDocument, OfferDocumentForm } from "./OfferDocumentForm";
 import { generateToken } from "@/util/token-fns";
 import { ChevronLeft, ChevronRight, Check, MapPin, FolderPlus } from "lucide-react";
 import { createOffer, updateOffer } from "@/server/offer/offer";
+import { createOfferDocument, updateOfferDocument } from "@/server/offer/offer-document";
 import { toast } from "sonner";
 import queryClient from "@/lib/queryClient";
 import { SOfferEdit } from "@/types/offer/offer";
@@ -96,7 +97,7 @@ export const OfferForm = ({onComplete, offerId, companyId,userId, allowPublish=f
 
      // Step 7: Submission
      const [proposalFormat, setProposalFormat] = useState("");
-     const [autoClose, setAutoClose] = useState("");
+     const [autoClose, setAutoClose] = useState("No");
      const [contactEmail, setContactEmail] = useState("");
      const [contactPhone, setContactPhone] = useState("");
      const [submissionNotes, setSubmissionNotes] = useState("");
@@ -157,6 +158,7 @@ export const OfferForm = ({onComplete, offerId, companyId,userId, allowPublish=f
           if (offer.safetyRequirements) setSafetyRequirements(offer.safetyRequirements);
           if (offer.requiredSkills?.length) setSkills(offer.requiredSkills);
           if (offer.requiredCertifications?.length) setRequiredCertifications(offer.requiredCertifications);
+          if (offer.requiredDocuments?.length) setRequiredAttachments(offer.requiredDocuments);
           if (offer.deliverables?.length) setDeliverables(offer.deliverables);
 
           // Step 4: Project Info
@@ -243,6 +245,26 @@ export const OfferForm = ({onComplete, offerId, companyId,userId, allowPublish=f
           event.preventDefault();
           setLoading(true);
           
+          // Pre-submit validation
+          if (!title?.trim()) {
+               toast.error("Offer title is required");
+               setCurrentStep(2);
+               setLoading(false);
+               return;
+          }
+          if (!offerType) {
+               toast.error("Offer type is required");
+               setCurrentStep(1);
+               setLoading(false);
+               return;
+          }
+          if (!visibility) {
+               toast.error("Visibility is required");
+               setCurrentStep(2);
+               setLoading(false);
+               return;
+          }
+
           try {
                if (!offerId) {
                     // Create new offer using state values
@@ -255,8 +277,8 @@ export const OfferForm = ({onComplete, offerId, companyId,userId, allowPublish=f
                          visibility: visibility as OfferVisibility,
                          requiredDocuments: requiredAttachments,
                          contractType: contractType as EOFferContractType,
-                         category: { connect: { id: categoryId } },
                          ...(companyId && { company: { connect: { id: companyId } } }),
+                         ...(categoryId && { category: { connect: { id: categoryId } } }),
                          ...(userId && { user: { connect: { id: userId } } }),
                          ...(scopeOfWork && { scopeOfWork }),
                          ...(qualityStandards && { qualityStandards }),
@@ -288,7 +310,7 @@ export const OfferForm = ({onComplete, offerId, companyId,userId, allowPublish=f
                     }
 
                     // Handle location
-                    if (country && city) {
+                    if (projectOption === "location" && country && city) {
                          offerData.siteLocation = {
                               create: {
                                    country,
@@ -346,9 +368,21 @@ export const OfferForm = ({onComplete, offerId, companyId,userId, allowPublish=f
                          return;
                     }
 
+                    // Save documents after offer is created
+                    const validDocs = documents.filter(d => d.url && d.type);
+                    if (validDocs.length > 0) {
+                         await Promise.all(validDocs.map(d => createOfferDocument({
+                              offer: { connect: { id: response.id } },
+                              type: d.type as any,
+                              url: d.url!,
+                              accessLevel: (d.accessLevel as any) ?? "PUBLIC",
+                         })));
+                    }
+
                     toast.success("Work Package created successfully");
+                    await queryClient.invalidateQueries();
                     onComplete();
-                    return queryClient.invalidateQueries();
+                    return;
                } else {
                     // Update existing offer using state values
                     const updateData: any = {
@@ -359,6 +393,7 @@ export const OfferForm = ({onComplete, offerId, companyId,userId, allowPublish=f
                          ...(status && { status: status as EOfferStatus }),
                          ...(visibility && { visibility: visibility as OfferVisibility }),
                          ...(contractType && { contractType: contractType as EOFferContractType }),
+                         ...(categoryId && { category: { connect: { id: categoryId } } }),
                          ...(scopeOfWork && { scopeOfWork }),
                          ...(qualityStandards && { qualityStandards }),
                          ...(technicalSpecifications && { technicalSpecifications }),
@@ -367,8 +402,73 @@ export const OfferForm = ({onComplete, offerId, companyId,userId, allowPublish=f
                          ...(skills.length > 0 && { requiredSkills: skills }),
                          ...(deliverables.length > 0 && { deliverables }),
                          ...(requiredCertifications.length > 0 && { requiredCertifications }),
-                         ...(requiredAttachments.length > 0 && { requiredAttachments }),
+                         ...(requiredAttachments.length > 0 && { requiredDocuments: requiredAttachments }),
                     };
+
+                    // Upsert site location
+                    if (projectOption === "location" && country && city) {
+                         updateData.siteLocation = {
+                              upsert: {
+                                   create: { country, city, ...(state && { state }), ...(zipCode && { zipCode }), ...(address && { address }) },
+                                   update: { country, city, ...(state && { state }), ...(zipCode && { zipCode }), ...(address && { address }) },
+                              }
+                         };
+                    }
+
+                    // Handle project based on option
+                    if (projectOption === "existing" && projectId) {
+                         updateData.project = { connect: { id: projectId } };
+                    } else if (projectOption === "new" && newProjectTitle) {
+                         updateData.project = {
+                              create: {
+                                   title: newProjectTitle,
+                                   description: newProjectDescription || "",
+                                   phase: "EXECUTION",
+                                   clientName: clientName || "",
+                                   clientEmail: clientEmail || "",
+                                   clientPhone: clientPhone || "",
+                                   initiatedOn: initiatedOn ? new Date(initiatedOn) : new Date(),
+                                   companyId: companyId,
+                                   userId: userId
+                              }
+                         };
+                    }
+
+                    // Upsert timeline
+                    if (startDate || endDate || deadline || duration) {
+                         const tlData = {
+                              ...(startDate && { startDate: new Date(startDate) }),
+                              ...(endDate && { endDate: new Date(endDate) }),
+                              ...(deadline && { deadline: new Date(deadline) }),
+                              ...(duration && { duration: parseInt(duration) }),
+                              ...(durationUnit && { durationUnit: durationUnit as EDurationUnit }),
+                         };
+                         updateData.timeline = { upsert: { create: tlData, update: tlData } };
+                    }
+
+                    // Upsert pricing
+                    if (budgetMin || budgetMax || paymentTerms || currency) {
+                         const prData = {
+                              ...(budgetMin && { budgetMin: parseFloat(budgetMin) }),
+                              ...(budgetMax && { budgetMax: parseFloat(budgetMax) }),
+                              ...(currency && { currency }),
+                              ...(paymentTerms && { paymentTerms }),
+                              ...(paymentMethods.length > 0 && { paymentMethods }),
+                         };
+                         updateData.pricing = { upsert: { create: prData, update: prData } };
+                    }
+
+                    // Upsert submission info
+                    if (proposalFormat || contactEmail || contactPhone || submissionNotes) {
+                         const siData = {
+                              ...(proposalFormat && { proposalFormat }),
+                              ...(contactEmail && { contactEmail }),
+                              ...(contactPhone && { contactPhone }),
+                              ...(submissionNotes && { submissionGuidelines: submissionNotes }),
+                              autoClose: autoClose === "Yes",
+                         };
+                         updateData.submissionInfo = { upsert: { create: siData, update: siData } };
+                    }
 
                     const response = await updateOffer(offerId, updateData);
                     
@@ -377,9 +477,31 @@ export const OfferForm = ({onComplete, offerId, companyId,userId, allowPublish=f
                          return;
                     }
 
+                    // Upsert documents — new ones get created, existing ones (have a DB url already) get updated
+                    const validDocs = documents.filter(d => d.url && d.type);
+                    if (validDocs.length > 0) {
+                         await Promise.all(validDocs.map(d => {
+                              const isExisting = offer?.documents?.some((od) => od.id === d.id);
+                              if (isExisting) {
+                                   return updateOfferDocument(d.id, {
+                                        type: d.type as any,
+                                        url: d.url!,
+                                        accessLevel: (d.accessLevel as any) ?? "PUBLIC",
+                                   });
+                              }
+                              return createOfferDocument({
+                                   offer: { connect: { id: offerId } },
+                                   type: d.type as any,
+                                   url: d.url!,
+                                   accessLevel: (d.accessLevel as any) ?? "PUBLIC",
+                              });
+                         }));
+                    }
+
                     toast.success("Work Package updated successfully");
+                    await queryClient.invalidateQueries();
                     onComplete();
-                    return queryClient.invalidateQueries();
+                    return;
                }
           } catch (error) {
                console.error("Error submitting work package:", error);
@@ -474,17 +596,21 @@ export const OfferForm = ({onComplete, offerId, companyId,userId, allowPublish=f
                                    </div>
                                    <Grid2InputWrapper>
                                         <SelectInputGroup 
+                                             key={`category-${categoryId}`}
                                              name="category" 
                                              label={`Category${categoryId ? `: ${offerCategories.find(c => c.id === categoryId)?.name ?? ""}` : ""}`}
                                              values={offerCategories.map(c => ({label:c.name, value:c.id}))} 
                                              required={!offer}
+                                             defaultValue={categoryId}
                                              action={(value) => setCategoryId(value)}
                                         />
                                         <SelectInputGroup 
+                                             key={`type-${offerType}`}
                                              name="type" 
                                              label={`Offer Type${offerType ? `: ${offerType.split("_").join(" ")}` : ""}`}
                                              values={Object.values(OfferType).map(v => ({value:v, label: v.split("_").join(" ")}))} 
                                              required={!offer}
+                                             defaultValue={offerType}
                                              action={(value) => setOfferType(value)}
                                         />
                                    </Grid2InputWrapper>
@@ -516,31 +642,39 @@ export const OfferForm = ({onComplete, offerId, companyId,userId, allowPublish=f
                                    />
                                    <Grid2InputWrapper>
                                         <SelectInputGroup 
+                                             key={`priority-${priority}`}
                                              name="priority" 
                                              label={`Priority${priority ? `: ${priority}` : ""}`}
                                              values={Object.values(EOfferPriority).map(v => ({value:v, label: v}))} 
                                              required={!offer}
+                                             defaultValue={priority}
                                              action={(value) => setPriority(value)}
                                         />
                                         {allowPublish && <SelectInputGroup 
+                                             key={`status-${status}`}
                                              name="status" 
                                              label={`Status${status ? `: ${status}` : ""}`}
                                              values={Object.values(EOfferStatus).map(v => ({value:v, label: v}))} 
                                              required={!offer}
+                                             defaultValue={status}
                                              action={(value) => setStatus(value)}
                                         />}
                                         <SelectInputGroup 
+                                             key={`visibility-${visibility}`}
                                              name="visibility" 
                                              label={`Visibility${visibility ? `: ${visibility}` : ""}`}
                                              values={Object.values(OfferVisibility).map(v => ({value:v, label: v}))} 
                                              required={!offer}
+                                             defaultValue={visibility}
                                              action={(value) => setVisibility(value)}
                                         />
                                         <SelectInputGroup 
+                                             key={`contract-type-${contractType}`}
                                              name="contract-type" 
                                              label={`Contract Type${contractType ? `: ${contractType.split("_").join(" ")}` : ""}`}
                                              values={Object.values(EOFferContractType).map(v => ({value:v, label: v.split("_").join(" ")}))} 
                                              required={!offer}
+                                             defaultValue={contractType}
                                              action={(value) => setContractType(value)}
                                         />
                                    </Grid2InputWrapper>
@@ -809,10 +943,12 @@ export const OfferForm = ({onComplete, offerId, companyId,userId, allowPublish=f
                                                   action={(value) => setDuration(value as string)}
                                              />
                                              <SelectInputGroup 
+                                                  key={`duration-unit-${durationUnit}`}
                                                   name="duration-unit" 
                                                   label={`Duration Unit${durationUnit ? `: ${durationUnit}` : ""}`}
                                                   values={Object.values(EDurationUnit).map(v => ({value:v, label: v}))} 
                                                   required={false}
+                                                  defaultValue={durationUnit}
                                                   action={(value) => setDurationUnit(value)}
                                              />
                                         </div>
@@ -890,10 +1026,12 @@ export const OfferForm = ({onComplete, offerId, companyId,userId, allowPublish=f
                                              action={(value) => setProposalFormat(value as string)}
                                         />
                                         <SelectInputGroup 
+                                             key={`auto-close-${autoClose}`}
                                              name="auto-close" 
                                              label={`Auto Close After Deadline${autoClose ? `: ${autoClose}` : ""}`}
                                              values={[{value:"Yes", label:"Yes"}, {value:"No", label:"No"}]} 
                                              required={false}
+                                             defaultValue={autoClose}
                                              action={(value) => setAutoClose(value)}
                                         />
                                         <TextInputGroup 
