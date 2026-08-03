@@ -514,6 +514,7 @@ export const SOfferEdit = {
      qualityStandards: true,
      safetyRequirements: true,
      requiredCertifications: true,
+     requiredDocuments: true,
      category: { select: { id: true, name: true } },
      project: {
           select: {

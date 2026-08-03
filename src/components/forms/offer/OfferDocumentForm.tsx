@@ -6,8 +6,9 @@ import { useState } from "react";
 import FileUpload from "@/components/ui/upload/FileUpload";
 import { toast } from "sonner";
 import { deleteSingleImage } from "@/util/s3Helpers";
-import { Eye, Trash2, X } from "lucide-react";
+import { Trash2, X } from "lucide-react";
 import { createOfferDocument, updateOfferDocument } from "@/server/offer/offer-document";
+import { PdfViewerButton } from "@/components/buttons/PdfViewerButton";
 import queryClient from "@/lib/queryClient";
 
 export interface IOfferDocument {
@@ -34,13 +35,20 @@ export const OfferDocumentForm = ({ document, onChange, offerId, documentId, onD
      });
      const [isSaving, setIsSaving] = useState(false);
 
+     const update = (patch: Partial<IOfferDocument>) => {
+          setDocumentData(prev => {
+               const next = { ...prev, ...patch };
+               onChange?.(next);
+               return next;
+          });
+     };
+
      const handleDeleteFile = async () => {
           if(!documentData.url) return;
           try {
                await deleteSingleImage(documentData.url);
                toast.success("File deleted successfully");
-               setDocumentData({ ...documentData, url: undefined });
-               onChange && onChange({ ...documentData, url: undefined });
+               update({ url: undefined });
           } catch (error) {
                console.error("Error deleting file:", error);
                toast.error("Failed to delete file");
@@ -92,7 +100,7 @@ export const OfferDocumentForm = ({ document, onChange, offerId, documentId, onD
                     size="sm" name="document-type" 
                     label="Document Type" 
                     options={Object.values(EOfferDocumentType).map(v => ({ value: v, label: v.split("_").join(" ").toLowerCase() }))} 
-                    onChange={(v => setDocumentData(prev => ({...prev, type: v as EOfferDocumentType})))} 
+                    onChange={(v => update({ type: v as EOfferDocumentType }))} 
                />
                <SelectInput 
                     className="min-w-25"
@@ -100,14 +108,20 @@ export const OfferDocumentForm = ({ document, onChange, offerId, documentId, onD
                     size="sm" name="access-level" 
                     label="Access Level" 
                     options={Object.values(EOfferDocumentAccessLevel).map(v => ({ value: v, label: v.split("_").join(" ").toLowerCase() }))} 
-                    onChange={(v => setDocumentData(prev => ({...prev, accessLevel: v as EOfferDocumentAccessLevel})))} 
+                    onChange={(v => update({ accessLevel: v as EOfferDocumentAccessLevel }))} 
                />
                {documentData.url ? 
                     <div className="flex items-center gap-1">
-                         <button type="button" className="cursor-pointer py-1.5 px-1.5 rounded-lg bg-gray-200 text-gray-800 font-medium text-sm" ><Eye className="w-4 h-4"/> View</button>
-                         <button type="button" className="cursor-pointer py-1.5 px-1.5 rounded-lg bg-red-200 text-red-600 font-medium text-sm" onClick={handleDeleteFile} ><Trash2 className="w-4 h-4"/></button>
+                         <PdfViewerButton
+                              fileUrl={documentData.url}
+                              title={documentData.type ? documentData.type.split("_").join(" ").toLowerCase() : "Document"}
+                              btnLabel="View"
+                              size="sm"
+                              variant="outline"
+                         />
+                         <button type="button" className="cursor-pointer py-1.5 px-1.5 rounded-lg bg-red-100 hover:bg-red-200 text-red-600 font-medium text-sm transition-colors" onClick={handleDeleteFile}><Trash2 className="w-4 h-4"/></button>
                     </div>
-               : <FileUpload onUploadComplete={res => setDocumentData({ ...documentData, url: res })} name={`Upload`} allowedTypes={["application/pdf"]} />}
+               : <FileUpload onUploadComplete={res => update({ url: res })} name={`Upload`} allowedTypes={["application/pdf"]} />}
                {offerId || documentId ? <button disabled={isSaving} onClick={handleSave} type="button" className="cursor-pointer py-1.5 px-1.5 rounded-lg bg-yellow-200 text-yellow-600 font-medium text-sm">{isSaving ? "Saving..." : "Save"}</button> : null}
                <button onClick={onDelete} type="button" className="border border-red-300 text-red-600 absolute top-1 right-1 p-1 rounded-full"><X className="w-4 h-4" /></button>
           </div>
